@@ -54,21 +54,49 @@ Unlike traditional NLP approaches that rely purely on linguistic features, our f
 
 ### Critical Findings from Optimization
 
-| Parameter | Previous (Failed) | Current (Optimal) |
+| Parameter | Previous (LR=1e-4) | Current (LR=2e-5) |
 |-----------|------------------|-------------------|
 | **Learning Rate** | 1e-4 | 2e-5 |
 | **Warmup Steps** | None | 500 |
 | **Early Stopping** | None | Patience=2 |
+| **Final Val F1** | 81.34% | Pending |
+| **Overfitting** | Yes (loss spike) | No |
 
-### Loss Trajectory Comparison
+### Loss Comparison at Same Milestones
+
+| Samples | % Complete | Previous Loss | Current Loss | Delta |
+|---------|------------|--------------|--------------|-------|
+| 5K | 4.1% | ~0.26 | 0.2733 | +0.01 |
+| 10K | 8.3% | ~0.21 | 0.1875 | -0.02 |
+| 15K | 12.4% | ~0.22 | 0.1509 | -0.07 |
+| 20K | 16.6% | N/A | 0.1315 | - |
+| 25K | 20.7% | N/A | 0.1198 | - |
+| 30K | 24.9% | N/A | 0.1123 | - |
+| 35K | 29.0% | ~0.15 (spike!) | 0.1056 | -0.04 |
+| 40K | 33.2% | N/A | 0.1002 | - |
+| 50K | 41.5% | N/A | 0.0928 | - |
+| 60K | 49.8% | N/A | **0.0879** | - |
+
+### Loss Trajectory Visualization
 
 ```
-LR=1e-4 (Overfitting):     LR=2e-5 (Optimal):
-0.27 → 0.15 → 0.49 ✗      0.27 → 0.15 → 0.10 ✓
-     ↑ spike at 35K              ↑ steady decrease
+Samples:    5K     10K    15K    20K    30K    35K    40K    50K    60K
+─────────────────────────────────────────────────────────────────────────────
+Previous:  0.26 → 0.21 → 0.22 → N/A  → N/A → 0.15 → N/A  → N/A  → N/A
+              ↓      ↓      ↓                    ↑
+          (spike)                        Loss spike at 35K! (0.15→0.49)
+
+Current:   0.27 → 0.19 → 0.15 → 0.13 → 0.11 → 0.11 → 0.10 → 0.09 → 0.09
+              ↓      ↓      ↓      ↓      ↓      ↓      ↓      ↓      ↓
+                                           Steady decrease, no spike ✓
 ```
 
-**Key Learning:** Lower LR with warmup prevents the loss spike that occurs around 35K samples when using higher learning rates.
+### Key Learnings
+
+1. **LR=1e-4 causes overfitting**: Loss spiked from ~0.15 to 0.49 at 35K samples
+2. **LR=2e-5 with warmup**: Consistent loss decrease without spikes
+3. **Early stopping critical**: Prevents overtraining after optimal point
+4. **Final Val F1 target**: Beat 81.34% previous best
 
 ---
 
