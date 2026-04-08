@@ -75,7 +75,8 @@ Unlike traditional NLP approaches that rely purely on linguistic features, our f
 | 35K | 29.0% | ~0.15 (spike!) | 0.1056 | -0.04 |
 | 40K | 33.2% | N/A | 0.1002 | - |
 | 50K | 41.5% | N/A | 0.0928 | - |
-| 60K | 49.8% | N/A | **0.0879** | - |
+| 65K | 53.9% | N/A | 0.0856 | - |
+| 70K | 58.1% | N/A | **0.0835** | - |
 
 ### Loss Trajectory Visualization
 
@@ -96,7 +97,18 @@ Current:   0.27 → 0.19 → 0.15 → 0.13 → 0.11 → 0.11 → 0.10 → 0.09 �
 1. **LR=1e-4 causes overfitting**: Loss spiked from ~0.15 to 0.49 at 35K samples
 2. **LR=2e-5 with warmup**: Consistent loss decrease without spikes
 3. **Early stopping critical**: Prevents overtraining after optimal point
-4. **Final Val F1 target**: Beat 81.34% previous best
+4. **Final Val F1 target**: Beat 81.34% → Est. 82-84%
+
+### Projected Final Metrics
+
+| Metric | Previous | Estimated Current | Notes |
+|--------|----------|-------------------|-------|
+| **Val F1** | 81.34% | **82-84%** | +1-3% improvement |
+| **Val Precision** | ~80% | **81-83%** | |
+| **Val Recall** | ~83% | **83-85%** | |
+| **Training Loss** | 0.49 (overfit) | **~0.06-0.07** | No overfitting |
+
+**Confidence**: Higher at 70K samples loss is still decreasing (0.0835) vs previous run which spiked at 35K. → Est. 82-84%
 
 ---
 
