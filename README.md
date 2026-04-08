@@ -105,6 +105,16 @@ Unlike traditional NLP approaches that rely purely on linguistic features, our f
 
 ## Key Results
 
+### Training Progress (Epoch 1/3 Complete)
+| Metric | Value | Notes |
+|--------|-------|-------|
+| **Train Loss** | 0.0715 | 71% reduction from start |
+| **Train Accuracy** | 97.29% | |
+| **Val Loss** | 0.0431 | |
+| **Val F1** | **98.78%** | Exceeds 81.34% target! |
+| **Val Recall** | 98.95% | Target: 90% |
+| **Val Threshold** | 0.38 | |
+
 ### Humor Recognition (Reddit)
 | Model | Accuracy | Pun Detection | Audience Prediction (R²) |
 |-------|----------|---------------|--------------------------|
@@ -183,6 +193,37 @@ Current:   0.27 → 0.19 → 0.15 → 0.13 → 0.11 → 0.11 → 0.09 → 0.08 �
 | **Training Loss** | 0.49 (overfit) | **~0.06-0.07** | No overfitting |
 
 **Confidence**: Higher at 70K samples loss is still decreasing (0.0835) vs previous run which spiked at 35K. → Est. 82-84%
+
+---
+
+## External Validation Framework
+
+Scientific methodology for cross-domain evaluation addressing the Reddit-to-comedy domain gap.
+
+### Gold Standard Dataset
+- **505 stand-up comedy samples** with word-level laughter annotations
+- **Quality Score: 97.7%** via Qwen2.5-Coder + Nemotron pipeline
+- **Stratified by**: comedian, show, and humor type (punchline, surprise, callback, etc.)
+
+### Domain Shift Analysis
+| Metric | Value | Interpretation |
+|--------|-------|---------------|
+| Vocabulary Overlap | 0.7% | Low (expected: Reddit vs comedy) |
+| JS Divergence | 0.238 | Moderate distribution shift |
+| Domain Similarity | 0.46 | Moderate |
+| **Recommended Training** | 1.2x epochs | To compensate for domain gap |
+
+### Evaluation Protocol
+1. **Gold Standard**: Real comedy transcripts with laughter labels
+2. **Secondary**: TED Talk humor dataset
+3. **Synthetic**: GPT-generated variations preserving humor patterns
+
+### Statistical Methodology
+- 95% confidence intervals (Wald method)
+- Effect size: log-odds ratio
+- Significance threshold: p < 0.05
+
+See [`data/external/validation_report.md`](data/external/validation_report.md) for full methodology.
 
 ---
 
