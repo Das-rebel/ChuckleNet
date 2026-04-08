@@ -1,4 +1,4 @@
-"""Setup script for biosemioticai package."""
+"""Setup script for ChuckleNet package."""
 
 from setuptools import setup, find_packages
 
@@ -6,14 +6,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="biosemioticai",
+    name="chuckleNet",
     version="0.1.0",
     author="Your Name",
     author_email="your.email@example.com",
     description="Biosemiotic Framework for Laughter and Humor Recognition",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/biosemiotic-laughter-prediction",
+    url="https://github.com/Das-rebel/ChuckleNet",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     classifiers=[

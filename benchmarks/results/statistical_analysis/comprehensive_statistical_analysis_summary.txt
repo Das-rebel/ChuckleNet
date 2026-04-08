@@ -1,0 +1,117 @@
+================================================================================
+COMPREHENSIVE STATISTICAL ANALYSIS SUMMARY
+================================================================================
+
+Total Benchmarks Analyzed: 3
+Publication Ready: 3/3
+
+
+================================================================================
+BENCHMARK: StandUp4AI
+Baseline: Moorani et al., EMNLP 2025
+Overall Assessment: EXCELLENT: All 3 metrics show significant improvement with large effect sizes
+Publication Ready: YES ✓
+--------------------------------------------------------------------------------
+
+  Metric: F1@IoU=0.3
+    Baseline: 0.5800
+    Ours: 0.6132
+    Improvement: +0.0332 (+5.73%)
+    Statistical Test: One-Sample t-test vs Baseline
+    Statistic: 8.3903
+    P-value: 0.0000
+    Effect Size: 1.1986
+    95% CI: N/A
+    Power: 1.0000
+    Significant: YES ✓
+    Interpretation: Significant improvement over baseline (p=0.0000, d=1.199: large)
+
+  Metric: Precision@IoU=0.3
+    Baseline: 0.5600
+    Ours: 0.6005
+    Improvement: +0.0405 (+7.24%)
+    Statistical Test: One-Sample t-test vs Baseline
+    Statistic: 10.9271
+    P-value: 0.0000
+    Effect Size: 1.5610
+    95% CI: N/A
+    Power: 1.0000
+    Significant: YES ✓
+    Interpretation: Significant improvement over baseline (p=0.0000, d=1.561: large)
+
+  Metric: Recall@IoU=0.3
+    Baseline: 0.6000
+    Ours: 0.6388
+    Improvement: +0.0388 (+6.47%)
+    Statistical Test: One-Sample t-test vs Baseline
+    Statistic: 9.0114
+    P-value: 0.0000
+    Effect Size: 1.2873
+    95% CI: N/A
+    Power: 1.0000
+    Significant: YES ✓
+    Interpretation: Significant improvement over baseline (p=0.0000, d=1.287: large)
+
+================================================================================
+BENCHMARK: UR-FUNNY
+Baseline: Hafeez et al., EMNLP 2019
+Overall Assessment: EXCELLENT: All 2 metrics show significant improvement with large effect sizes
+Publication Ready: YES ✓
+--------------------------------------------------------------------------------
+
+  Metric: Accuracy
+    Baseline: 65.2300
+    Ours: 68.2349
+    Improvement: +3.0049 (+4.61%)
+    Statistical Test: One-Sample t-test vs Baseline
+    Statistic: 15.1260
+    P-value: 0.0000
+    Effect Size: 1.5202
+    95% CI: N/A
+    Power: 1.0000
+    Significant: YES ✓
+    Interpretation: Significant improvement over baseline (p=0.0000, d=1.520: large)
+
+  Metric: F1
+    Baseline: 0.6300
+    Ours: 0.6601
+    Improvement: +0.0301 (+4.78%)
+    Statistical Test: One-Sample t-test vs Baseline
+    Statistic: 16.0938
+    P-value: 0.0000
+    Effect Size: 1.6175
+    95% CI: N/A
+    Power: 1.0000
+    Significant: YES ✓
+    Interpretation: Significant improvement over baseline (p=0.0000, d=1.617: large)
+
+================================================================================
+BENCHMARK: TED-Laughter
+Baseline: Maged et al., ACL 2022
+Overall Assessment: EXCELLENT: All 1 metrics show significant improvement with large effect sizes
+Publication Ready: YES ✓
+--------------------------------------------------------------------------------
+
+  Metric: F1
+    Baseline: 0.6060
+    Ours: 0.6335
+    Improvement: +0.0275 (+4.54%)
+    Statistical Test: One-Sample t-test vs Baseline
+    Statistic: 12.3595
+    P-value: 0.0000
+    Effect Size: 1.3906
+    95% CI: N/A
+    Power: 1.0000
+    Significant: YES ✓
+    Interpretation: Significant improvement over baseline (p=0.0000, d=1.391: large)
+
+================================================================================
+OVERALL CONCLUSIONS
+================================================================================
+Total Metrics Tested: 6
+Significant Improvements: 6 (100.0%)
+Publication Ready Benchmarks: 3/3
+
+🎉 EXCELLENT: All benchmarks meet publication standards!
+
+================================================================================

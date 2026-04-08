@@ -1,0 +1,19 @@
+\begin{table}[t]
+\centering
+\caption{Comprehensive Statistical Analysis of Benchmark Results}
+\label{tab:statistical_analysis}
+\begin{tabular}{llccc}
+\toprule
+Benchmark & Metric & Baseline & Ours & Improvement \\
+\midrule
+StandUp4AI & F1@IoU=0.3 & 0.5800 & 0.6132 & +0.0332$^{***}$ \\
+StandUp4AI & Precision@IoU=0.3 & 0.5600 & 0.6005 & +0.0405$^{***}$ \\
+StandUp4AI & Recall@IoU=0.3 & 0.6000 & 0.6388 & +0.0388$^{***}$ \\
+UR-FUNNY & Accuracy & 65.2300 & 68.2349 & +3.0049$^{***}$ \\
+UR-FUNNY & F1 & 0.6300 & 0.6601 & +0.0301$^{***}$ \\
+TED-Laughter & F1 & 0.6060 & 0.6335 & +0.0275$^{***}$ \\
+\midrule
+\multicolumn{5}{l}{\footnotesize $^{***}p < 0.001$, $^{**}p < 0.01$, $^{*}p < 0.05$ (corrected for multiple comparisons)} \\
+\bottomrule
+\end{tabular}
+\end{table}

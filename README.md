@@ -1,10 +1,10 @@
-# Biosemiotic Laughter Prediction
+# ChuckleNet
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![arXiv](https://img.shields.io/badge/arXiv-Pending-brightgreen.svg)](https://arxiv.org/abs/XXXX.XXXXX)
 
-**The first biosemiotic framework for computational humor recognition, integrating evolutionary theories of laughter with transformer-based machine learning.**
+**ChuckleNet: The first biosemiotic AI framework for computational humor recognition, integrating evolutionary theories of laughter with transformer-based machine learning.**
 
 ---
 
@@ -115,8 +115,8 @@ Current:   0.27 → 0.19 → 0.15 → 0.13 → 0.11 → 0.11 → 0.10 → 0.09 �
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/biosemioticai.git
-cd biosemioticai
+git clone https://github.com/Das-rebel/ChuckleNet.git
+cd ChuckleNet
 pip install -r requirements.txt
 ```
 
@@ -152,7 +152,7 @@ python reproduce_results.py
 ## Project Structure
 
 ```
-biosemioticai/
+ChuckleNet/
 ├── README.md                      # This file
 ├── LICENSE                       # MIT License
 ├── requirements.txt              # Dependencies
