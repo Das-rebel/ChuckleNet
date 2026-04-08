@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4F46E5"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="inputGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E1B4B"/>
+      <stop offset="100%" style="stop-color:#312E81"/>
+    </linearGradient>
+    <linearGradient id="bertGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#059669"/>
+      <stop offset="100%" style="stop-color:#047857"/>
+    </linearGradient>
+    <linearGradient id="bioGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#DC2626"/>
+      <stop offset="100%" style="stop-color:#B91C1C"/>
+    </linearGradient>
+    <linearGradient id="gcacuGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#D97706"/>
+      <stop offset="100%" style="stop-color:#B45309"/>
+    </linearGradient>
+    <linearGradient id="tomGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB"/>
+      <stop offset="100%" style="stop-color:#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="outputGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#7C3AED"/>
+      <stop offset="100%" style="stop-color:#6D28D9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="700" fill="#0F172A" rx="12"/>
+
+  <!-- Title -->
+  <rect width="900" height="50" fill="url(#headerGrad)" rx="12" ry="12"/>
+  <text x="450" y="32" font-family="system-ui, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">Biosemiotic Laughter Prediction Framework</text>
+
+  <!-- Input Layer -->
+  <rect x="30" y="80" width="180" height="80" fill="url(#inputGrad)" rx="8" filter="url(#shadow)"/>
+  <text x="120" y="105" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="white" text-anchor="middle">INPUT</text>
+  <text x="120" y="125" font-family="system-ui, sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">Social Media Text</text>
+  <text x="120" y="140" font-family="system-ui, sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">(Reddit Jokes, Pun,</text>
+  <text x="120" y="155" font-family="system-ui, sans-serif" font-size="10" fill="#CBD5E1" text-anchor="middle">Sarcasm, Comedy)</text>
+
+  <!-- Arrow Input -> BERT -->
+  <path d="M210 120 L270 120" stroke="#4F46E5" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4F46E5"/>
+    </marker>
+  </defs>
+
+  <!-- BERT Encoder -->
+  <rect x="280" y="70" width="200" height="100" fill="url(#bertGrad)" rx="8" filter="url(#shadow)"/>
+  <text x="380" y="95" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">XLM-RoBERTa</text>
+  <text x="380" y="115" font-family="system-ui, sans-serif" font-size="10" fill="#A7F3D0" text-anchor="middle">Base Encoder (270M params)</text>
+  <text x="380" y="135" font-family="system-ui, sans-serif" font-size="10" fill="#A7F3D0" text-anchor="middle">768 hidden, 12 layers,</text>
+  <text x="380" y="155" font-family="system-ui, sans-serif" font-size="10" fill="#A7F3D0" text-anchor="middle">12 attention heads</text>
+
+  <!-- Branching Arrows -->
+  <path d="M480 100 L540 100" stroke="#4F46E5" stroke-width="2" fill="none"/>
+  <polygon points="535,95 545,100 535,105" fill="#4F46E5"/>
+
+  <!-- Duchenne Laughter -->
+  <rect x="555" y="50" width="150" height="100" fill="url(#bioGrad)" rx="8" filter="url(#shadow)"/>
+  <text x="630" y="75" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Duchenne Marker</text>
+  <text x="630" y="95" font-family="system-ui, sans-serif" font-size="9" fill="#FECACA" text-anchor="middle">Spontaneous laughter</text>
+  <text x="630" y="110" font-family="system-ui, sans-serif" font-size="9" fill="#FECACA" text-anchor="middle">Brainstem/limbic</text>
+  <text x="630" y="125" font-family="system-ui, sans-serif" font-size="9" fill="#FECACA" text-anchor="middle">Genuine amusement</text>
+  <circle cx="630" cy="138" r="6" fill="white"/>
+  <text x="630" y="142" font-family="system-ui, sans-serif" font-size="7" fill="white" text-anchor="middle">F1: 0.83</text>
+
+  <!-- GCACU Incongruity -->
+  <rect x="555" y="170" width="150" height="100" fill="url(#gcacuGrad)" rx="8" filter="url(#shadow)"/>
+  <text x="630" y="195" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">GCACU Incongruity</text>
+  <text x="630" y="215" font-family="system-ui, sans-serif" font-size="9" fill="#FEF3C7" text-anchor="middle">Semantic conflict</text>
+  <text x="630" y="230" font-family="system-ui, sans-serif" font-size="9" fill="#FEF3C7" text-anchor="middle">Conceptual mismatch</text>
+  <text x="630" y="245" font-family="system-ui, sans-serif" font-size="9" fill="#FEF3C7" text-anchor="middle">Contextual resolution</text>
+  <circle cx="630" cy="258" r="6" fill="white"/>
+  <text x="630" y="262" font-family="system-ui, sans-serif" font-size="7" fill="white" text-anchor="middle">Acc: 75%</text>
+
+  <!-- Theory of Mind -->
+  <rect x="555" y="290" width="150" height="100" fill="url(#tomGrad)" rx="8" filter="url(#shadow)"/>
+  <text x="630" y="315" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Theory of Mind</text>
+  <text x="630" y="335" font-family="system-ui, sans-serif" font-size="9" fill="#BFDBFE" text-anchor="middle">Mental state modeling</text>
+  <text x="630" y="350" font-family="system-ui, sans-serif" font-size="9" fill="#BFDBFE" text-anchor="middle">Audience expectation</text>
+  <text x="630" y="365" font-family="system-ui, sans-serif" font-size="9" fill="#BFDBFE" text-anchor="middle">Humor appreciation</text>
+  <circle cx="630" cy="378" r="6" fill="white"/>
+  <text x="630" y="382" font-family="system-ui, sans-serif" font-size="7" fill="white" text-anchor="middle">R²: 0.68</text>
+
+  <!-- Cross-Cultural Adapter -->
+  <rect x="555" y="410" width="150" height="80" fill="#0891B2" rx="8" filter="url(#shadow)"/>
+  <text x="630" y="435" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Cultural Adapter</text>
+  <text x="630" y="455" font-family="system-ui, sans-serif" font-size="9" fill="#A5F3FC" text-anchor="middle">Adaptive thresholds</text>
+  <text x="630" y="470" font-family="system-ui, sans-serif" font-size="9" fill="#A5F3FC" text-anchor="middle">Multi-regional comedy</text>
+  <text x="630" y="485" font-family="system-ui, sans-serif" font-size="9" fill="#A5F3FC" text-anchor="middle">Cultural nuance</text>
+
+  <!-- Fusion Layer -->
+  <rect x="555" y="510" width="150" height="60" fill="#4F46E5" rx="8" filter="url(#shadow)"/>
+  <text x="630" y="535" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">Attention Fusion</text>
+  <text x="630" y="555" font-family="system-ui, sans-serif" font-size="9" fill="#C7D2FE" text-anchor="middle">Weighted biosemiotic</text>
+  <text x="630" y="570" font-family="system-ui, sans-serif" font-size="9" fill="#C7D2FE" text-anchor="middle">feature integration</text>
+
+  <!-- Arrow to Output -->
+  <path d="M705 120 L750 120" stroke="#4F46E5" stroke-width="2" fill="none"/>
+  <polygon points="745,115 755,120 745,125" fill="#4F46E5"/>
+
+  <!-- Output Layer -->
+  <rect x="760" y="80" width="120" height="80" fill="url(#outputGrad)" rx="8" filter="url(#shadow)"/>
+  <text x="820" y="105" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="white" text-anchor="middle">OUTPUT</text>
+  <text x="820" y="125" font-family="system-ui, sans-serif" font-size="10" fill="#EDE9FE" text-anchor="middle">Humor Score</text>
+  <text x="820" y="145" font-family="system-ui, sans-serif" font-size="10" fill="#EDE9FE" text-anchor="middle">(0-1 probability)</text>
+
+  <!-- Key Insights Box -->
+  <rect x="30" y="200" width="200" height="370" fill="#1E293B" rx="8" stroke="#334155" stroke-width="1"/>
+  <text x="130" y="225" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="white" text-anchor="middle">KEY INSIGHTS</text>
+
+  <text x="45" y="255" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#FBBF24">1. Duchenne Laughter</text>
+  <text x="45" y="273" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">Spontaneous (brainstem) vs</text>
+  <text x="45" y="288" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">volitional (cortical) laughter.</text>
+  <text x="45" y="305" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">F1=0.83 on validation.</text>
+
+  <text x="45" y="335" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#FBBF24">2. GCACU Incongruity</text>
+  <text x="45" y="353" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">Generalized Cognitive Arch.</text>
+  <text x="45" y="368" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">for Conceptual Understanding.</text>
+  <text x="45" y="385" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">Detects semantic conflicts.</text>
+
+  <text x="45" y="415" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#FBBF24">3. Theory of Mind</text>
+  <text x="45" y="433" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">Models audience mental</text>
+  <text x="45" y="448" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">states for humor prediction.</text>
+  <text x="45" y="465" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">R²=0.68 upvote prediction.</text>
+
+  <text x="45" y="495" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#FBBF24">4. Cultural Adapter</text>
+  <text x="45" y="513" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">Adaptive thresholds for</text>
+  <text x="45" y="528" font-family="system-ui, sans-serif" font-size="9" fill="#CBD5E1">cross-cultural humor patterns.</text>
+  <text x="45" y="545" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">75.9% cultural nuance.</text>
+
+  <!-- Training Insights -->
+  <rect x="750" y="200" width="120" height="370" fill="#1E293B" rx="8" stroke="#334155" stroke-width="1"/>
+  <text x="810" y="225" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="#A78BFA" text-anchor="middle">TRAINING</text>
+  <text x="810" y="225" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="#A78BFA" text-anchor="middle">INSIGHTS</text>
+
+  <text x="765" y="255" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#34D399">✓ LR: 2e-5</text>
+  <text x="765" y="275" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">Lower LR prevents</text>
+  <text x="765" y="290" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">overfitting vs 1e-4</text>
+
+  <text x="765" y="320" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#34D399">✓ Warmup: 500</text>
+  <text x="765" y="340" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">Smooth loss decrease</text>
+  <text x="765" y="355" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">No spikes</text>
+
+  <text x="765" y="385" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#34D399">✓ Early Stop</text>
+  <text x="765" y="405" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">Patience=2 prevents</text>
+  <text x="765" y="420" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">overtraining</text>
+
+  <text x="765" y="450" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#F87171">✗ Previous Run</text>
+  <text x="765" y="470" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">LR=1e-4 caused</text>
+  <text x="765" y="485" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">overfitting at 35K+</text>
+  <text x="765" y="500" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">(loss: 0.15→0.49)</text>
+
+  <!-- Architecture Details -->
+  <rect x="280" y="200" width="200" height="180" fill="#1E293B" rx="8" stroke="#334155" stroke-width="1"/>
+  <text x="380" y="225" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="#FBBF24" text-anchor="middle">ARCHITECTURE</text>
+  <text x="380" y="250" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#CBD5E1">Base: bert-base-uncased</text>
+  <text x="295" y="270" font-family="monospace" font-size="9" fill="#94A3B8">• 12 transformer layers</text>
+  <text x="295" y="287" font-family="monospace" font-size="9" fill="#94A3B8">• 768 hidden dim</text>
+  <text x="295" y="304" font-family="monospace" font-size="9" fill="#94A3B8">• 12 attention heads</text>
+  <text x="295" y="321" font-family="monospace" font-size="9" fill="#94A3B8">• 110M base params</text>
+  <text x="295" y="345" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#A78BFA">Biosemiotic Heads:</text>
+  <text x="295" y="365" font-family="monospace" font-size="9" fill="#94A3B8">• Duchenne: 512→1</text>
+  <text x="295" y="382" font-family="monospace" font-size="9" fill="#94A3B8">• GCACU: 512→256→1</text>
+
+  <!-- Loss Curve Placeholder -->
+  <rect x="280" y="400" width="200" height="100" fill="#1E293B" rx="8" stroke="#334155" stroke-width="1"/>
+  <text x="380" y="420" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#4ADE80" text-anchor="middle">LOSS TRAJECTORY</text>
+  <path d="M300,485 L330,470 L360,455 L390,445 L420,440 L450,435 L480,432" stroke="#4ADE80" stroke-width="2" fill="none"/>
+  <text x="300" y="500" font-family="system-ui, sans-serif" font-size="8" fill="#94A3B8">0</text>
+  <text x="380" y="500" font-family="system-ui, sans-serif" font-size="8" fill="#94A3B8">20K</text>
+  <text x="470" y="500" font-family="system-ui, sans-serif" font-size="8" fill="#94A3B8">40K</text>
+  <text x="285" y="435" font-family="system-ui, sans-serif" font-size="8" fill="#94A3B8">0.27</text>
+  <text x="285" y="490" font-family="system-ui, sans-serif" font-size="8" fill="#94A3B8">0.10</text>
+
+  <!-- Results Summary -->
+  <rect x="30" y="590" width="840" height="100" fill="#1E293B" rx="8" stroke="#334155" stroke-width="1"/>
+  <text x="450" y="615" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">RESULTS SUMMARY</text>
+
+  <rect x="60" y="630" width="150" height="45" fill="#059669" rx="6"/>
+  <text x="135" y="650" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">75%</text>
+  <text x="135" y="668" font-family="system-ui, sans-serif" font-size="9" fill="#A7F3D0" text-anchor="middle">Humor Accuracy</text>
+
+  <rect x="230" y="630" width="150" height="45" fill="#D97706" rx="6"/>
+  <text x="305" y="650" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">83%</text>
+  <text x="305" y="668" font-family="system-ui, sans-serif" font-size="9" fill="#FEF3C7" text-anchor="middle">Pun Detection</text>
+
+  <rect x="400" y="630" width="150" height="45" fill="#2563EB" rx="6"/>
+  <text x="475" y="650" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">0.68</text>
+  <text x="475" y="668" font-family="system-ui, sans-serif" font-size="9" fill="#BFDBFE" text-anchor="middle">Audience R²</text>
+
+  <rect x="570" y="630" width="150" height="45" fill="#7C3AED" rx="6"/>
+  <text x="645" y="650" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">75.9%</text>
+  <text x="645" y="668" font-family="system-ui, sans-serif" font-size="9" fill="#EDE9FE" text-anchor="middle">Cultural Nuance</text>
+
+  <rect x="740" y="630" width="110" height="45" fill="#DC2626" rx="6"/>
+  <text x="795" y="650" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">81.3%</text>
+  <text x="795" y="668" font-family="system-ui, sans-serif" font-size="9" fill="#FECACA" text-anchor="middle">Prev Val F1</text>
+</svg>
