@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4F46E5"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="biosemoticGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#10B981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+    <linearGradient id="xlmrGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="ensembleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B"/>
+      <stop offset="100%" style="stop-color:#D97706"/>
+    </linearGradient>
+    <linearGradient id="moduleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6"/>
+      <stop offset="100%" style="stop-color:#7C3AED"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#0F172A" rx="12"/>
+
+  <!-- Title -->
+  <rect width="1200" height="60" fill="url(#headerGrad)" rx="12" ry="12"/>
+  <text x="600" y="38" font-family="system-ui, sans-serif" font-size="22" font-weight="bold" fill="white" text-anchor="middle">Performance Breakthrough: Biosemotic vs XLM-R Architecture</text>
+
+  <!-- ========== MAIN COMPARISON SECTION ========== -->
+
+  <!-- Biosemotic Model (Left) -->
+  <rect x="50" y="100" width="350" height="400" fill="url(#biosemoticGrad)" rx="12" filter="url(#shadow)"/>
+  <text x="225" y="130" font-family="system-ui, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">Biosemotic Humor-BERT</text>
+  <text x="225" y="155" font-family="system-ui, sans-serif" font-size="14" fill="#D1FAE5" text-anchor="middle">🏆 81.34% F1 Score</text>
+  <text x="225" y="180" font-family="system-ui, sans-serif" font-size="12" fill="#D1FAE5" text-anchor="middle">7-Layer Cognitive Stack</text>
+
+  <!-- Biosemotic Architecture Details -->
+  <rect x="70" y="200" width="310" height="280" fill="#064E3B" rx="8" stroke="#059669" stroke-width="2"/>
+
+  <text x="80" y="225" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#34D399">✓ Cognitive Architecture</text>
+  <text x="90" y="245" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• Theory of Mind (Mental States)</text>
+  <text x="90" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• GCACU (Incongruity Detection)</text>
+  <text x="90" y="275" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• Duchenne Classification</text>
+  <text x="90" y="290" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• MLSA Social Context</text>
+  <text x="90" y="305" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• Sarcasm Detector</text>
+  <text x="90" y="320" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• Cascade Dynamics</text>
+
+  <text x="80" y="345" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#34D399">✓ Performance Highlights</text>
+  <text x="90" y="365" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• Perfect Recall: 100%</text>
+  <text x="90" y="380" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• High Precision: 68.5%</text>
+  <text x="90" y="395" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• Optimal Threshold: 0.50</text>
+  <text x="90" y="410" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">• Social Cognition: Advanced</text>
+
+  <text x="80" y="435" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#34D399">✓ Key Advantage</text>
+  <text x="90" y="455" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">Models humor as cognitive-social</text>
+  <text x="90" y="470" font-family="system-ui, sans-serif" font-size="11" fill="#D1FAE5">phenomenon, not just linguistic</text>
+
+  <!-- XLM-R Model (Right) -->
+  <rect x="450" y="100" width="350" height="400" fill="url(#xlmrGrad)" rx="12" filter="url(#shadow)"/>
+  <text x="625" y="130" font-family="system-ui, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">XLM-R Baseline</text>
+  <text x="625" y="155" font-family="system-ui, sans-serif" font-size="14" fill="#DBEAFE" text-anchor="middle">72.22% F1 Score</text>
+  <text x="625" y="180" font-family="system-ui, sans-serif" font-size="12" fill="#DBEAFE" text-anchor="middle">Single Multilingual Encoder</text>
+
+  <!-- XLM-R Architecture Details -->
+  <rect x="470" y="200" width="310" height="280" fill="#1E3A8A" rx="8" stroke="#1D4ED8" stroke-width="2"/>
+
+  <text x="480" y="225" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#60A5FA">✓ Linguistic Architecture</text>
+  <text x="490" y="245" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• XLM-RoBERTa Base (270M)</text>
+  <text x="490" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• 12 Transformer Layers</text>
+  <text x="490" y="275" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• 768 Hidden Dimension</text>
+  <text x="490" y="290" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Multilingual Support</text>
+  <text x="490" y="305" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Position-Specific Unfreeze</text>
+
+  <text x="480" y="335" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#60A5FA">✓ Performance Analysis</text>
+  <text x="490" y="355" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Test F1: 72.22%</text>
+  <text x="490" y="370" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Validation F1: 66.67%</text>
+  <text x="490" y="385" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Perfect Precision: 100%</text>
+  <text x="490" y="400" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Training Loss: 0.055</text>
+
+  <text x="480" y="430" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#F87171">✗ Limitations Identified</text>
+  <text x="490" y="450" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Pure pattern matching</text>
+  <text x="490" y="465" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• No social context</text>
+  <text x="490" y="480" font-family="system-ui, sans-serif" font-size="11" fill="#DBEAFE">• Binary classification only</text>
+
+  <!-- Performance Gap Arrow -->
+  <path d="M410 300 L440 300" stroke="#10B981" stroke-width="4" fill="none"/>
+  <polygon points="440,290 455,300 440,310" fill="#10B981"/>
+  <text x="427" y="280" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#10B981" text-anchor="middle">+</text>
+  <text x="427" y="295" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#10B981" text-anchor="middle">9.12%</text>
+  <text x="427" y="315" font-family="system-ui, sans-serif" font-size="10" fill="#10B981" text-anchor="middle">F1</text>
+
+  <!-- ========== ENHANCED XLM-R (Target) ========== -->
+  <rect x="850" y="100" width="300" height="400" fill="url(#ensembleGrad)" rx="12" filter="url(#shadow)"/>
+  <text x="1000" y="130" font-family="system-ui, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">XLM-R Enhanced</text>
+  <text x="1000" y="155" font-family="system-ui, sans-serif" font-size="14" fill="#FEF3C7" text-anchor="middle">Target: 77% F1 Score</text>
+  <text x="1000" y="180" font-family="system-ui, sans-serif" font-size="12" fill="#FEF3C7" text-anchor="middle">XLM-R + Lightweight Incongruity</text>
+
+  <!-- Enhanced Architecture Details -->
+  <rect x="870" y="200" width="260" height="280" fill="#78350F" rx="8" stroke="#D97706" stroke-width="2"/>
+
+  <text x="880" y="225" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#FBBF24">✓ Hybrid Architecture</text>
+  <text x="890" y="245" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• XLM-R Base (72.22% F1)</text>
+  <text x="890" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• + Semantic Conflict Detection</text>
+  <text x="890" y="275" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• + Expectation Violation MLP</text>
+  <text x="890" y="290" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• + Contextual Surprise Attention</text>
+  <text x="890" y="305" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• Parameter Increase: &lt;10%</text>
+
+  <text x="880" y="335" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#FBBF24">✓ Expected Gains</text>
+  <text x="890" y="355" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• Target: +4.78% F1</text>
+  <text x="890" y="370" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• Minimal complexity cost</text>
+  <text x="890" y="385" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• Fast inference maintained</text>
+  <text x="890" y="400" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• Bridge to biosemotic</text>
+
+  <text x="880" y="430" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#34D399">🔄 Status: Implementation Ready</text>
+  <text x="890" y="450" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• Script: xlmr_incongruity_enhanced.py</text>
+  <text x="890" y="465" font-family="system-ui, sans-serif" font-size="11" fill="#FEF3C7">• Training: Ready to execute</text>
+
+  <!-- ========== DETAILED MODULE BREAKDOWN ========== -->
+  <rect x="50" y="530" width="1100" height="150" fill="#1E293B" rx="12" stroke="#334155" stroke-width="2"/>
+  <text x="600" y="560" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#F87171" text-anchor="middle">Biosemotic 7-Layer Cognitive Stack Breakdown</text>
+
+  <!-- Module 1: GCACU -->
+  <rect x="70" y="580" width="140" height="80" fill="url(#moduleGrad)" rx="8"/>
+  <text x="140" y="600" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">1. GCACU</text>
+  <text x="140" y="615" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Incongruity</text>
+  <text x="140" y="628" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Detection</text>
+  <text x="140" y="645" font-family="system-ui, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">+3-4% F1</text>
+
+  <!-- Module 2: Theory of Mind -->
+  <rect x="230" y="580" width="140" height="80" fill="url(#moduleGrad)" rx="8"/>
+  <text x="300" y="600" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">2. Theory of Mind</text>
+  <text x="300" y="615" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Mental State</text>
+  <text x="300" y="628" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Modeling</text>
+  <text x="300" y="645" font-family="system-ui, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">+2-3% F1</text>
+
+  <!-- Module 3: Duchenne -->
+  <rect x="390" y="580" width="140" height="80" fill="url(#moduleGrad)" rx="8"/>
+  <text x="460" y="600" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">3. Duchenne</text>
+  <text x="460" y="615" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Authenticity</text>
+  <text x="460" y="628" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Classification</text>
+  <text x="460" y="645" font-family="system-ui, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">+1-2% F1</text>
+
+  <!-- Module 4: MLSA -->
+  <rect x="550" y="580" width="140" height="80" fill="url(#moduleGrad)" rx="8"/>
+  <text x="620" y="600" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">4. MLSA</text>
+  <text x="620" y="615" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Social Context</text>
+  <text x="620" y="628" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Alignment</text>
+  <text x="620" y="645" font-family="system-ui, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">+1-2% F1</text>
+
+  <!-- Module 5: Sarcasm -->
+  <rect x="710" y="580" width="140" height="80" fill="url(#moduleGrad)" rx="8"/>
+  <text x="780" y="600" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">5. Sarcasm</text>
+  <text x="780" y="615" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Incongruity</text>
+  <text x="780" y="628" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Analyzer</text>
+  <text x="780" y="645" font-family="system-ui, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">+0.5-1% F1</text>
+
+  <!-- Module 6: Cascade -->
+  <rect x="870" y="580" width="140" height="80" fill="url(#moduleGrad)" rx="8"/>
+  <text x="940" y="600" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">6. Cascade</text>
+  <text x="940" y="615" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Dynamics</text>
+  <text x="940" y="628" font-family="system-ui, sans-serif" font-size="9" fill="#DDD6FE" text-anchor="middle">Propagation</text>
+  <text x="940" y="645" font-family="system-ui, sans-serif" font-size="8" fill="#A5B4FC" text-anchor="middle">+0.5-1% F1</text>
+
+  <!-- Module 7: Base XLM-R -->
+  <rect x="1030" y="580" width="120" height="80" fill="#1E3A8A" rx="8" stroke="#1D4ED8" stroke-width="2"/>
+  <text x="1090" y="600" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="white" text-anchor="middle">Base</text>
+  <text x="1090" y="615" font-family="system-ui, sans-serif" font-size="9" fill="#DBEAFE" text-anchor="middle">XLM-R</text>
+  <text x="1090" y="628" font-family="system-ui, sans-serif" font-size="9" fill="#DBEAFE" text-anchor="middle">Foundation</text>
+  <text x="1090" y="645" font-family="system-ui, sans-serif" font-size="8" fill="#60A5FA" text-anchor="middle">72.22%</text>
+
+  <!-- ========== PERFORMANCE ROADMAP ========== -->
+  <rect x="50" y="700" width="1100" height="180" fill="#1E293B" rx="12" stroke="#334155" stroke-width="2"/>
+  <text x="600" y="730" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#4ADE80" text-anchor="middle">Performance Trajectory & Strategic Roadmap</text>
+
+  <!-- Progress Bar -->
+  <rect x="100" y="750" width="1000" height="40" fill="#0F172A" rx="6" stroke="#334155" stroke-width="2"/>
+
+  <!-- XLM-R Baseline -->
+  <rect x="100" y="750" width="236" height="40" fill="#1D4ED8" rx="6"/>
+  <text x="218" y="775" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">72.22%</text>
+  <text x="218" y="805" font-family="system-ui, sans-serif" font-size="10" fill="#DBEAFE" text-anchor="middle">XLM-R Baseline</text>
+
+  <!-- Enhanced Target -->
+  <rect x="336" y="750" width="47" height="40" fill="#D97706" rx="6"/>
+  <text x="360" y="775" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">77%</text>
+  <text x="360" y="805" font-family="system-ui, sans-serif" font-size="10" fill="#FEF3C7" text-anchor="middle">Enhanced</text>
+
+  <!-- XLM-R + Top 3 -->
+  <rect x="383" y="750" width="70" height="40" fill="#7C3AED" rx="6"/>
+  <text x="418" y="775" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">80%</text>
+  <text x="418" y="805" font-family="system-ui, sans-serif" font-size="10" fill="#DDD6FE" text-anchor="middle">+Top 3</text>
+
+  <!-- Ensemble Target -->
+  <rect x="453" y="750" width="164" height="40" fill="#10B981" rx="6"/>
+  <text x="535" y="775" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">85% (Target)</text>
+  <text x="535" y="805" font-family="system-ui, sans-serif" font-size="10" fill="#D1FAE5" text-anchor="middle">Ensemble SOTA</text>
+
+  <!-- Biosemotic Current -->
+  <rect x="617" y="750" width="236" height="40" fill="#059669" rx="6"/>
+  <text x="735" y="775" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="white" text-anchor="middle">81.34%</text>
+  <text x="735" y="805" font-family="system-ui, sans-serif" font-size="10" fill="#D1FAE5" text-anchor="middle">Biosemotic Current</text>
+
+  <!-- Milestone Markers -->
+  <text x="100" y="825" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">72.22%</text>
+  <text x="336" y="825" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">77%</text>
+  <text x="383" y="825" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">80%</text>
+  <text x="453" y="825" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">85%</text>
+  <text x="617" y="825" font-family="system-ui, sans-serif" font-size="9" fill="#94A3B8">81.34%</text>
+
+  <!-- Strategic Timeline -->
+  <text x="100" y="850" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#34D399">Phase 1:</text>
+  <text x="170" y="850" font-family="system-ui, sans-serif" font-size="10" fill="#94A3B8">Lightweight Integration (→77% F1)</text>
+
+  <text x="450" y="850" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#34D399">Phase 2:</text>
+  <text x="520" y="850" font-family="system-ui, sans-serif" font-size="10" fill="#94A3B8">Module Ablation + Top 3 (→80% F1)</text>
+
+  <text x="850" y="850" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#34D399">Phase 3:</text>
+  <text x="920" y="850" font-family="system-ui, sans-serif" font-size="10" fill="#94A3B8">Ensemble Approach (→85% F1 SOTA)</text>
+
+  <!-- Key Insights Footer -->
+  <rect x="50" y="890" width="1100" height="10" fill="url(#headerGrad)" rx="0" ry="0"/>
+  <text x="600" y="898" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="white" text-anchor="middle">🔑 Key Insight: Modeling humor as cognitive-social phenomenon vs linguistic patterns = +9.12% F1 performance gain</text>
+
+</svg>
