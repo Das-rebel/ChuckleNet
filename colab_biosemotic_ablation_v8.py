@@ -377,110 +377,117 @@ def run_experiment(name, pos_weight=5.0, epochs=10, lr=2e-5, batch_size=16,
                    aux_weight=0.3, patience=3, unfreeze_layers=4, **disable_flags):
     import traceback as _tb
     try:
-                   aux_weight=0.3, patience=3, unfreeze_layers=4, **disable_flags):
-    print(f"\n{'─'*60}")
-    print(f" {name}  pw={pos_weight} aux={aux_weight} uf={unfreeze_layers}")
-    disabled = [k for k,v in disable_flags.items() if v]
-    if disabled: print(f" Disabled: {disabled}")
-    print(f"{'─'*60}")
+        print(f"\n{'─'*60}")
+        print(f" {name}  pw={pos_weight} aux={aux_weight} uf={unfreeze_layers}")
+        disabled = [k for k,v in disable_flags.items() if v]
+        if disabled: print(f" Disabled: {disabled}")
+        print(f"{'─'*60}")
 
-    device = torch.device('cuda')
-    try:
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_LOCAL)
-    except Exception as e:
-        print(f"ERROR loading tokenizer from {MODEL_LOCAL}: {e}")
-        import traceback; traceback.print_exc()
-        # Try downloading fresh
-        import os
-        os.system(f"rm -rf {MODEL_LOCAL}")
-        os.makedirs(MODEL_LOCAL, exist_ok=True)
-        for fname in HF_FILES:
-            subprocess.run(["wget", "-q", "-O", f"{MODEL_LOCAL}/{fname}", f"{HF_CDN}/{fname}"], check=True)
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_LOCAL)
-    start = time.time()
+        device = torch.device('cuda')
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(MODEL_LOCAL)
+        except Exception as e:
+            print(f"ERROR loading tokenizer: {e}")
+            import os
+            os.system(f"rm -rf {MODEL_LOCAL}")
+            os.makedirs(MODEL_LOCAL, exist_ok=True)
+            for fname in HF_FILES:
+                subprocess.run(["wget", "-q", "-O", f"{MODEL_LOCAL}/{fname}", f"{HF_CDN}/{fname}"], check=True)
+            tokenizer = AutoTokenizer.from_pretrained(MODEL_LOCAL)
+        start = time.time()
 
-    train_ds = BiosemoticDataset('train.jsonl', tokenizer)
-    valid_ds = BiosemoticDataset('valid.jsonl', tokenizer)
-    test_ds  = BiosemoticDataset('test.jsonl', tokenizer)
+        train_ds = BiosemoticDataset('train.jsonl', tokenizer)
+        valid_ds = BiosemoticDataset('valid.jsonl', tokenizer)
+        test_ds  = BiosemoticDataset('test.jsonl', tokenizer)
 
-    train_dl = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
-                          collate_fn=collate_fn, num_workers=0, pin_memory=True)
-    valid_dl = DataLoader(valid_ds, batch_size=batch_size*2, shuffle=False,
-                          collate_fn=collate_fn, num_workers=0, pin_memory=True)
-    test_dl  = DataLoader(test_ds, batch_size=batch_size*2, shuffle=False,
-                          collate_fn=collate_fn, num_workers=0, pin_memory=True)
+        train_dl = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
+                              collate_fn=collate_fn, num_workers=0, pin_memory=True)
+        valid_dl = DataLoader(valid_ds, batch_size=batch_size*2, shuffle=False,
+                              collate_fn=collate_fn, num_workers=0, pin_memory=True)
+        test_dl  = DataLoader(test_ds,  batch_size=batch_size*2, shuffle=False,
+                              collate_fn=collate_fn, num_workers=0, pin_memory=True)
 
-    model = BiosemoticModel(**disable_flags).to(device)
-    optimizer = torch.optim.AdamW([
-        {'params': model.backbone.parameters(), 'lr': lr},
-        {'params': model.laughter_head.parameters(), 'lr': lr*5},
-    ], weight_decay=0.01)
+        model = BiosemoticModel(**disable_flags).to(device)
+        optimizer = torch.optim.AdamW([
+            {'params': model.backbone.parameters(), 'lr': lr},
+            {'params': model.laughter_head.parameters(), 'lr': lr*5},
+        ], weight_decay=0.01)
 
-    total_steps = len(train_dl) * epochs
-    scheduler = get_linear_schedule_with_warmup(optimizer, int(0.1*total_steps), total_steps)
+        total_steps = len(train_dl) * epochs
+        scheduler = get_linear_schedule_with_warmup(optimizer, int(0.1*total_steps), total_steps)
 
-    best_f1 = 0.0
-    best_state = None
-    wait = 0
+        best_f1 = 0.0
+        best_state = None
+        wait = 0
 
-    for epoch in range(epochs):
-        # Freeze/unfreeze
-        if epoch == 0:
-            for p in model.backbone.parameters(): p.requires_grad = False
-        else:
-            for p in model.backbone.parameters(): p.requires_grad = False
-            if 0 < unfreeze_layers < 12:
-                for layer in model.backbone.encoder.layer[-unfreeze_layers:]:
-                    for p in layer.parameters(): p.requires_grad = True
-            elif unfreeze_layers >= 12:
-                for p in model.backbone.parameters(): p.requires_grad = True
-        for p in model.laughter_head.parameters(): p.requires_grad = True
+        for epoch in range(epochs):
+            # Freeze/unfreeze
+            if epoch == 0:
+                for p in model.backbone.parameters(): p.requires_grad = False
+            else:
+                for p in model.backbone.parameters(): p.requires_grad = False
+                if 0 < unfreeze_layers < 12:
+                    for layer in model.backbone.encoder.layer[-unfreeze_layers:]:
+                        for p in layer.parameters(): p.requires_grad = True
+                elif unfreeze_layers >= 12:
+                    for p in model.backbone.parameters(): p.requires_grad = True
+            for p in model.laughter_head.parameters(): p.requires_grad = True
 
-        # Train
-        model.train()
-        epoch_loss = 0
-        optimizer.zero_grad()
-        for step, batch in enumerate(train_dl):
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            outputs = model(input_ids, attention_mask)
-            loss, losses = compute_loss(outputs, batch, pos_weight, aux_weight)
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
-            scheduler.step()
+            # Train
+            model.train()
+            epoch_loss = 0
             optimizer.zero_grad()
-            epoch_loss += loss.item()
+            for step, batch in enumerate(train_dl):
+                input_ids = batch['input_ids'].to(device)
+                attention_mask = batch['attention_mask'].to(device)
+                outputs = model(input_ids, attention_mask)
+                loss, losses = compute_loss(outputs, batch, pos_weight, aux_weight)
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                optimizer.step()
+                scheduler.step()
+                optimizer.zero_grad()
+                epoch_loss += loss.item()
 
-        # Validate
-        val = evaluate(model, valid_dl, device, pos_weight, aux_weight)
-        improved = val['f1'] > best_f1
-        if improved:
-            best_f1 = val['f1']
-            best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
-            wait = 0
-        else:
-            wait += 1
+            # Validate
+            val = evaluate(model, valid_dl, device, pos_weight, aux_weight)
+            improved = val['f1'] > best_f1
+            if improved:
+                best_f1 = val['f1']
+                best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                wait = 0
+            else:
+                wait += 1
 
-        elapsed = (time.time() - start) / 60
-        print(f"  E{epoch+1:2d}/{epochs} loss={epoch_loss/len(train_dl):.4f} "
-              f"VaF1={val['f1']:.4f} best={best_f1:.4f} "
-              f"{'★' if improved else ''} [{elapsed:.1f}m]", flush=True)
+            elapsed = (time.time() - start) / 60
+            print(f"  E{epoch+1:2d}/{epochs} loss={epoch_loss/len(train_dl):.4f} "
+                  f"VaF1={val['f1']:.4f} best={best_f1:.4f} "
+                  f"{'★' if improved else ''} [{elapsed:.1f}m]", flush=True)
 
-        if wait >= patience:
-            print(f"  Early stop at epoch {epoch+1}")
-            break
+            if wait >= patience:
+                print(f"  Early stop at epoch {epoch+1}")
+                break
 
-    # Test with best model
-    if best_state:
-        model.load_state_dict(best_state)
-    test = evaluate(model, test_dl, device, pos_weight, aux_weight)
+        # Test with best model
+        if best_state:
+            model.load_state_dict(best_state)
+        test = evaluate(model, test_dl, device, pos_weight, aux_weight)
 
-    print(f"  TEST: F1={test['f1']:.4f} P={test['precision']:.4f} R={test['recall']:.4f}")
+        print(f"  TEST: F1={test['f1']:.4f} P={test['precision']:.4f} R={test['recall']:.4f}")
 
-    # Cleanup
-    del model, best_state, train_ds, valid_ds, test_ds
-    gc.collect(); torch.cuda.empty_cache()
+        # Cleanup
+        del model, best_state, train_ds, valid_ds, test_ds
+        gc.collect(); torch.cuda.empty_cache()
+
+        return {
+            'name': name,
+            'val_f1': best_f1,
+            'test_f1': test['f1'],
+            'test_precision': test['precision'],
+            'test_recall': test['recall'],
+            'time_min': round((time.time() - start)/60),
+            'disabled': disabled,
+        }
 
     except Exception as e:
         print(f"\n*** ERROR in {name}: {e}")
@@ -492,95 +499,8 @@ def run_experiment(name, pos_weight=5.0, epochs=10, lr=2e-5, batch_size=16,
             'test_precision': 0.0,
             'test_recall': 0.0,
             'time_min': round((time.time() - start)/60),
-            'disabled': disabled,
+            'disabled': disabled if 'disabled' in dir() else [],
             'error': str(e),
         }
-    
-    return {
-        'name': name,
-        'val_f1': best_f1,
-        'test_f1': test['f1'],
-        'test_precision': test['precision'],
-        'test_recall': test['recall'],
-        'time_min': round((time.time() - start)/60),
-        'disabled': disabled,
-    }
 
-# ================================================================
-# RUN ALL EXPERIMENTS (as per FINAL_TRAINING_PLAN.md)
-# ================================================================
-print(f"\n{'='*70}")
-print(f" BIOSEMOTIC ABLATION STUDY — {n_train:,} examples, 27 dims, 7 task groups")
-print(f" Plan: A1-A2 baseline → B1-B2 full → C1-C7 ablation → D1-D3 groups")
-print(f"{'='*70}\n")
 
-results = []
-t0 = time.time()
-
-# ── PHASE A: Baselines (no aux tasks) ──
-results.append(run_experiment("A1_baseline_pw5", pos_weight=5.0, disable_all_aux=True))
-results.append(run_experiment("A2_baseline_pw3", pos_weight=3.0, disable_all_aux=True))
-
-# ── PHASE B: Full biosemotic model ──
-results.append(run_experiment("B1_full27dim_aw03", pos_weight=5.0, aux_weight=0.3))
-results.append(run_experiment("B2_full27dim_aw05", pos_weight=5.0, aux_weight=0.5))
-
-# ── PHASE C: Single-dimension ablation ──
-for dim in ['duchenne', 'incongruity', 'tom', 'cue', 'structural', 'linguistic', 'metadata']:
-    exp_num = ['duchenne','incongruity','tom','cue','structural','linguistic','metadata'].index(dim) + 1
-    flag = {f'disable_{dim}': True}
-    results.append(run_experiment(f"C{exp_num}_no_{dim}", **flag))
-
-# ── PHASE D: Group ablation ──
-results.append(run_experiment("D1_core_trio_only",
-    disable_cue=True, disable_structural=True, disable_linguistic=True, disable_metadata=True))
-results.append(run_experiment("D2_no_cognitive",
-    disable_duchenne=True, disable_incongruity=True, disable_tom=True))
-results.append(run_experiment("D3_surface_only",
-    disable_duchenne=True, disable_incongruity=True, disable_tom=True))
-
-total_time = (time.time() - t0) / 60
-
-# ================================================================
-# FINAL RESULTS
-# ================================================================
-print(f"\n{'='*70}")
-print(f" FINAL RESULTS — {len(results)} experiments in {total_time:.0f} min")
-print(f"{'='*70}")
-
-ranked = sorted(results, key=lambda r: r['val_f1'], reverse=True)
-print(f"\n{'Rank':<5} {'Name':<25} {'ValF1':>7} {'TeF1':>7} {'Prec':>7} {'Rec':>7} {'Time':>6} {'Disabled'}")
-print('─'*90)
-for i, r in enumerate(ranked, 1):
-    dis = ','.join(r.get('disabled',[])) or '—'
-    print(f"{i:<5} {r['name']:<25} {r['val_f1']:>7.4f} {r['test_f1']:>7.4f} "
-          f"{r['test_precision']:>7.4f} {r['test_recall']:>7.4f} {r['time_min']:>5}m {dis}")
-
-# Key comparisons
-baselines = [r for r in results if 'baseline' in r['name']]
-full = [r for r in results if 'full27dim' in r['name']]
-ablations = [r for r in results if r['name'].startswith('C')]
-
-if baselines and full:
-    b = max(baselines, key=lambda r: r['val_f1'])
-    f = max(full, key=lambda r: r['val_f1'])
-    print(f"\n📊 BASELINE vs FULL BIOSEMOTIC:")
-    print(f"   Baseline:   {b['name']} ValF1={b['val_f1']:.4f}")
-    print(f"   Full 27dim: {f['name']} ValF1={f['val_f1']:.4f}")
-    delta = f['val_f1'] - b['val_f1']
-    print(f"   Δ = {delta:+.4f} {'↑ BIOSEMOTIC HELPS!' if delta > 0 else '↓ No improvement'}")
-
-if ablations:
-    print(f"\n🔬 DIMENSION IMPORTANCE RANKING:")
-    base_f1 = max(baselines, key=lambda r: r['val_f1'])['val_f1'] if baselines else 0
-    for a in sorted(ablations, key=lambda r: r['val_f1']):
-        impact = base_f1 - a['val_f1'] if base_f1 else 0
-        dim = a['name'].replace('C','').split('_',1)[-1]
-        print(f"   Removing {dim:<15}: F1={a['val_f1']:.4f} (Δ={impact:+.4f})")
-
-# Save
-with open('biosemotic_ablation_results.json', 'w') as f:
-    json.dump({'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
-               'n_train': n_train, 'total_time_min': total_time,
-               'results': ranked}, f, indent=2)
-print(f"\n💾 Saved to biosemotic_ablation_results.json")
