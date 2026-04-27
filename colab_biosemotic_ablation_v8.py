@@ -123,15 +123,17 @@ class BiosemoticDataset(Dataset):
     def __init__(self, filepath, tokenizer, max_length=256):
         self.examples = []
         raw = []
-        with open(filepath) as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    try:
-                        raw.append(json.loads(line))
-                    except json.JSONDecodeError:
-                        print(f"  WARNING: Skipping malformed line {idx+1}: {line[:50]}")
-                        continue
+        try:
+            with open(filepath) as f:
+                for idx, line in enumerate(f):
+                    line = line.strip()
+                    if line:
+                        try:
+                            raw.append(json.loads(line))
+                        except json.JSONDecodeError:
+                            print(f"  WARNING: Skipping malformed line {idx+1}: {line[:50]}")
+        except Exception as e:
+            print(f"  ERROR loading {filepath}: {e}")
 
         print(f"  Pre-tokenizing {len(raw)} examples...")
         for idx, ex in enumerate(raw):
@@ -373,6 +375,9 @@ def evaluate(model, loader, device, pos_weight=5.0, aux_weight=0.3):
 
 def run_experiment(name, pos_weight=5.0, epochs=10, lr=2e-5, batch_size=16,
                    aux_weight=0.3, patience=3, unfreeze_layers=4, **disable_flags):
+    import traceback as _tb
+    try:
+                   aux_weight=0.3, patience=3, unfreeze_layers=4, **disable_flags):
     print(f"\n{'─'*60}")
     print(f" {name}  pw={pos_weight} aux={aux_weight} uf={unfreeze_layers}")
     disabled = [k for k,v in disable_flags.items() if v]
@@ -380,7 +385,18 @@ def run_experiment(name, pos_weight=5.0, epochs=10, lr=2e-5, batch_size=16,
     print(f"{'─'*60}")
 
     device = torch.device('cuda')
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_LOCAL)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_LOCAL)
+    except Exception as e:
+        print(f"ERROR loading tokenizer from {MODEL_LOCAL}: {e}")
+        import traceback; traceback.print_exc()
+        # Try downloading fresh
+        import os
+        os.system(f"rm -rf {MODEL_LOCAL}")
+        os.makedirs(MODEL_LOCAL, exist_ok=True)
+        for fname in HF_FILES:
+            subprocess.run(["wget", "-q", "-O", f"{MODEL_LOCAL}/{fname}", f"{HF_CDN}/{fname}"], check=True)
+        tokenizer = AutoTokenizer.from_pretrained(MODEL_LOCAL)
     start = time.time()
 
     train_ds = BiosemoticDataset('train.jsonl', tokenizer)
@@ -388,11 +404,11 @@ def run_experiment(name, pos_weight=5.0, epochs=10, lr=2e-5, batch_size=16,
     test_ds  = BiosemoticDataset('test.jsonl', tokenizer)
 
     train_dl = DataLoader(train_ds, batch_size=batch_size, shuffle=True,
-                          collate_fn=collate_fn, num_workers=2, pin_memory=True)
+                          collate_fn=collate_fn, num_workers=0, pin_memory=True)
     valid_dl = DataLoader(valid_ds, batch_size=batch_size*2, shuffle=False,
-                          collate_fn=collate_fn, num_workers=2, pin_memory=True)
+                          collate_fn=collate_fn, num_workers=0, pin_memory=True)
     test_dl  = DataLoader(test_ds, batch_size=batch_size*2, shuffle=False,
-                          collate_fn=collate_fn, num_workers=2, pin_memory=True)
+                          collate_fn=collate_fn, num_workers=0, pin_memory=True)
 
     model = BiosemoticModel(**disable_flags).to(device)
     optimizer = torch.optim.AdamW([
@@ -466,6 +482,20 @@ def run_experiment(name, pos_weight=5.0, epochs=10, lr=2e-5, batch_size=16,
     del model, best_state, train_ds, valid_ds, test_ds
     gc.collect(); torch.cuda.empty_cache()
 
+    except Exception as e:
+        print(f"\n*** ERROR in {name}: {e}")
+        _tb.print_exc()
+        return {
+            'name': name,
+            'val_f1': 0.0,
+            'test_f1': 0.0,
+            'test_precision': 0.0,
+            'test_recall': 0.0,
+            'time_min': round((time.time() - start)/60),
+            'disabled': disabled,
+            'error': str(e),
+        }
+    
     return {
         'name': name,
         'val_f1': best_f1,
