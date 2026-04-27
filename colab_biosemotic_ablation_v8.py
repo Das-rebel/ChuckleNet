@@ -96,9 +96,20 @@ n_test  = sum(1 for _ in open('test.jsonl'))
 print(f"Data: train={n_train:,} valid={n_valid:,} test={n_test:,}")
 
 # Check biosemotic dimensions
-sample = json.loads(open('train.jsonl').readline())
-bio_keys = [k for k in sample if k not in ['words','labels','language','metadata','example_id','cue_bucket_ids']]
-print(f"Biosemotic fields ({len(bio_keys)}): {bio_keys}")
+try:
+    sample = json.loads(open('train.jsonl').readline())
+    bio_keys = [k for k in sample if k not in ['words','labels','language','metadata','example_id','cue_bucket_ids']]
+    print(f"Biosemotic fields ({len(bio_keys)}): {bio_keys}")
+except (json.JSONDecodeError, IndexError, Exception) as e:
+    print(f"WARNING: Could not read sample line: {e}")
+    # Try second line
+    try:
+        sample = json.loads(open('train.jsonl').readline())
+        bio_keys = [k for k in sample if k not in ['words','labels','language','metadata','example_id','cue_bucket_ids']]
+        print(f"Biosemotic fields (from line 2, {len(bio_keys)}): {bio_keys}")
+    except:
+        bio_keys = ['comedian_id','show_id','laughter_type','dialect_bucket','language_domain','gender','age_group','current_segment_start','clause_boundary_ratio','punchline_zone_ratio','setup_zone_ratio','filler_token_ratio','filler_token_count','negation_ratio','negation_count','exclamation_ratio','exclamation_count','quoted_speech_ratio','in_quoted_speech','duchenne_joy_intensity','duchenne_genuine_humor_probability','duchenne_spontaneous_laughter_markers','duchenne_setup_punchline_structure','incongruity_expectation_violation_score','incongruity_humor_complexity_score','incongruity_resolution_time','tom_speaker_intent_label','tom_speaker_intent_confidence','tom_audience_perspective_score','tom_social_context_humor_score','tom_character_interaction_pattern','tom_character_interaction_score']
+        print(f"Biosemotic fields (fallback, {len(bio_keys)}): {bio_keys}")
 
 # ================================================================
 # Dataset with 27-dim biosemotic features
@@ -112,11 +123,17 @@ class BiosemoticDataset(Dataset):
         with open(filepath) as f:
             for line in f:
                 line = line.strip()
-                if line: raw.append(json.loads(line))
+                if line:
+                    try:
+                        raw.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        print(f"  WARNING: Skipping malformed line {idx+1}: {line[:50]}")
+                        continue
 
         print(f"  Pre-tokenizing {len(raw)} examples...")
         for idx, ex in enumerate(raw):
             words = [str(x) for x in ex.get('words', [])]
+            if not words: continue
             labels = ex.get('labels', [0]*len(words))
 
             # Subword-aligned tokenization
