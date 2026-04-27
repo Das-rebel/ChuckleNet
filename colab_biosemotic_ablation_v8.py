@@ -34,32 +34,34 @@ import numpy as np
 from pathlib import Path
 
 # ================================================================
-# STEP 0: Download XLM-RoBERTa from ModelScope (bypasses HF rate limits)
+# STEP 0: Download XLM-RoBERTa from HuggingFace CDN via wget
+# (bypasses HF API rate limit by using the CDN directly)
 # ================================================================
 MODEL_LOCAL = "/tmp/xlm-roberta-base-ms"
-if not Path(MODEL_LOCAL).joinpath("model.safetensors").exists():
-    print("Downloading XLM-RoBERTa from ModelScope (no HF rate limits)...")
-    subprocess.run([sys.executable, '-m', 'pip', 'install', '-q', 'modelscope'], check=True)
-    
-    from modelscope.hub.snapshot_download import snapshot_download
-    cache_dir = snapshot_download('iic/xlm-roberta-base', cache_dir='/tmp/ms-cache')
-    
-    # Copy to expected location
-    import shutil
+HF_CDN = "https://huggingface.co/FacebookAI/xlm-roberta-base/resolve/main"
+HF_FILES = [
+    "config.json", "model.safetensors", "tokenizer_config.json",
+    "tokenizer.json", "vocab.json", "merges.txt",
+    "sentencepiece.bpe.model", "special_tokens_map.json",
+]
+
+if not Path(MODEL_LOCAL).joinpath("model.safetensors").exists() or \
+   Path(MODEL_LOCAL).joinpath("model.safetensors").stat().st_size < 1000:
+    print("Downloading XLM-RoBERTa from HuggingFace CDN (no rate limits)...")
     os.makedirs(MODEL_LOCAL, exist_ok=True)
-    for f in os.listdir(cache_dir):
-        src = f"{cache_dir}/{f}"
-        dst = f"{MODEL_LOCAL}/{f}"
-        if not os.path.exists(dst):
-            if os.path.isdir(src):
-                shutil.copytree(src, dst)
-            else:
-                shutil.copy2(src, dst)
-    print(f"Model cached at: {MODEL_LOCAL}")
-    
-    # Verify
-    files = list(Path(MODEL_LOCAL).iterdir())
-    print(f"Files: {[f.name for f in files]}")
+    for fname in HF_FILES:
+        dst = f"{MODEL_LOCAL}/{fname}"
+        if not Path(dst).exists() or Path(dst).stat().st_size < 100:
+            print(f"  Downloading {fname}...", end="", flush=True)
+            r = subprocess.run(["wget", "-q", "-O", dst, f"{HF_CDN}/{fname}"],
+                             capture_output=True, timeout=300)
+            size = Path(dst).stat().st_size if Path(dst).exists() else 0
+            print(f" {size/1024/1024:.1f} MB")
+        else:
+            print(f"  {fname}: already exists")
+    print(f"Model ready at {MODEL_LOCAL}")
+    files = [f.name for f in Path(MODEL_LOCAL).iterdir()]
+    print(f"Files: {files}")
 else:
     print(f"Model already at {MODEL_LOCAL}")
 
