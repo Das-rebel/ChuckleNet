@@ -45,6 +45,9 @@ HF_FILES = [
     "sentencepiece.bpe.model", "special_tokens_map.json",
 ]
 
+
+# Force clean redownload (prev run may have left corrupt files)
+os.system("rm -rf " + MODEL_LOCAL)
 if not Path(MODEL_LOCAL).joinpath("model.safetensors").exists() or \
    Path(MODEL_LOCAL).joinpath("model.safetensors").stat().st_size < 1000:
     print("Downloading XLM-RoBERTa from HuggingFace CDN (no rate limits)...")
