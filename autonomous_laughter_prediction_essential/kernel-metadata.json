@@ -1,0 +1,12 @@
+{
+  "id": "subhajitdas/wavlm-laughter-detection-v2",
+  "title": "WavLM Laughter Detection Training",
+  "code_file": "kaggle_wavlm_training.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "keywords": ["audio", "wavlm", "laughter-detection"],
+  "license": "cc-by-sa-4.0"
+}
