@@ -126,19 +126,79 @@ for segment in aligned:
 
 ---
 
-## PHASE 2: SCALE DATA COLLECTION (Weeks 2-4)
+## PHASE 2: SCALE TO 10M SEGMENTS (Weeks 2-6)
 
-**Goal:** Reach 10M segments by collecting ~3,400 more videos
+**Goal:** Reach 10M segments by collecting ~3,400 more videos across 3 languages
 
 ### 2.1: Language Strategy
 
-| Language | Target Videos | Target Segments | Current | Priority |
-|----------|---------------|-----------------|---------|----------|
-| English | 1,500 | 4,000,000 | ~700K (batch1-15) | P1 — add 1,200 more |
-| Chinese | 1,000 | 3,000,000 | 0 | P1 — start from zero |
-| Hindi/Hinglish | 1,200 | 3,000,000 | 0 | P2 — harder, lower yield |
+| Language | Target Videos | Target Segments | Current | Priority | Status |
+|----------|---------------|-----------------|---------|----------|--------|
+| English | 1,500 | 4,000,000 | ~700K (batch1-15) | P1 — add 1,200 more | 🔄 In progress |
+| Chinese | 1,000 | 3,000,000 | 0 | P1 — start from zero | ⏳ Pending |
+| Hindi/Hinglish | 1,200 | 3,000,000 | 0 | P2 — harder, lower yield | ⏳ Pending |
 
 **Note:** Chinese has lower words-per-video yield (~6K vs 8K for EN) so needs more videos.
+
+### 2.2: Pipeline Scripts Created
+
+| Script | Purpose | Status |
+|--------|---------|--------|
+| `training/find_comedy_videos.py` | Search YouTube, filter by laugh density | ✅ Created |
+| `training/download_audio_batch.py` | Parallel yt-dlp to GDrive/local | ✅ Created |
+| `training/whisper_batch_gdrive.py` | Batch Whisper transcription (tiny/base/large) | ✅ Created |
+| `training/align_10m_segments.py` | VTT + Whisper alignment at scale | ✅ Created |
+
+### 2.3: Execution Commands
+
+**Step 1: Find videos (per language)**
+```bash
+# English - find 1,200 more videos
+python training/find_comedy_videos.py --lang en --target 1200
+
+# Chinese - find 1,000 videos
+python training/find_comedy_videos.py --lang zh --target 1000
+
+# Hindi - find 1,200 videos
+python training/find_comedy_videos.py --lang hi-latn --target 1200
+```
+
+**Step 2: Download audio + VTT**
+```bash
+# Download with 4 parallel workers
+python training/download_audio_batch.py \
+  --lang en \
+  --video-list data/video_candidates/en.json \
+  --workers 4 \
+  --gdrive  # or omit for local
+```
+
+**Step 3: Whisper transcription**
+```bash
+# On RTX 4090 (fastest)
+python training/whisper_batch_gdrive.py \
+  --lang en \
+  --model base \
+  --device cuda \
+  --compute-type float16
+
+# On Colab T4 (fallback)
+python training/whisper_batch_gdrive.py \
+  --lang en \
+  --model tiny \
+  --device cuda \
+  --compute-type int8_float16
+```
+
+**Step 4: Alignment**
+```bash
+python training/align_10m_segments.py \
+  --lang en \
+  --audio-dir gdrive:laughter_prediction/audio/en \
+  --transcript-dir gdrive:laughter_prediction/transcripts/en \
+  --vtt-dir gdrive:laughter_prediction/vtt/en \
+  --output gdrive:laughter_prediction/aligned/en.jsonl
+```
 
 ### 2.2: Video Discovery Pipeline
 
@@ -435,18 +495,47 @@ WEEK 6  ████████  Phase 6: Evaluation, ablations, paper writing
 
 ---
 
-## FILE MANIFEST (to create)
+## FILE MANIFEST (✅ = created, 🔄 = in progress, ⏳ = pending)
 
-| Script | Purpose | Priority |
-|--------|---------|----------|
-| `training/extract_audio_segments.py` | Extract WAV from aligned segments | P0 |
-| `training/find_comedy_videos.py` | YouTube search + filter by laugh density | P1 |
-| `training/download_audio_batch.py` | Parallel yt-dlp to GDrive | P1 |
-| `training/align_10m_segments.py` | VTT + Whisper alignment at scale | P1 |
-| `training/compute_mfcc_features.py` | Batch MFCC extraction | P2 |
-| `training/train_wav2vec2_audio.py` | Wav2Vec2 fine-tuning | P2 |
-| `training/train_xlmr_combined.py` | XLM-R text (verify existing) | P0 |
-| `training/train_fusion_model.py` | Multimodal cross-attention | P3 |
+| Script | Purpose | Status |
+|--------|---------|--------|
+| `training/extract_audio_segments.py` | Extract WAV from aligned segments (librosa) | ✅ |
+| `training/extract_audio_segments_fast.py` | Extract WAV using ffmpeg (100x faster) | ✅ |
+| `training/train_wavlm_audio.py` | WavLM 3-phase training (frozen/partial/full) | ✅ |
+| `training/train_wavlm_audio_v2.py` | WavLM on-the-fly loading (no pre-extraction) | ✅ |
+| `training/find_comedy_videos.py` | YouTube search + filter by laugh density | ✅ |
+| `training/download_audio_batch.py` | Parallel yt-dlp to GDrive/local | ✅ |
+| `training/whisper_batch_gdrive.py` | Batch Whisper transcription | ✅ |
+| `training/align_10m_segments.py` | VTT + Whisper alignment at scale | ✅ |
+| `training/compute_mfcc_features.py` | Batch MFCC extraction | ⏳ |
+| `training/train_fusion_model.py` | Multimodal cross-attention | ⏳ |
+
+---
+
+## SCALING TO 10M: QUICK START
+
+```bash
+# 1. Find videos (run for each language)
+python training/find_comedy_videos.py --lang en --target 1200
+python training/find_comedy_videos.py --lang zh --target 1000
+python training/find_comedy_videos.py --lang hi-latn --target 1200
+
+# 2. Download audio + VTT
+python training/download_audio_batch.py --lang en --video-list data/video_candidates/en.json --workers 4
+
+# 3. Whisper transcription (RTX 4090)
+python training/whisper_batch_gdrive.py --lang en --model base --device cuda
+
+# 4. Align to create labeled segments
+python training/align_10m_segments.py --lang en \
+  --audio-dir gdrive:laughter_prediction/audio/en \
+  --transcript-dir gdrive:laughter_prediction/transcripts/en \
+  --vtt-dir gdrive:laughter_prediction/vtt/en \
+  --output gdrive:laughter_prediction/aligned/en.jsonl
+
+# 5. Train WavLM on new data
+python training/train_wavlm_audio_v2.py --phase C --epochs 10
+```
 
 ---
 
