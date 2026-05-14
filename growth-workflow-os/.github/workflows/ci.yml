@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, clean-fixes]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install streamlit plotly
+      
+      - name: Smoke test: imports
+        run: |
+          python3 -c "from inference_engines.base import InferenceEngine"
+          python3 -c "from workflow_architecture import get_all_patterns"
+          python3 -c "from strategic_memory.store import SignalStore"
+      
+      - name: Smoke test: run_daily (dry-run)
+        run: python3 run_daily.py --dry-run
+      
+      - name: Check for API key leaks
+        run: |
+          grep -r "sk-ant-api03\|sk-ant-api02\|gsk_" config/ 2>/dev/null && echo "FOUND KEY LEAK!" && exit 1 || echo "No key leaks found"

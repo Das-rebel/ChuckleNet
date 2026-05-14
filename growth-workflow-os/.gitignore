@@ -1,0 +1,33 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# API keys and secrets
+config/.env
+*.env.local
+.env
+
+# Memory / Data
+*.db
+*.sqlite
+strategic_memory/data/
+operating_memos/output/
+signal_collectors/cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output (generated)
+operating_memos/output/*.md
+!operating_memos/output/.gitkeep

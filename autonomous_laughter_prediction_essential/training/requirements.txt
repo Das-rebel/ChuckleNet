@@ -1,0 +1,29 @@
+# StandUp4AI Dataset Integration Requirements
+# ==========================================
+# Core dependencies for the StandUp4AI dataset pipeline
+
+# Audio Processing
+openai-whisper==20231117  # ASR transcription
+yt-dlp==2023.12.30        # Video download
+ffmpeg-python==0.2.0      # Audio processing
+
+# Machine Learning
+numpy==1.24.3             # Numerical computing
+torch==2.1.0              # PyTorch (for Whisper compatibility)
+
+# Apple Silicon Optimization (Optional but Recommended)
+mlx==0.0.8                # Apple Silicon ML framework
+
+# Data Processing
+requests==2.31.0          # HTTP requests
+psutil==5.9.6             # System monitoring
+matplotlib==3.8.0         # Visualization
+seaborn==0.13.0           # Statistical visualization
+
+# Natural Language Processing
+transformers==4.35.0      # NLP models (optional)
+tokenizers==0.15.0        # Tokenization (optional)
+
+# Utilities
+tqdm==4.66.1              # Progress bars
+python-dotenv==1.0.0      # Environment variables
