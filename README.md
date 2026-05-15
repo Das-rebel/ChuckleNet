@@ -1,10 +1,33 @@
 # ChuckleNet
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![arXiv](https://img.shields.io/badge/arXiv-Pending-brightgreen.svg)](https://arxiv.org/abs/XXXX.XXXXX)
+> What if you could predict whether content would actually land with an audience —
+> before you spent budget promoting it?
 
-**ChuckleNet: The first biosemiotic AI framework for computational humor recognition, integrating evolutionary theories of laughter with transformer-based machine learning.**
+That's the question I was trying to answer. After 10 years running growth at Groww,
+Axis Bank, and NIRO, I kept running into the same problem: we had impression data,
+CTR, and conversion rates — but no signal for *why* some content resonated and some didn't.
+
+ChuckleNet is a research experiment in building that signal. I fine-tuned a transformer
+model on 120,000+ audience responses to predict content resonance — specifically whether
+something would land as genuinely engaging versus falling flat. The domain is humor, but
+the underlying problem is audience intelligence: what makes content connect?
+
+## What this demonstrates for growth applications
+
+- **Audience intelligence at scale** — fine-tuning transformers on human response data to
+  predict engagement before distribution, not after
+- **Cross-cultural signal detection** — 75.9% accuracy on nuance detection across cultural
+  contexts, vs 61-67% for universal embedding baselines. Relevant for India's multi-language
+  growth market
+- **Production ML workflow** — BERT fine-tuned on 120K samples, 98.78% Val F1, systematic
+  ablation studies, 8 parallel AI agents for validation. Not a notebook experiment
+- **Research-grade output** — targeting ACL/EMNLP 2026 submission
+
+## Why a growth operator built this
+
+Creative effectiveness scoring and engagement prediction are the next frontier for
+performance marketing teams. This project is my hands-on exploration of whether ML
+can answer the question growth teams have always asked: will this work?
 
 ---
 
