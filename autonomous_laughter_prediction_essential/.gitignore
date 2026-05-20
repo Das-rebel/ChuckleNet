@@ -1,0 +1,38 @@
+# Large data files
+data/audio_comedy/audio/
+data/audio_comedy/*.mp3
+data/audio_comedy/*.db
+data/audio_comedy/whisper/
+data/audio_comedy/aligned_segments*.jsonl
+data/audio_comedy/*_backup.jsonl
+data/audio_comedy/*_features*.csv
+data/audio_comedy/*_features*.jsonl
+data/audio_comedy/utterance_features*.jsonl
+data/v8_1*/
+data/combined/
+
+# OS files
+.DS_Store
+.Trash/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Env files
+.env
+*.egg-info/
+dist/
+build/
+
+# Model caches
+*.pt
+*.bin
+models/
+
+# Temp files
+*.tmp
+*.swp
+_EOF
+
+echo "Created .gitignore"
+cat .gitignore
