@@ -34,10 +34,9 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.optim import AdamW
-from torch.optim.lr_scheduler import get_linear_schedule_with_warmup
 from torch.utils.data import DataLoader, Subset
 from sklearn.metrics import f1_score, precision_score, recall_score
-from transformers import get_scheduler
+from transformers import get_scheduler, get_linear_schedule_with_warmup
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

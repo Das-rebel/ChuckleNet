@@ -281,7 +281,11 @@ class WavLMXLMRFusionModel(nn.Module):
             logits = self.text_classifier(t)
             result = {"logits": logits}
             if return_gate_stats:
-                result["gate_stats"] = {"phase": 1, "text_norm": t.norm(dim=-1).mean()}
+                result["gate_stats"] = {
+                    "gate_mean": torch.tensor(1.0),  # Phase 1 = pure text, gate=1
+                    "gate_std": torch.tensor(0.0),
+                    "text_norm": t.norm(dim=-1).mean(),
+                }
             return result
         
         # Multimodal mode (phases 2 and 3)
