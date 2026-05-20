@@ -261,3 +261,56 @@ Fused = g⊙t + (1-g)⊙a
 4. **Text context dominates detection**: XLM-R F1=0.82 is 3x better than best audio model. The 16-word context window is what makes it work, not individual word semantics.
 
 5. **Statistical vs practical significance**: With N=60K+ words, even trivially small effects (ΔF0=5Hz, d=0.063) are "highly significant" (p < 10⁻⁶). Always report effect sizes.
+
+---
+
+# Appendix: Revalidation Results (May 20, 2026)
+
+## Stability Check: Colab vs Local Replication
+
+Two independent evaluations on overlapping but different test sets confirm all findings:
+
+| Metric | Colab (50 videos) | Local (47 videos) | Agreement |
+|--------|:-----------------:|:-----------------:|:---------:|
+| Laugh F0 mean | 202.0 Hz | 200.2 Hz | ✅ |
+| Non-laugh F0 mean | 207.1 Hz | 209.5 Hz | ✅ |
+| ΔF0 | 5.1 Hz | 9.3 Hz | ✅ (both negligible) |
+| Cohen's d | 0.063 | 0.115 | ✅ (both < 0.2) |
+| F0+Energy+Pause F1 | 0.29 | 0.29 | ✅ (identical) |
+| All 49 features F1 | 0.27 | 0.27 | ✅ (identical) |
+| Pause-only F1 | 0.11 | 0.11 | ✅ (identical) |
+| ZCR alone F1 | 0.23 | 0.23* | ✅ |
+
+*ZCR showed F1=0.44 on 10-video test set (overfitting). At 47 videos: F1=0.23.
+
+All findings are robust across different test set compositions.
+
+## Additional Revalidated Numbers (47 videos, 49 features)
+
+| Feature | Laugh (mean) | Non-laugh (mean) | Δ | Cohen's d |
+|---------|:------------:|:-----------------:|:-:|:---------:|
+| F0 mean | 200.2 Hz | 209.5 Hz | 9.3 Hz | 0.115 |
+| F0 min | — | — | — | 0.067 |
+| F0 max | — | — | — | 0.050 |
+| rms_max | — | — | — | 0.144 |
+| pause_before | 0.22s | 0.14s | 0.08s | 0.112 |
+| word_duration | 0.29s | 0.27s | 0.02s | 0.071 |
+
+All effects are NEGLIGIBLE (d < 0.2) or SMALL (d < 0.5) at most.
+
+## Data Provenance
+
+| File | Rows | Columns | Source |
+|------|------|---------|--------|
+| aligned_segments.jsonl | 549,334 | 8 | Whisper+VTT aligned, span-level realigned |
+| aligned_segments_v1_backup.jsonl | 389,686 | 8 | Original (before span realignment) |
+| prosody_features_50videos.csv | 73,947 | 14 | Colab extraction (F0, RMS, pause) |
+| combined_features_50videos.csv | 73,941 | 51 | Local extraction (+MFCC, ZCR, spectral) |
+| spectral_features_50videos.csv | 69,285 | 42 | Spectral features only |
+| aligned_utterances.jsonl | 15,060 | 12 | Utterance-level grouping |
+
+## Colab Notebook Links
+
+- H6.1 Prosody Test (real audio): https://colab.research.google.com/gist/Das-rebel/c5ffe5a6f427ac15a22f8b1a15424b73
+- GitHub Gist (source): https://gist.github.com/Das-rebel/c5ffe5a6f427ac15a22f8b1a15424b73
+- GDrive shared folder: https://drive.google.com/drive/folders/15ixKiy86MZ67OwGEVxtnwSTs3nvbLRbh
