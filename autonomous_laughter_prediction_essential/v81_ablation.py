@@ -29,7 +29,7 @@ import os, sys, json, time, subprocess, random
 from pathlib import Path
 
 # Setup
-os.environ['HF_TOKEN'] = 'REDACTED_HF_TOKEN'
+os.environ['HF_TOKEN'] = os.environ.get('HF_TOKEN', '')
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
 import torch
