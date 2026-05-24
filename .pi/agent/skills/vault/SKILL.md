@@ -75,10 +75,12 @@ The API returns JSON with this structure:
   - `entity` → skip (entities have no useful content)
   - default → 🌐 Link
 
-- **Title:**
-  - Use `name` field (e.g., `@username`)
-  - If name is empty AND type is instagram_post → use first 50 chars of content as title
-  - If name is empty AND type is entity → SKIP this result entirely
+- **Title:** (CRITICAL - read this carefully)
+  - If `name` field has ANY value (including '@username') → use it as-is
+  - If `name` field is EMPTY ('') for instagram_post → MUST use first 50 chars of `content` as title
+  - If `name` field is EMPTY ('') for entity → SKIP this result entirely
+  
+  **COMMON BUG TO AVOID:** When `name=''` for instagram_post, do NOT show 'Untitled'. You MUST use `content[:50]` as the title instead.
 
 - **Caption:** Show first 120 chars of `content`. If content is empty, skip this result.
 
