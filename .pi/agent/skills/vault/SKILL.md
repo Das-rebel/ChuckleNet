@@ -13,73 +13,107 @@ Search vault knowledge base for ideas, concepts, and relevant content.
 
 ### Step 1: Extract Keywords from Natural Language Query
 
-**Input:** "find me ideas to improve or post about it easily"
-**Stopwords removed:** a, an, the, is, are, was, were, be, been, being, have, has, had, do, does, did, will, would, could, should, may, might, can, to, of, in, for, on, with, at, by, from, as, or, and, but, find, me, my, i, want, need, look, up, search, get, give, some, ideas
+Remove stopwords and keep meaningful words (length > 2).
 
-**Keywords:** `improve post ideas`
-**Bigrams:** `post about` (if both words are keywords)
+**Stopwords to remove:**
+a, an, the, is, are, was, were, be, been, being, have, has, had, do, does, did, will, would, could, should, may, might, can, to, of, in, for, on, with, at, by, from, as, or, and, but, find, me, my, i, want, need, look, up, search, get, give, some, ideas, about, what, how, who, when, where, why, which, that, this, these, those, it, its, they, them, their, we, us, our, you, your, please, help, thanks, thank, recently, bookmark, bookmarked, bookmarks, just, like, really
 
-### Step 2: Build Search URL (CRITICAL - use single q= parameter)
+**Examples:**
+
+| Input | Keywords |
+|-------|----------|
+| "find ideas to improve posting" | `improve posting` |
+| "how to get npm downloads" | `npm downloads` |
+| "developer tool marketing" | `developer tool marketing` |
+| "github linked repos" | `github repos` |
+| "recently bookmarked twitter threads" | `twitter threads` |
+
+### Step 2: Build Search URL
 
 ```
 GET https://serve-vault-search-338789220059.asia-south1.run.app/search?q=<KEYWORDS>&limit=5
 ```
 
-**WRONG:** `?q=llm&q=routing&q=npm` (this causes 404)
-**RIGHT:** `?q=llm%20routing%20npm` (single q= with URL-encoded spaces)
+**CRITICAL:** Use single `q=` parameter with URL-encoded spaces (NOT multiple `&q=` params).
 
-For "LLM routing npm growth":
-- Keywords: `llm routing npm growth`
-- URL: `https://serve-vault-search-338789220059.asia-south1.run.app/search?q=llm%20routing%20npm%20growth&limit=5`
+- ❌ WRONG: `?q=llm&q=routing&q=npm`
+- ✅ RIGHT: `?q=llm%20routing%20npm`
 
-### Step 3: Parse Results
+### Step 3: Parse and Format Results
 
-Parse the JSON response. Format results with:
-- Source icon: 🐦 Twitter, 📷 Instagram
-- Title (name field)
-- Caption snippet (truncated to 100 chars)
-- **Topic** (what post is about - from TEXT, highlighted)
-- **Visual description** (what image shows - from BLIP, de-emphasized)
-- URL link if present
+The API returns JSON with this structure:
+```json
+{
+  "query": "github repos",
+  "count": 5,
+  "results": [
+    {
+      "id": "tw_8200",
+      "type": "twitter_tweet",
+      "name": "@username",
+      "content": "post text...",
+      "url": "https://x.com/...",
+      "topic": "AI/ML, Developer",
+      "score": 2.82,
+      "visual_description": "a man with a beard",
+      "metadata": {
+        "vlTags": ["tech", "landscape"],
+        "vlMood": "Vibrant",
+        "narrative": "description",
+        "visual_description": "a man with a beard"
+      }
+    }
+  ]
+}
+```
 
-## Response Format
+**Format each result like this:**
 
-Present as a clean bulleted list or numbered list with source icons.
-Highlight the **topic** field (extracted from post text) over visual metadata.
-If no results, try broader keywords.
+- **Icon by type:**
+  - `twitter_tweet` → 🐦 Twitter
+  - `instagram_post` → 📷 Instagram  
+  - `entity` → skip (entities have no useful content)
+  - default → 🌐 Link
 
-## Keyword Extraction Examples
+- **Title:**
+  - Use `name` field (e.g., `@username`)
+  - If name is empty AND type is instagram_post → use first 50 chars of content as title
+  - If name is empty AND type is entity → SKIP this result entirely
 
-| Natural Language | Keywords | Notes |
-|-----------------|----------|-------|
-| "find me ideas to improve or post about it easily" | `improve post ideas` | Remove stopwords |
-| "how to get more npm downloads" | `npm downloads growth` | "get" removed |
-| "developer tool marketing ideas" | `developer tool marketing` | |
-| "open source launch strategy" | `open source launch` | |
-| "LLM routing best practices" | `llm routing` | |
-| "AI agent framework comparison" | `ai agent framework` | |
-| "bookmarked github repos" | `github repos` | Remove "bookmarked" |
+- **Caption:** Show first 120 chars of `content`. If content is empty, skip this result.
 
-## Search Priority (v3)
+- **Topic:** Show `topic` field if present (e.g., "AI/ML, Developer"). Skip if empty.
 
-The vault now prioritizes text content over visual metadata:
-1. **content** (1.0) - Post text, captions - HIGHEST
-2. **topic** (0.8) - Topic extracted from text
-3. **name** (0.6) - Username/title
-4. **visual_description** (0.2) - What image shows - LOWEST
-5. **vlTags** (0.1) - Visual tags from BLIP - IGNORE
+- **Visual description:** Show `visual_description` field if present. Add: 📸 "description"
+
+- **URL:** Show `url` field after the content
+
+**Important:** Skip any result where both `name` AND `content` are empty/null. These are entities that add no value.
+
+### Response Format
+
+Present results as a numbered list. If no results, try broader keywords.
+
+## Examples
+
+**Query:** "github repos"
+```
+1. 🐦 @gusik4ever — the fastest growing GitHub repos in finance this week...
+   🏷 AI/ML, Developer
+   https://x.com/gusik4ever/status/...
+```
+
+**Query:** "AI tools"
+```
+1. 📷 — This Free AI Just Killed Paid Web Scraping Tools...
+   🏷 Developer, AI Tools, AI/ML
+   📸 a man with a beard and a black shirt
+```
 
 ## Context
 
 Vault contains 16,000+ bookmarks (12,000 Twitter + 4,000 Instagram).
-SQLite-based full-text search with keyword matching.
-
-## Troubleshooting
-
-If no results:
-1. Try fewer keywords (2-3 most important)
-2. Try single keyword search
-3. Check if keyword contains stopwords that weren't filtered
+SQLite-based keyword search with +1000 char content + BLIP visual descriptions.
 
 ## Trigger
 
