@@ -123,3 +123,7 @@ Any of:
 - "search my knowledge graph"
 - "find in bookmarks"
 - "look up in vault"
+- "vault results for"
+- "🔍 vault"
+- "check vault"
+- "recheck vault"
