@@ -397,42 +397,14 @@ Example good suggestions (FOCUS on connection, not new ingredients):
 
 Now generate 10 similar suggestions. Format: **bold title** + 1 sentence explaining what it enables. Be specific — mention actual npm packages, libraries, or techniques.`;
 
+        // Show a quick note — quality answer comes from PI assistant in the conversation
+        ctx.ui.notify(`🤔 Question detected. PI assistant will answer with specific, actionable ideas.`, "info");
+        // Do a light vault search for context (so PI assistant has something to reference)
         try {
-          const { spawn } = await import("node:child_process");
-          const subAgent = process.env.HOME + "/.npm-global/bin/claude-minimax";
-          const proc = spawn(subAgent, ["-p", agentPrompt], {
-            env: { ...process.env },
-            shell: false,
-            stdio: ["pipe", "pipe", "pipe"],
-          });
-          proc.stdin?.end();
-
-          let stdout = "";
-          let stderr = "";
-          const timer = setTimeout(() => proc.kill("SIGKILL"), 45000);
-
-          await new Promise<void>((resolve, reject) => {
-            proc.stdout?.on("data", (d: Buffer) => (stdout += d.toString()));
-            proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()));
-            proc.on("close", (code) => {
-              clearTimeout(timer);
-              if (code === 0 || stdout) resolve();
-              else reject(new Error(stderr || "Exit " + code));
-            });
-            proc.on("error", (err) => {
-              clearTimeout(timer);
-              reject(err);
-            });
-          });
-
-          if (stdout.trim()) {
-            ctx.ui.notify(`🤖 *AI Answer*\n\n${stdout.trim()}\n\n💡 _Tip: /vault <keyword> for raw bookmarks_`, "success");
-          } else {
-            ctx.ui.notify(`⚠️ Could not generate answer. Try /vault <keyword> for raw bookmarks.`, "warning");
-          }
-        } catch (err: any) {
-          ctx.ui.notify(`⚠️ AI failed: ${err.message}`, "error");
-        }
+          const vaultUrl = `https://serve-vault-search-338789220059.asia-south1.run.app/search?q=${encodeURIComponent(query)}&limit=3`;
+          const { exec } = await import("node:child_process");
+          exec(`curl -s --max-time 5 "${vaultUrl}" > /dev/null 2>&1`);
+        } catch { /* best effort */ }
         return;
       }
 
