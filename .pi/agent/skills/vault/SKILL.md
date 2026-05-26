@@ -7,11 +7,48 @@ description: >
   in the vault/personal knowledge graph.
 ---
 
-Search vault knowledge base for ideas, concepts, and relevant content.
+## QUESTION DETECTION — Route to AI instead of raw search
 
-## How to Execute
+If the query STARTS WITH any of these words → it's a QUESTION, not a search.
+Route to AI (NVIDIA/Groq) for a proper answer instead of showing raw bookmarks.
 
-### Step 1: Extract Keywords from Natural Language Query
+**Question triggers:**
+`find`, `suggest`, `recommend`, `what`, `how`, `why`, `best`, `ideas`,
+`give me`, `tell me`, `list`, `top`, `create`, `generate`
+
+**Test:** Does the query start with one of these words followed by a space?
+```javascript
+/^(find|suggest|recommend|what|how|why|best|ideas|give me|tell me|list|top|create|generate)(\s|$)/i.test(query)
+```
+
+### If YES (question):
+1. Extract the question text (remove "/vault" or "search vault" prefix)
+2. Call NVIDIA API:
+   ```
+   POST https://integrate.api.nvidia.com/v1/chat/completions
+   Headers: Content-Type: application/json
+            Authorization: Bearer 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
+   Body: {
+     "model": "meta/llama-3.3-70b-instruct",
+     "messages": [
+       {"role": "system", "content": "You are OmniClaw AI. Direct, specific, no fluff. OmniClaw ALREADY has: Telegram bot, WhatsApp bot, Alexa skill, web dashboard, LLM integration, FAISS vault search, persistent memory, TTS, story generation, Growth OS dashboards, TreeQuest multi-agent ensemble, autonomous research loops, social ingestion, Redis, GCS. All on Cloud Run.\n\nDo NOT suggest what it already has. Suggest what it does NOT have yet. Format: numbered list with **bold title** + 1 sentence. Direct, no fluff."},
+       {"role": "user", "content": "<the question>"}
+     ],
+     "max_tokens": 2000,
+     "temperature": 0.5
+   }
+   ```
+3. Present the AI answer as-is (it's already formatted)
+4. Add a note: "💡 _Tip: Use /vault <keyword> for raw bookmark search, or just ask naturally._"
+
+### If NO (keyword search):
+Continue with the normal vault keyword search below.
+
+---
+
+## KEYWORD SEARCH (only for non-question queries)
+
+### Step 1: Extract Keywords
 
 Remove stopwords and keep meaningful words (length > 2).
 
