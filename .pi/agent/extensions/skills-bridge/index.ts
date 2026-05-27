@@ -453,4 +453,95 @@ Now generate 10 similar suggestions. Format: **bold title** + 1 sentence explain
   });
 
   console.log(`[Skills Bridge] ${skills.length} skills loaded`);
+
+  // a3m — Route query through A3M Router (parallel multi-LLM)
+  pi.registerCommand("a3m", {
+    description: "Route a query through A3M Router — returns cheapest capable model + cost + reasoning",
+    handler: async (args, ctx) => {
+      if (!args || args.trim() === "") {
+        ctx.ui.notify(
+          "🤖 /a3m <query> — Route a query through A3M Router\n" +
+          "Returns cheapest capable model, cost estimate, and tier.\n" +
+          "Example: /a3m Write a Python sort function\n" +
+          "Aliases: /route, /a3m-router",
+          "info"
+        );
+        return;
+      }
+      const query = args.trim();
+      ctx.ui.notify(`🔀 Routing "${query.slice(0, 60)}..." through A3M...`, "info");
+
+      try {
+        const { execSync } = require("node:child_process");
+        const result = execSync(`npx --yes a3m-router route "${query.replace(/"/g, '\\"')}"`, {
+          timeout: 30000,
+          encoding: "utf-8",
+          maxBuffer: 1024 * 100,
+        }).trim();
+
+        ctx.ui.notify(`🤖 A3M Router result:\n\n${result}`, "success");
+      } catch (err: any) {
+        ctx.ui.notify(`❌ A3M Router failed: ${err.message}`, "error");
+      }
+    },
+  });
+
+  // a3m-cost — Show A3M Router cost analytics
+  pi.registerCommand("a3m-cost", {
+    description: "Show A3M Router cost analytics and budget status",
+    handler: async (args, ctx) => {
+      try {
+        const { execSync } = require("node:child_process");
+        const result = execSync(`npx --yes a3m-router cost`, {
+          timeout: 15000,
+          encoding: "utf-8",
+          maxBuffer: 1024 * 100,
+        }).trim();
+        ctx.ui.notify(`💰 A3M Cost Analytics:\n\n${result}`, "success");
+      } catch (err: any) {
+        ctx.ui.notify(`❌ Cost analytics failed: ${err.message}`, "error");
+      }
+    },
+  });
+
+  // a3m-health — Check A3M Router provider health
+  pi.registerCommand("a3m-health", {
+    description: "Check A3M Router provider health status",
+    handler: async (args, ctx) => {
+      try {
+        const { execSync } = require("node:child_process");
+        const result = execSync(`npx --yes a3m-router health`, {
+          timeout: 30000,
+          encoding: "utf-8",
+          maxBuffer: 1024 * 100,
+        }).trim();
+        ctx.ui.notify(`❤️ A3M Provider Health:\n\n${result}`, "success");
+      } catch (err: any) {
+        ctx.ui.notify(`❌ Health check failed: ${err.message}`, "error");
+      }
+    },
+  });
+
+  // Alias: /route → /a3m
+  pi.registerCommand("route", {
+    description: "Alias for /a3m — Route a query through A3M Router",
+    handler: async (args, ctx) => {
+      // Forward to /a3m handler
+      if (!args || args.trim() === "") {
+        ctx.ui.notify("🔀 /route <query> — Alias for /a3m. Routes query through A3M Router.", "info");
+        return;
+      }
+      try {
+        const { execSync } = require("node:child_process");
+        const result = execSync(`npx --yes a3m-router route "${args.trim().replace(/"/g, '\\"')}"`, {
+          timeout: 30000,
+          encoding: "utf-8",
+          maxBuffer: 1024 * 100,
+        }).trim();
+        ctx.ui.notify(`🔀 A3M Route result:\n\n${result}`, "success");
+      } catch (err: any) {
+        ctx.ui.notify(`❌ Routing failed: ${err.message}`, "error");
+      }
+    },
+  });
 }
