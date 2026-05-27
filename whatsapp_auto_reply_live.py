@@ -14,7 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Configuration
-WHATSAPP_NUMBER = "+919003349852"
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "")
 SENDING_NUMBER = "+917977110915"  # Your phone
 AGENT_TIMEOUT = 65000  # 65 seconds
 LOG_FILE = "/tmp/whatsapp-auto-reply-live.log"
@@ -211,7 +211,7 @@ async def monitor_openclaw_logs():
             line_str = line.decode().strip()
 
             # Look for inbound WhatsApp messages
-            # Pattern: "Inbound message +917977110915 -> +919003349852"
+            # Pattern: "Inbound message +917977110915 -> ${WHATSAPP_NUMBER}"
             match = re.search(r'Inbound message (\+\d+) -> \+\d+', line_str)
 
             if match:

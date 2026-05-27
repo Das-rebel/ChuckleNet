@@ -5,7 +5,7 @@ echo "================================================"
 
 # Network Configuration
 NETWORK_NAME="Security_Camera_2.4G"
-PASSWORD="Cam1234Secure!"
+PASSWORD="YOUR_PASSWORD"
 CHANNEL=6
 
 # Create network configuration plist

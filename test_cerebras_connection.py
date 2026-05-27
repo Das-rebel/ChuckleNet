@@ -5,7 +5,7 @@ from cerebras_cloud_sdk import CerebrasCloudAPI
 def main():
     try:
         # Initialize the API client with your API key
-        api_key = os.getenv('CEREBRAS_API_KEY', 'csk-59h9m9vpjrwxpew26eek6myk39xcenrpw35ye8ndy5vme4nm')
+        api_key = os.getenv('CEREBRAS_API_KEY')
         client = CerebrasCloudAPI(api_key=api_key)
         
         # Test connection by listing available models

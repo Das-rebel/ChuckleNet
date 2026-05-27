@@ -324,12 +324,12 @@ echo "TEST 9: Auto-Reply Trigger Mechanism Check"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Check for recent inbound messages
-INBOUND_COUNT=$(grep -c "Inbound message.*919003349852" "$LOG_FILE" 2>/dev/null || echo "0")
+INBOUND_COUNT=$(grep -c "Inbound message.*${WHATSAPP_NUMBER##*+}" "$LOG_FILE" 2>/dev/null || echo "0")
 info "Inbound WhatsApp messages detected: $INBOUND_COUNT"
 
 if [ $INBOUND_COUNT -gt 0 ]; then
     # Check if inbound messages triggered agent runs
-    LATEST_INBOUND_TIME=$(grep "Inbound message.*919003349852" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o '"time":"[^"]*"' | cut -d'"' -f4)
+    LATEST_INBOUND_TIME=$(grep "Inbound message.*${WHATSAPP_NUMBER##*+}" "$LOG_FILE" 2>/dev/null | tail -1 | grep -o '"time":"[^"]*"' | cut -d'"' -f4)
     info "Latest inbound message at: $LATEST_INBOUND_TIME"
 
     # Look for agent run within 5 seconds after inbound
@@ -355,7 +355,7 @@ if [ $TESTS_FAILED -eq 0 ]; then
     echo ""
     echo "The system is configured correctly. The agent is working."
     echo ""
-    echo "NEXT STEP: Send a WhatsApp message from +917977110915 to +919003349852"
+    echo "NEXT STEP: Send a WhatsApp message from +917977110915 to \${WHATSAPP_NUMBER}"
     echo "to test the actual auto-reply functionality."
     exit 0
 else

@@ -11,7 +11,7 @@ from linkedin_post_scraper_enhanced import EnhancedLinkedInScraper
 
 async def process_existing_posts():
     """Process existing posts from JSON file"""
-    scraper = EnhancedLinkedInScraper("sdas22@gmail.com", "Abfl@321", "https://www.linkedin.com/in/jagadeesh-j/")
+    scraper = EnhancedLinkedInScraper(os.getenv("LINKEDIN_EMAIL", "YOUR_EMAIL@example.com"), os.getenv("LINKEDIN_PASSWORD", "YOUR_PASSWORD"), "https://www.linkedin.com/in/jagadeesh-j/")
     
     # Try to load existing posts
     json_files = [

@@ -5,7 +5,7 @@ echo "Setting up Security Camera 2.4GHz WiFi Network..."
 
 # Network Configuration
 NETWORK_NAME="Security_Camera_2.4G"
-PASSWORD="Cam1234Secure!"
+PASSWORD="YOUR_PASSWORD"
 SUBNET="192.168.200"
 DHCP_RANGE_START="192.168.200.100"
 DHCP_RANGE_END="192.168.200.150"

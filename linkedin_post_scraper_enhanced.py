@@ -1559,8 +1559,8 @@ Return ONLY a JSON array of category names, one per post in order. Be specific a
 
 async def main():
     """Main execution function"""
-    email = "sdas22@gmail.com"
-    password = "Abfl@321"
+    email = "YOUR_EMAIL@example.com"
+    password = "YOUR_PASSWORD"
     profile_url = "https://www.linkedin.com/in/jagadeesh-j/"
     
     print("=" * 60)

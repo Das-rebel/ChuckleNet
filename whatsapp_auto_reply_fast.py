@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 
 # Configuration - OPTIMIZED FOR SPEED
-WHATSAPP_NUMBER = "+919003349852"
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "")
 SENDING_NUMBER = "+917977110915"
 AGENT_TIMEOUT = 25000  # 25 seconds (was 65!)
 LOG_FILE = "/tmp/whatsapp-auto-reply-live.log"
@@ -248,7 +248,7 @@ async def monitor_openclaw_logs():
                 json_match = re.search(r'"from"\s*:\s*"(\+\d+)"', line_str)
                 if json_match:
                     sender = json_match.group(1)
-                    if re.search(r'"to"\s*:\s*"\+919003349852"', line_str):
+                    if re.search(r'"to"\s*:\s*"\+\d+"', line_str):
                         match = json_match
 
             # Pattern 3: web-inbound format
