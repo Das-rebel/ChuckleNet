@@ -1074,7 +1074,9 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-**Last Updated**: 2026-05-20  
+**Last Updated**: 2026-05-31
+**WavLM Best**: Val F1=0.7564 (epoch 3)
+**Status**: Active training complete  
 **Promoted Model**: `experiments/xlmr_standup_baseline_weak_pos5`  
 **Best Metrics**: Val F1=0.7850, Val IoU-F1=0.7891, Test F1=0.8194, Test IoU-F1=0.8798  
 **Dataset**: 549,334 aligned segments, 71 videos, 6 languages  
