@@ -1,0 +1,81 @@
+{
+  "datasets": [
+    {
+      "dataset_name": "train_merged",
+      "filepath": "/Users/Subho/run_42_transfer_minimal/data/train_merged.jsonl",
+      "total_examples": 1515,
+      "has_language_count": 1515,
+      "no_language_count": 0,
+      "language_counter": {
+        "en": 1099,
+        "zh": 416
+      },
+      "language_percentages": {
+        "en": 72.54125412541255,
+        "zh": 27.45874587458746
+      },
+      "unique_languages": [
+        "en",
+        "zh"
+      ]
+    },
+    {
+      "dataset_name": "valid_merged",
+      "filepath": "/Users/Subho/run_42_transfer_minimal/data/valid_merged.jsonl",
+      "total_examples": 306,
+      "has_language_count": 306,
+      "no_language_count": 0,
+      "language_counter": {
+        "en": 215,
+        "zh": 91
+      },
+      "language_percentages": {
+        "en": 70.26143790849673,
+        "zh": 29.73856209150327
+      },
+      "unique_languages": [
+        "en",
+        "zh"
+      ]
+    },
+    {
+      "dataset_name": "test_merged",
+      "filepath": "/Users/Subho/run_42_transfer_minimal/data/test_merged.jsonl",
+      "total_examples": 69,
+      "has_language_count": 69,
+      "no_language_count": 0,
+      "language_counter": {
+        "en": 69
+      },
+      "language_percentages": {
+        "en": 100.0
+      },
+      "unique_languages": [
+        "en"
+      ]
+    },
+    {
+      "dataset_name": "synthetic_comedy_data",
+      "filepath": "/Users/Subho/autonomous_laughter_prediction_essential/training/synthetic_comedy_data.jsonl",
+      "total_examples": 8485,
+      "has_language_count": 0,
+      "no_language_count": 8485,
+      "language_counter": {},
+      "language_percentages": {},
+      "unique_languages": []
+    }
+  ],
+  "summary": {
+    "total_examples_all": 10375,
+    "total_with_language": 1890,
+    "total_without_language": 8485,
+    "all_languages": {
+      "en": 1383,
+      "zh": 507
+    },
+    "all_language_percentages": {
+      "en": 13.33012048192771,
+      "zh": 4.886746987951807
+    }
+  }
+}
