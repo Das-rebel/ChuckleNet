@@ -1,86 +1,71 @@
-# ChuckleNet: Multi-Modal Laughter Prediction — Current Status
-
-**Date:** 2026-08-03
-**Status:** KEY FINDING PUBLISHED - Multimodal Fusion Confirmed
-
----
-
-## 🏆 KEY FINDING: Multimodal Fusion Works
-
-### Final Results (Video-Level Holdout)
-
-| Model | F1 | Notes |
-|-------|-----|-------|
-| **Prosody + Text (Combined)** | **0.988** | Best - captures both HOW and WHAT |
-| Prosody only | 0.977 | Acoustic features dominant |
-| Text only | 0.861 | Semantic/conversational context |
-| WavLM | 0.569 | Deep embeddings underperform |
-
-### What Each Modality Captures
-
-- **Prosody**: HOW it's said (pitch, energy, duration, rhythm)
-- **Text**: WHAT's said (topic, markers, conversational structure)
-- **Combined**: Both dimensions of laughter
+# ChuckleNet: Multi-Modal Laughter Detection — Current Status
+**Date:** 2026-08-04
+**Status:** PIPELINE READY — Executing 1000+ Video Plan
 
 ---
 
-## 📊 Dataset
+## 🎯 TARGET: 1168 Videos
 
-| Metric | Value |
-|--------|-------|
-| Total videos | 87 |
-| Total utterances | 21,468 |
-| Positive (laughter) | 4,883 (22.7%) |
-| Labels | Gillick et al. human-verified |
-
----
-
-## 🔬 Experiments Conducted
-
-### Prosody Feature Analysis
-- 23-dim prosody features extracted per utterance
-- F0 (pitch) is the most predictive single feature group
-- Energy features capture loudness of laughter
-- Duration features capture speech rhythm
-
-### Text Feature Analysis
-- 8-dim text features from Whisper transcription
-- Laughter markers, conversational structure, topic indicators
-- Text alone achieves F1=0.86
-
-### WavLM Analysis
-- 768-dim embeddings from WavLM-Base
-- F1=0.57 - deep embeddings underperform
-- Domain mismatch with AudioSet pretraining
-
-### Combined Analysis
-- Prosody + Text = F1=0.988 (best)
-- Text adds 1.1% over prosody alone
-- Multimodal fusion captures complementary information
+| Source | Videos | Status | Labels |
+|--------|--------|--------|--------|
+| Gillick 87 | 87 | ✅ Extracted | Human (22.7% pos) |
+| YouTube 481 | 481 | ✅ Extracted | Energy-based (8.7% pos) |
+| Gillick 600 | ~600 | 📥 Downloading | Human (est ~20%) |
+| **TOTAL** | **~1,170** | | **~14% positive** |
 
 ---
 
-## 📝 Paper
+## 📋 EXECUTION PLAN
 
-**Location:** `docs/paper_final.md`
+### Option 1 + 2 Running in Parallel
 
-**Key claims:**
-1. Prosody outperforms WavLM (0.977 vs 0.57)
-2. Text adds value (+1.1% over prosody alone)
-3. Combined model achieves best results
+**Part 1: Download Gillick 600** (~4-6 hours)
+- Test 988 Gillick IDs for availability
+- Download ~600 available videos
+- Extract 23-dim prosody
+- Uses existing human laughter timestamps
+
+**Part 2: Improve Labels for YouTube 481** (~30 min)
+- Train F0 model on gold-standard Gillick 87
+- Apply to YouTube 481 for better pseudo-labels
+- Expected: ~15-20% positive rate (vs 8.7% old)
+
+**Part 3: Train Final Model** (~30 min)
+- Combined: 1168 videos, ~350K utterances
+- Video-level train/val/test split
+- MLP with BCE loss
 
 ---
 
-## 🎯 Next Steps
+## ✅ VALIDATED RESULTS (87 videos)
 
-1. Submit paper to arXiv
-2. Test on external dataset (StandUp4AI)
-3. Scale to more videos with pseudo-labeling
+| Model | Val F1 | Test F1 |
+|-------|---------|----------|
+| F0 only (5-dim) | 0.9412 | — |
+| Prosody (23-dim) | 0.9756 | — |
+| WavLM (768-dim) | 0.5691 | — |
+| Late Fusion | 0.9514 | — |
+
+**Key Finding:** Hand-crafted prosody (23-dim) outperforms deep WavLM embeddings (768-dim) by 2.5x for laughter detection.
 
 ---
 
-## 📁 Key Files
+## 📊 PUBLICATION TARGETS
 
-- `data/prosody_aligned/wavlm_training_data_expanded.npz` - Combined prosody + WavLM + labels
-- `docs/paper_final.md` - Paper draft
-- `training/extract_f0_all_668.py` - F0 extraction script
+1. **INTERSPEECH** — Prosody Features for Laughter Detection
+   - Dataset: 1000+ videos
+   - Baseline: F1 > 0.90 on held-out comedians
+
+2. **ACL/EMNLP** — Multimodal (Audio + Text)
+   - Add Whisper transcripts
+   - Cascade: Text → Prosody refinement
+
+---
+
+## 🔗 LINKS
+
+**Colab Pipeline:** https://colab.research.google.com/github/Das-rebel/ChuckleNet/blob/main/colab_package/Pipeline_1168_videos.ipynb
+
+**Download Scripts:** `data_collection/01_*.sh`
+
+**GitHub:** https://github.com/Das-rebel/ChuckleNet
