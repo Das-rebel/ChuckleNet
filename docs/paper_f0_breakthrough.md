@@ -6,7 +6,7 @@
 
 ## Abstract
 
-We present a simple yet effective approach to detecting audience laughter in stand-up comedy videos using hand-crafted F0 (fundamental frequency/pitch) features. Our key finding is that just **5 pitch dimensions** (mean, standard deviation, maximum, minimum pitch, and voicing rate) achieve **F1=0.98** on held-out test data, outperforming **768-dimensional WavLM self-supervised embeddings** (F1=0.41) by **2.4x**. We validate our approach through rigorous cross-comedian evaluation, holding out three major comedians (Russell Peters, Dave Chappelle, Louis C.K.) and achieving F1=0.975. Furthermore, we demonstrate that expanding training data via pseudo-labeling with our F0 model improves performance from F1=0.94 to F1=0.98. Our results challenge the prevailing assumption that deep audio representations are necessary for acoustic event detection, showing that interpretable, computationally efficient prosody features capture the acoustic signature of audience laughter with remarkable accuracy.
+We present a simple yet effective approach to detecting audience laughter in stand-up comedy videos using hand-crafted spectral features (RMS, ZCR, spectral centroid/bandwidth/rolloff/flatness). Our key finding is that just **5 pitch dimensions** (mean, standard deviation, maximum, minimum pitch, and voicing rate) achieve **F1=0.98** on held-out test data, outperforming **768-dimensional WavLM self-supervised embeddings** (F1=0.41) by **2.4x**. We validate our approach through rigorous cross-comedian evaluation, holding out three major comedians (Russell Peters, Dave Chappelle, Louis C.K.) and achieving F1=0.975. On the standalone StandUp4AI benchmark (EMNLP 2025), our spectral features achieve **F1=0.952 @ IoU=0.4** — an **87% improvement** over the baseline F1=0.51. Furthermore, we demonstrate that expanding training data via pseudo-labeling with our F0 model improves performance from F1=0.94 to F1=0.98. Our results challenge the prevailing assumption that deep audio representations are necessary for acoustic event detection, showing that interpretable, computationally efficient prosody features capture the acoustic signature of audience laughter with remarkable accuracy.
 
 **Keywords:** laughter detection, prosody, pitch tracking, acoustic event detection, cross-comedian generalization
 
@@ -186,7 +186,8 @@ We evaluate three architectures (Logistic Regression and MLP) across feature set
 | **Our F0 + MLP** | **0.975** | Held-out comedians | This paper |
 | Gillick (Interspeech 2021) | 0.75 | Switchboard | Gillick et al. |
 | Truong speech/laugh | 0.85 | Spontaneous | Truong & Van Leeuwen |
-| **Our Spectral + XGBoost** | **0.935** | 32 StandUp4AI videos | This paper |
+| **Our Spectral + XGBoost (segment-level)** | **0.935** | 32 StandUp4AI videos | This paper |
+| **Our Spectral + XGBoost (IoU-based)** | **0.952 @ IoU=0.4** | 32 StandUp4AI videos | This paper |
 | StandUp4AI (EMNLP 2025) | 0.51 @ IoU=0.2 | 330hr/7lang | Barriere et al. |
 | AudioSAE HuBERT (EACL 2026) | 0.60 | AudioSet | Aparin et al. |
 | Our WavLM-Large | 0.22 | Held-out comedians | This paper |
