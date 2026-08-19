@@ -1,0 +1,16 @@
+{
+  "n_videos": 9,
+  "pred_threshold": 0.5,
+  "iou_thresholds": [0.1, 0.2, 0.3, 0.4, 0.5],
+  "per_video": [],
+  "summary": {
+    "0.1": {"macro_p": 0.112, "macro_r": 0.890, "macro_f1": 0.198},
+    "0.2": {"macro_p": 0.103, "macro_r": 0.819, "macro_f1": 0.181},
+    "0.3": {"macro_p": 0.087, "macro_r": 0.685, "macro_f1": 0.153},
+    "0.4": {"macro_p": 0.073, "macro_r": 0.585, "macro_f1": 0.129},
+    "0.5": {"macro_p": 0.061, "macro_r": 0.480, "macro_f1": 0.108}
+  },
+  "model_output": "SATURATED — all predictions = 1.0",
+  "diagnosis": "Model outputs 1.0 for every word segment regardless of threshold. positive_class_weight=5.0 caused saturation. The 15-dim per-word features lack temporal context — model cannot distinguish individual word laugh markers from surrounding speech. RECOMMENDATION: Add bidirectional LSTM/GRU temporal context layer on top of 15-dim prosody features.",
+  "key_insight": "Word-level prosody alone (no temporal context) is insufficient. The model needs sequence context to identify laugh segments vs speech with similar features."
+}
