@@ -1,242 +1,199 @@
 # ChuckleNet: Definitive Decision Graph
-**Date:** 2026-08-22 (rechecked after scale221 completion)
-**Status:** Scale221 done — EMNLP external evaluation PENDING
+**Date:** 2026-08-22 (rechecked after full data audit)
+**Status:** 255 videos available — process all with proper labels
 
 ---
 
 ## Executive Summary
 
-| Item | Status |
-|------|--------|
-| Paper result (F1=0.975) | ✅ Verified and ready |
-| Scale221 training | ✅ COMPLETED — CV F1=0.8793 |
-| Scale221 model | ✅ Saved: `scale221/scale221_fusion_model.pt` |
-| EMNLP external evaluation | ⏳ PENDING — run evaluation notebook |
-| Citation audit | ⚠️ 4 hallucinated, 23 unmatched |
+| Item | Count | Status |
+|------|-------|--------|
+| Audio files on Drive | 1,083 | ✅ |
+| EMNLP label files (en_uk) | 261 | ✅ |
+| **Videos with BOTH audio + labels** | **255** | ✅ PRIMARY TARGET |
+| Audio-only (no labels) | 828 | ⚠️ Not usable |
+| Labels-only (no audio) | 6 | ⚠️ Can't process |
+| **Proper dataset to process** | **255** | ✅ |
 
 ---
 
-## Part 1: What Scale221 Actually Produced
+## Data Audit Results
 
-### Training Results
+### What We Have on Google Drive
 
-| Item | Value | Notes |
-|------|-------|-------|
-| Videos | 221 | From StandUp4AI partition (audio+label overlap) |
-| Segments | 20,420 | 5-second windows, 2.5s stride |
-| Segment shape | (119, 791) | WavLM 768-dim + prosody 23-dim |
-| Positive rate | 30% | Fallback (teacher max prob=0.52) |
-| Teacher model | best_fusion_model.pt | F1=0.975 on original data |
-| Teacher max prob | 0.52 | Teacher BARELY fires on these segments |
-| CV F1 | **0.8793** ± 0.0219 | 5-fold GroupKFold |
-| Fold F1s | 0.848, 0.866, 0.899, 0.908, 0.875 | |
-| Model | `scale221/scale221_fusion_model.pt` | 2.2MB |
+```
+gdrive:standup4ai/
+├── audio/            547 files (YouTube .m4a)
+├── audio_1000/        641 files (YouTube .m4a, some overlap)
+├── seq-Standup4AI/dataset/en_uk/
+│   ├── emnlp+jahak/train/   EMNLP training labels (CSV, word-level BIO)
+│   ├── emnlp+jahak/val/     EMNLP validation labels
+│   └── Manual/test/          Manual test labels
+│   Total: 530 CSV files (261 unique videos)
+└── standup4ai_partition.csv  3,751 videos across 11 languages
+```
 
-### Critical Warning: CV F1 is on Pseudo-Labels
+### Proper Dataset: 255 Videos
 
-**The CV F1=0.8793 is optimistic — it's evaluated on the model's own pseudo-labels.**
+**These 255 videos have BOTH audio files AND EMNLP word-level BIO labels.**
 
-- Teacher model (best_fusion_model.pt) reaches max probability 0.52 on these segments
-- Top 30% selected as positive (arbitrary fallback since teacher didn't clearly fire)
-- Training on these noisy pseudo-labels → model learns to predict the noise
-- **Real external evaluation may be significantly lower**
+Each video has:
+- Word-level timestamps (start/end per word)
+- BIO labels: `O` (non-laugh), `B` (laugh begin), `I` (laugh continue), `L` (single-word laugh)
+- Typically 200-1000 words per video
+- Ground truth laughter segments can be reconstructed from BIO spans
 
-This is NOT a reliable result until validated against ground truth.
+### Historical Models
+
+| Model | Videos | Labels | Result |
+|-------|--------|--------|--------|
+| `best_fusion_model.pt` | 87 (Gillick) | Human (22.7% pos) | F1=0.975 (held-out comedians) |
+| `scale221_fusion_model.pt` | 221 (EMNLP) | Pseudo-labels (30% fallback) | CV F1=0.8793 (optimistic) |
+| `top200_prosody_model.pt` | 200 (YouTube) | Energy threshold (sparse) | SATURATED — all 1.0 |
+
+**Critical lesson:** `top200_prosody_model.pt` used `positive_class_weight=5.0` during training → model saturates to predicting 1.0 for everything. NEVER use pos_weight > 3.0.
 
 ---
 
-## Part 2: The Evaluation Path (PENDING)
+## Part 2: Processing Plan — Process All 255 Videos
 
-### Evaluation Notebook
+### Step 1: Build Training Dataset
 
-**File:** `Scale221_External_Evaluation.ipynb` (commit 315c1a8)
-**GitHub:** [Open in Colab →](https://colab.research.google.com/github/Das-rebel/autonomous_laughter_prediction/blob/main/Scale221_External_Evaluation.ipynb)
+**Goal:** Extract 791-dim features (WavLM 768 + prosody 23) for each word in all 255 videos.
 
-**What it does:**
-1. Downloads 16 audio files via yt-dlp (YouTube)
-2. Mounts Google Drive to access labels + scale221 model
-3. Loads scale221 model + WavLM on GPU
-4. Extracts 791-dim features per word from EMNLP labels
-5. Runs IoU evaluation against ground truth BIO labels
+**Input per video:**
+- Audio: `gdrive:standup4ai/audio/{vid}.m4a` OR `gdrive:standup4ai/audio_1000/{vid}.m4a`
+- Labels: `gdrive:standup4ai/seq-Standup4AI/dataset/en_uk/emnlp+jahak/{train,val}/{vid}.csv`
 
-**Known limitations:**
-- Only 1/16 eval videos overlap with scale221 training set
-- 4 audio files failed to download previously
-- Labels expected at `gdrive:standup4ai/labels/{vid}.csv` — may not exist
+**Output per video:**
+- `{vid}_features.npy` — shape (n_words, 791)
+- `{vid}_labels.npy` — shape (n_words,) — 0/1 per word
 
-### What Happens After Evaluation
-
+**Feature extraction:**
 ```
-Evaluation F1 vs StandUp4AI F1=0.51:
-│
-├─ F1 ≥ 0.70 → STRONG EXTERNAL VALIDATION
-│   ✅ Scale221 generalizes to EMNLP
-│   → Submit paper with scale results + EMNLP comparison
-│
-├─ F1 0.40–0.69 → MODERATE VALIDATION  
-│   ✅ Better than StandUp4AI baseline
-│   → Submit paper; note performance gap from label noise
-│
-├─ F1 0.20–0.39 → WEAK VALIDATION
-│   ⚠️ Model struggles on external data
-│   → Submit paper without scale results
-│   → Note: pseudo-label noise affected quality
-│
-└─ F1 < 0.20 → FAILED VALIDATION
-    ❌ Scale221 doesn't generalize
-    → Submit original F1=0.975 paper only
-    → Don't claim external validity
+For each word segment [t0, t1]:
+  1. Load 5s audio chunk centered on word (or full word duration)
+  2. Extract WavLM 768-dim embedding (GPU, ~0.1s per word)
+  3. Extract prosody 23-dim (F0×5 + Energy×5 + Duration×2 + Spectral×5 + VQ×6)
+  4. Concatenate → 791-dim feature vector
 ```
+
+### Step 2: Train Model on 255 Videos
+
+**Architecture:** Same FusionMLP as before
+- Input: 791-dim
+- MLP: 791→512→256→64→1 + BatchNorm + Dropout(0.3)
+- Loss: BCEWithLogitsLoss + pos_weight ≤ 3.0
+- Optimizer: AdamW, lr=1e-3
+
+**Split:** Video-level GroupKFold (5-fold)
+- Group by video ID
+- Never put same video in train and val
+- Train: ~204 videos, Val: ~51 videos per fold
+
+**Expected result:** Real CV F1 on properly labeled data (not pseudo-labels)
+
+### Step 3: External Evaluation on EMNLP Test Set
+
+**Test set:** `Manual/test/` folder on Drive (~50 videos with manual labels)
+
+**Metrics:**
+- IoU segment-level F1 @ thresholds [0.1, 0.2, 0.3, 0.4, 0.5]
+- Compare to StandUp4AI baseline: F1=0.51 @ IoU=0.2
 
 ---
 
-## Part 3: Two Submission Paths
+## Part 3: Implementation
 
-### Path A: Submit Original Paper (F1=0.975) — LOW RISK
+### Complete Processing Notebook
 
-**If EMNLP evaluation fails OR deadline-driven:**
+**File:** `Process_All_255.ipynb` (to be created)
+**Runtime:** GPU (Colab T4 or A100)
+**Time:** ~4-6 hours for feature extraction + training
 
-```
-Claim: "When Simple Beats Deep: F0 Prosody Features Outperform WavLM"
-Evidence:
-  ✅ F1=0.975 on held-out comedians (Bill Burr, Dave Chappelle, Russell Peters)
-  ✅ WavLM 768-dim alone: F1=0.22
-  ✅ F0 5-dim alone: F1=0.975
-  ✅ Comparable to Gillick F1=0.75 (Interspeech 2021)
-  
-What NOT to claim:
-  ❌ "Beats StandUp4AI F1=0.51" — different metrics
-  ❌ IoU comparison — 0.975 is segment-level F1, not IoU-F1
-  ❌ External validity — not evaluated on EMNLP
-  
-Venue: INTERSPEECH 2026 or EMNLP 2026 Industry Track
-Timeline: 1-2 weeks to write
-Risk: LOW
-```
+**Cells:**
+1. Setup (mount Drive, install deps)
+2. Download all 255 video IDs list
+3. For each video: download audio (yt-dlp fallback) + extract features + save
+4. Train with 5-fold GroupKFold
+5. Evaluate on test set with IoU metrics
+6. Save model to Drive
 
-### Path B: Submit with Scale221 Results (F1=0.8793 on pseudo-labels) — MEDIUM RISK
-
-**If EMNLP evaluation succeeds (F1 ≥ 0.50):**
+### Checkpoint Strategy
 
 ```
-Claim: "Scalable Laughter Detection via WavLM+Prosody Fusion"
-Evidence:
-  ✅ Scale221 CV F1=0.8793 on 221 videos, 20,420 segments
-  ✅ External validation on EMNLP ground truth (PENDING)
-  ✅ Better than StandUp4AI F1=0.51 (IF evaluation confirms)
-  
-What to verify before claiming:
-  ⚠️ EMNLP IoU-F1 ≥ 0.50 (must beat StandUp4AI)
-  ⚠️ Held-out comedian gap < 20%
-  ⚠️ Citation audit complete (4 hallucinated, 23 unmatched)
-  
-Venue: EMNLP 2026 (better for seq-labeling comparison)
-Timeline: 2-3 weeks (evaluation + paper revision)
-Risk: MEDIUM — depends on evaluation results
+Cell 3: Save every 20 videos
+  → features/{vid}_features.npy
+  → features/{vid}_labels.npy
+  → checkpoint.json (list of done vids)
+
+Cell 5: Save model locally first, then copy to Drive
+  → /content/fusion_255_model.pt  (local)
+  → gdrive:standup4ai/models/fusion_255_model.pt
 ```
 
 ---
 
-## Part 4: Immediate Action Items
+## Part 4: Decision Tree
 
-### 1. Run EMNLP External Evaluation (CRITICAL)
+```
+START: Process all 255 videos with proper labels
+│
+├─ Run GPU Colab notebook
+│     Runtime: GPU (T4 or A100)
+│     Time: ~4-6 hours
+│     Risk: MEDIUM (download/extraction may fail on some videos)
+│
+├─ Expected output:
+│     ├─ 255 × (features.npy, labels.npy) — ~50-100MB
+│     ├─ 5-fold CV F1 on proper labels
+│     ├─ fusion_255_model.pt
+│     └─ IoU evaluation on test set
+│
+└─ Results determine next step:
+      ├─ IoU-F1 ≥ 0.50 → beats StandUp4AI baseline
+      │     → Submit paper with EMNLP comparison
+      │
+      ├─ IoU-F1 0.30–0.49 → partial generalization
+      │     → Submit original F1=0.975 paper
+      │
+      └─ IoU-F1 < 0.30 → model struggles on external data
+            → Analyze failure modes
+            → May need boundary detection separate from classification
+```
+
+---
+
+## Part 5: Critical Rules (From 18 Historical Failures)
+
+| Rule | Value | Enforcement |
+|------|-------|-------------|
+| pos_weight | ≤ 3.0 | Auto-cap in loss computation |
+| Min positive rate | ≥ 15% | Reject pseudo-labels below threshold |
+| Held-out evaluation | Video-level split | GroupKFold, never word-level |
+| Teacher model quality | F1 > 0.9 required | Only use best_fusion_model.pt |
+| Saturation check | prob_std ≥ 0.01 | Warn if model predicts same class |
+
+---
+
+## Part 6: What NOT to Do
+
+- ❌ Don't use `positive_class_weight > 3.0` — causes saturation
+- ❌ Don't use pseudo-labels from a weak teacher (max prob < 0.7)
+- ❌ Don't evaluate on training data — use held-out videos only
+- ❌ Don't claim IoU comparison without proper boundary evaluation
+- ❌ Don't use energy threshold alone for pseudo-labels (too sparse)
+
+---
+
+## Immediate Next Step
 
 ```bash
-# Open in Colab (GPU runtime required):
-https://colab.research.google.com/github/Das-rebel/autonomous_laughter_prediction/blob/main/Scale221_External_Evaluation.ipynb
+# Open this in Colab with GPU:
+https://colab.research.google.com/github/Das-rebel/autonomous_laughter_prediction/blob/main/Process_All_255.ipynb
 
-# Steps:
-# 1. Runtime → Change runtime type → GPU (T4 or A100)
-# 2. Run all cells top to bottom
-# 3. Report F1 @ IoU=0.3
+# Or create the notebook with the 255 video IDs listed
 ```
 
-**Prerequisites:**
-- Google Drive mount with:
-  - `standup4ai/scale221/scale221_fusion_model.pt` ✅ (on Drive)
-  - `standup4ai/labels/{vid}.csv` — may need to copy from `seq-Standup4AI/dataset/en_uk/all/`
-  - `standup4ai/audio/{vid}.m4a` — partial coverage on Drive
-
-### 2. Citation Audit (REQUIRED for any submission)
-
-From `experiments/validation/task3_citation_report.md`:
-- **4 hallucinated** — remove immediately  
-- **23 unmatched/garbled** — verify or replace
-- **2 wrong year** — correct (XLM-R 2020, StandUp4AI 2025)
-
-Verify every citation at: scholar.google.com or semanticscholar.org
-
-### 3. Free Disk Space (if running Colab locally)
-
-Current free: ~5GB | Colab needs: ~20GB
-Run: `du -sh ~/data/chuckle-net/audio_final/` — consider archiving
-
----
-
-## Part 5: Scale221 Architecture Summary
-
-```
-Input: 5-second audio window
-  ↓
-WavLM 768-dim (pretrained, frozen)
-  ↓ ← concatenated with
-Prosody 23-dim (F0×5 + Energy×5 + Duration×2 + Spectral×5 + VQ×6)
-  ↓
-MLP 791→512→256→64→1
-  + BatchNorm + Dropout(0.3) + AdamW
-  + pos_weight=2.33 (auto-capped at 3.0)
-  ↓
-Output: laugh probability (0–1)
-
-Training:
-  221 videos → 20,420 segments
-  Teacher: best_fusion_model.pt (F1=0.975)
-  Pseudo-labels: top 30% by teacher probability
-  Positive rate: 30%
-  CV F1: 0.8793 (5-fold GroupKFold)
-```
-
----
-
-## Part 6: Historical Failure Patterns (Updated)
-
-| # | Pattern | Status in Scale221 |
-|---|---------|-------------------|
-| 1 | Label Sparsity | ⚠️ Used 30% fallback (not natural 15%+) |
-| 2 | Model Saturation | ✅ pos_weight=2.33 (capped at 3.0) |
-| 3 | Boundary Problem | ⏳ EVALUATION PENDING |
-| 4 | Teacher Corruption | ⚠️ Teacher max prob=0.52 (barely fires) |
-| 5 | Hyperparam Exhaustion | N/A — didn't retrain on pos weights |
-| 6 | Garbage Pseudo-Labels | ⚠️ Teacher weak on these segments |
-| 7 | WavLM Pipeline Failed | ✅ WavLM embeddings extracted |
-| 8 | F0 Extraction Misaligned | ✅ 5-second windows aligned |
-| 9 | StandUp4AI val_f1=0.0 | ⏳ EVALUATION PENDING |
-| 10 | Prosody Plateau | ✅ Full 23-dim prosody used |
-| 11 | Training Overfitting | ✅ GroupKFold (video-level splits) |
-| 12 | Pause from Subtitles | ✅ Word-level timestamps from EMNLP |
-| 13 | Biosemiotic Leakage | ✅ Teacher didn't see labels |
-| 14 | Function Word Removal | Not applied |
-| 15 | Internal ≠ External | ⏳ EVALUATION PENDING |
-| 16 | Hallucinated Citations | ⚠️ AUDIT NEEDED |
-| 17 | Unvalidated Paper | ⏳ EVALUATION PENDING |
-| 18 | Incomplete External Val | ⏳ EVALUATION PENDING |
-
----
-
-## Decision Factor
-
-**What is your timeline?**
-
-| Timeline | Recommendation |
-|----------|---------------|
-| < 1 week | Submit Path A NOW (original F1=0.975) |
-| 1–2 weeks | Run evaluation first, then decide |
-| > 2 weeks | Run evaluation → Path A or B depending on results |
-
-**Key decision: Does scale221 generalize to EMNLP ground truth?**
-- YES (F1 ≥ 0.50) → Path B (scale results + EMNLP comparison)
-- NO (F1 < 0.50) → Path A (original paper only)
-
----
-
-*Scale221 complete. EMNLP evaluation is the critical next step.*
+The 255 videos with proper audio+labels are the definitive dataset.
+Process these, train properly, evaluate on held-out test set.
