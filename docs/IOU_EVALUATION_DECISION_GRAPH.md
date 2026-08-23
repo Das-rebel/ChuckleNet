@@ -197,3 +197,39 @@ https://colab.research.google.com/github/Das-rebel/autonomous_laughter_predictio
 
 The 255 videos with proper audio+labels are the definitive dataset.
 Process these, train properly, evaluate on held-out test set.
+
+---
+
+## Appendix: Kaggle Debugging Log (2026-08-22)
+
+### Issues Found & Fixed
+
+| # | Issue | Root Cause | Fix |
+|---|-------|-----------|-----|
+| 1 | Audio files named `.wav.wav` | `-o` template had extension + `--extract-audio` adds one | Removed ext from template |
+| 2 | Labels not found on Kaggle | Dataset nested: `/kaggle/input/datasets/subhajitdas/...` | Hardcoded correct path |
+| 3 | Missing imports across cells | Variables don't persist between cells in Kaggle execution | Added all imports to Cell 1 |
+| 4 | 75% of words dropped | Min duration 0.02s + min WavLM chunk 0.1s too strict | Lowered to 0.005s and 0.01s |
+| 5 | **CUDA error on T4** | PyTorch 2.10+cu128 doesn't support sm_75 (T4) group_norm kernel | **Force CPU for WavLM** |
+| 6 | yt-dlp not found | Not installed in fresh kernel environment | pip install in Cell 1 |
+
+### Key Finding
+
+Kaggle T4 GPU runs PyTorch 2.10.0+cu128 which **does NOT support WavLM's group_norm operations**.
+The error is: `CUDA error: no kernel image is available for execution on the device`
+
+This means:
+- ❌ Cannot run WavLM forward pass on T4 GPU
+- ✅ Can run MLP training on GPU (simple Linear layers work)
+- ✅ Must extract features on CPU, train on GPU
+
+### Processing Strategy
+
+```
+Batch processing approach:
+- Each run processes 25 videos
+- Feature extraction: CPU (~5 min per video = ~2h per batch)
+- Training: GPU after all batches complete
+- Total: ~10 batches × 2h = ~20 hours of CPU time
+```
+
