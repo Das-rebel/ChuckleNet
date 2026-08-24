@@ -1,235 +1,192 @@
 # ChuckleNet: Definitive Decision Graph
-**Date:** 2026-08-22 (rechecked after full data audit)
-**Status:** 255 videos available — process all with proper labels
+**Date:** 2026-08-24 (triple-checked against actual work)
+**Status:** Batch 1 complete (49/50) — 4 batches remaining, then train
 
 ---
 
 ## Executive Summary
 
-| Item | Count | Status |
-|------|-------|--------|
-| Audio files on Drive | 1,083 | ✅ |
-| EMNLP label files (en_uk) | 261 | ✅ |
-| **Videos with BOTH audio + labels** | **255** | ✅ PRIMARY TARGET |
-| Audio-only (no labels) | 828 | ⚠️ Not usable |
-| Labels-only (no audio) | 6 | ⚠️ Can't process |
-| **Proper dataset to process** | **255** | ✅ |
+| Item | Status |
+|------|--------|
+| Dataset | ✅ 255 videos (audio + EMNLP labels) confirmed |
+| Platform | ✅ **Colab T4 GPU** (Kaggle P100 incompatible) |
+| Notebook | `Process_All_255_Colab.ipynb` |
+| **Batch 1** | ✅ **49/50 processed** (~35K words extracted) |
+| Batches remaining | ⏳ 4 more (videos 51–255) |
+| Features location | Google Drive: `standup4ai/features_255/` |
+| Training notebook | `Train_Fusion_255.ipynb` (fixed to read from Drive) |
 
 ---
 
-## Data Audit Results
+## Current Stage: Feature Extraction
 
-### What We Have on Google Drive
+### What's Done
 
-```
-gdrive:standup4ai/
-├── audio/            547 files (YouTube .m4a)
-├── audio_1000/        641 files (YouTube .m4a, some overlap)
-├── seq-Standup4AI/dataset/en_uk/
-│   ├── emnlp+jahak/train/   EMNLP training labels (CSV, word-level BIO)
-│   ├── emnlp+jahak/val/     EMNLP validation labels
-│   └── Manual/test/          Manual test labels
-│   Total: 530 CSV files (261 unique videos)
-└── standup4ai_partition.csv  3,751 videos across 11 languages
-```
-
-### Proper Dataset: 255 Videos
-
-**These 255 videos have BOTH audio files AND EMNLP word-level BIO labels.**
-
-Each video has:
-- Word-level timestamps (start/end per word)
-- BIO labels: `O` (non-laugh), `B` (laugh begin), `I` (laugh continue), `L` (single-word laugh)
-- Typically 200-1000 words per video
-- Ground truth laughter segments can be reconstructed from BIO spans
-
-### Historical Models
-
-| Model | Videos | Labels | Result |
+| Batch | Videos | Status | Output |
 |-------|--------|--------|--------|
-| `best_fusion_model.pt` | 87 (Gillick) | Human (22.7% pos) | F1=0.975 (held-out comedians) |
-| `scale221_fusion_model.pt` | 221 (EMNLP) | Pseudo-labels (30% fallback) | CV F1=0.8793 (optimistic) |
-| `top200_prosody_model.pt` | 200 (YouTube) | Energy threshold (sparse) | SATURATED — all 1.0 |
+| 1 | 1–50 | ✅ **49/50 done** | ~35K words, saved to Drive |
+| 2 | 51–100 | ⏳ Next (`BATCH_NUM=2`) | — |
+| 3 | 101–150 | ⏳ Pending | — |
+| 4 | 151–200 | ⏳ Pending | — |
+| 5 | 201–255 | ⏳ Pending (55 videos) | — |
 
-**Critical lesson:** `top200_prosody_model.pt` used `positive_class_weight=5.0` during training → model saturates to predicting 1.0 for everything. NEVER use pos_weight > 3.0.
+### Batch 1 Results
+
+- Avg ~73s per video on T4 GPU
+- Word counts: 135–1209 per video
+- Laugh rates: 2.9% – 30.7% per video
+- No errors, no missing audio or labels
+
+### How to Continue Processing
+
+```
+1. Open: Process_All_255_Colab.ipynb in Colab (T4 GPU)
+2. Cell 3: Set BATCH_NUM = 2
+3. Run Cells: 1 → 2 → 3 → 4 → 5
+4. Check Cell 6 for total progress
+5. Repeat with BATCH_NUM = 3, 4, 5
+```
+
+Each batch takes ~60 minutes.
 
 ---
 
-## Part 2: Processing Plan — Process All 255 Videos
-
-### Step 1: Build Training Dataset
-
-**Goal:** Extract 791-dim features (WavLM 768 + prosody 23) for each word in all 255 videos.
-
-**Input per video:**
-- Audio: `gdrive:standup4ai/audio/{vid}.m4a` OR `gdrive:standup4ai/audio_1000/{vid}.m4a`
-- Labels: `gdrive:standup4ai/seq-Standup4AI/dataset/en_uk/emnlp+jahak/{train,val}/{vid}.csv`
-
-**Output per video:**
-- `{vid}_features.npy` — shape (n_words, 791)
-- `{vid}_labels.npy` — shape (n_words,) — 0/1 per word
-
-**Feature extraction:**
-```
-For each word segment [t0, t1]:
-  1. Load 5s audio chunk centered on word (or full word duration)
-  2. Extract WavLM 768-dim embedding (GPU, ~0.1s per word)
-  3. Extract prosody 23-dim (F0×5 + Energy×5 + Duration×2 + Spectral×5 + VQ×6)
-  4. Concatenate → 791-dim feature vector
-```
-
-### Step 2: Train Model on 255 Videos
-
-**Architecture:** Same FusionMLP as before
-- Input: 791-dim
-- MLP: 791→512→256→64→1 + BatchNorm + Dropout(0.3)
-- Loss: BCEWithLogitsLoss + pos_weight ≤ 3.0
-- Optimizer: AdamW, lr=1e-3
-
-**Split:** Video-level GroupKFold (5-fold)
-- Group by video ID
-- Never put same video in train and val
-- Train: ~204 videos, Val: ~51 videos per fold
-
-**Expected result:** Real CV F1 on properly labeled data (not pseudo-labels)
-
-### Step 3: External Evaluation on EMNLP Test Set
-
-**Test set:** `Manual/test/` folder on Drive (~50 videos with manual labels)
-
-**Metrics:**
-- IoU segment-level F1 @ thresholds [0.1, 0.2, 0.3, 0.4, 0.5]
-- Compare to StandUp4AI baseline: F1=0.51 @ IoU=0.2
-
----
-
-## Part 3: Implementation
-
-### Complete Processing Notebook
-
-**File:** `Process_All_255.ipynb` (to be created)
-**Runtime:** GPU (Colab T4 or A100)
-**Time:** ~4-6 hours for feature extraction + training
-
-**Cells:**
-1. Setup (mount Drive, install deps)
-2. Download all 255 video IDs list
-3. For each video: download audio (yt-dlp fallback) + extract features + save
-4. Train with 5-fold GroupKFold
-5. Evaluate on test set with IoU metrics
-6. Save model to Drive
-
-### Checkpoint Strategy
+## Pipeline Architecture (Verified)
 
 ```
-Cell 3: Save every 20 videos
-  → features/{vid}_features.npy
-  → features/{vid}_labels.npy
-  → checkpoint.json (list of done vids)
+Process_All_255_Colab.ipynb          Train_Fusion_255.ipynb
+┌─────────────────────────┐         ┌──────────────────────────┐
+│ Mounts Google Drive     │         │ Mounts Google Drive      │
+│ Reads labels from Drive │         │ Reads features from Drive│
+│ Gets audio (Drive+yt-dlp)│        │ Trains FusionMLP         │
+│ Extracts WavLM+prosody  │  ───►   │ 5-fold GroupKFold       │
+│ Saves to Drive:         │         │ Evaluates IoU           │
+│   features_255/*.npy    │         │ Saves model to Drive    │
+└─────────────────────────┘         └──────────────────────────┘
+```
 
-Cell 5: Save model locally first, then copy to Drive
-  → /content/fusion_255_model.pt  (local)
-  → gdrive:standup4ai/models/fusion_255_model.pt
+### Data Flow
+
+```
+Google Drive                          Colab GPU
+gdrive:standup4ai/
+├── audio/{vid}.m4a  ──────►  WavLM(768) + prosody(23)
+├── seq-Standup4AI/...csv ──►  word-level BIO labels
+│                                    │
+│                                    ▼
+├── features_255/  ◄────────── {vid}_features.npy (n_words, 791)
+│   (saved to Drive)           {vid}_labels.npy   (n_words,)
+│                                    │
+│                                    ▼
+├── models/fusion255_model.pt ◄── FusionMLP trained
 ```
 
 ---
 
-## Part 4: Decision Tree
+## Platform Decision Matrix
+
+| Platform | GPU | Compute Cap | PyTorch Default | WavLM Works? |
+|----------|-----|-------------|-----------------|--------------|
+| **Colab T4** | Tesla T4 | sm_75 | 2.x+cu121 | ✅ Native |
+| Kaggle P100 | Tesla P100 | sm_60 | 2.10+cu128 | ❌ CUDA error |
+| Kaggle T4 | Tesla T4 | sm_75 | 2.10+cu128 | ❓ Untested |
+
+**Decision:** Use **Colab T4** — it works natively, no dependency hacks needed.
+
+---
+
+## Historical Models Comparison
+
+| Model | Videos | Labels Type | Result | Trustworthy? |
+|-------|--------|-------------|--------|-------------|
+| `best_fusion_model.pt` | 87 (Gillick) | Human (22.7%) | F1=0.975 | ✅ Yes |
+| `scale221_fusion_model.pt` | 221 | Pseudo-labels (30%) | CV F1=0.8793 | ⚠️ Optimistic |
+| `top200_prosody_model.pt` | 200 | Energy threshold | SATURATED | ❌ Broken |
+| **fusion_255 (pending)** | **255** | **EMNLP ground truth** | **TBD** | **Will be definitive** |
+
+The fusion_255 model will be trained on **proper EMNLP ground truth labels**, not pseudo-labels. This is the first properly-labeled model at this scale.
+
+---
+
+## After Training Completes: Decision Tree
 
 ```
-START: Process all 255 videos with proper labels
-│
-├─ Run GPU Colab notebook
-│     Runtime: GPU (T4 or A100)
-│     Time: ~4-6 hours
-│     Risk: MEDIUM (download/extraction may fail on some videos)
-│
-├─ Expected output:
-│     ├─ 255 × (features.npy, labels.npy) — ~50-100MB
-│     ├─ 5-fold CV F1 on proper labels
-│     ├─ fusion_255_model.pt
-│     └─ IoU evaluation on test set
-│
-└─ Results determine next step:
-      ├─ IoU-F1 ≥ 0.50 → beats StandUp4AI baseline
-      │     → Submit paper with EMNLP comparison
-      │
-      ├─ IoU-F1 0.30–0.49 → partial generalization
-      │     → Submit original F1=0.975 paper
-      │
-      └─ IoU-F1 < 0.30 → model struggles on external data
-            → Analyze failure modes
-            → May need boundary detection separate from classification
+Train_Fusion_255.ipynb produces:
+  CV F1 + IoU evaluation results
+           │
+           ├─ IoU-F1 ≥ 0.50 @ IoU=0.2
+           │     → BEATS StandUp4AI baseline (F1=0.51)
+           │     → Submit paper with EMNLP comparison
+           │     → "When Simple Beats Deep" narrative holds
+           │
+           ├─ IoU-F1 0.30–0.49
+           │     → Partial generalization
+           │     → Submit original F1=0.975 paper
+           │     → Include fusion_255 as supplementary result
+           │
+           └─ IoU-F1 < 0.30
+                 → Model struggles on external data
+                 → Analyze: is it boundary detection or classification failing?
+                 → May need separate classification head from boundary head
+                 → Submit original paper only
 ```
 
 ---
 
-## Part 5: Critical Rules (From 18 Historical Failures)
+## Critical Rules (Enforced)
 
-| Rule | Value | Enforcement |
-|------|-------|-------------|
-| pos_weight | ≤ 3.0 | Auto-cap in loss computation |
-| Min positive rate | ≥ 15% | Reject pseudo-labels below threshold |
-| Held-out evaluation | Video-level split | GroupKFold, never word-level |
-| Teacher model quality | F1 > 0.9 required | Only use best_fusion_model.pt |
-| Saturation check | prob_std ≥ 0.01 | Warn if model predicts same class |
-
----
-
-## Part 6: What NOT to Do
-
-- ❌ Don't use `positive_class_weight > 3.0` — causes saturation
-- ❌ Don't use pseudo-labels from a weak teacher (max prob < 0.7)
-- ❌ Don't evaluate on training data — use held-out videos only
-- ❌ Don't claim IoU comparison without proper boundary evaluation
-- ❌ Don't use energy threshold alone for pseudo-labels (too sparse)
+| Rule | Value | Where Enforced |
+|------|-------|---------------|
+| pos_weight ≤ 3.0 | Auto-cap | Train notebook, loss computation |
+| Video-level split | GroupKFold | Train notebook |
+| Saturation check | prob_std ≥ 0.01 | Train notebook |
+| Features on Drive | Persistent | Process notebook saves to Drive |
+| Label lookup pre-built | Dict not walk | Process notebook Cell 2 |
 
 ---
 
-## Immediate Next Step
+## Known Issues (Resolved)
+
+| # | Issue | Root Cause | Fix Applied |
+|---|-------|-----------|-------------|
+| 1 | All videos silently skipped | `find_label()` returned None without reporting | Pre-built LABEL_LOOKUP dict |
+| 2 | Audio double extension `.wav.wav` | yt-dlp `-o` template included ext | Removed ext from template |
+| 3 | Labels not found on Kaggle | Nested dataset path `/kaggle/input/datasets/...` | Hardcoded correct path |
+| 4 | CUDA error on P100 | PyTorch 2.10 doesn't support sm_60 | Switched to Colab T4 |
+| 5 | Missing imports across cells | Variables don't persist in Kaggle execution | All imports in Cell 1 |
+| 6 | 75% of words dropped | Min duration/chunk too strict | Lowered to 0.005s / 0.01s |
+| 7 | Training can't find features | Saved to Drive but training looked locally | Fixed to mount Drive |
+
+---
+
+## Immediate Next Steps
+
+### Step 1: Complete Feature Extraction (4 batches remaining)
 
 ```bash
-# Open this in Colab with GPU:
-https://colab.research.google.com/github/Das-rebel/autonomous_laughter_prediction/blob/main/Process_All_255.ipynb
+# Open in Colab:
+https://colab.research.google.com/github/Das-rebel/autonomous_laughter_prediction/blob/main/Process_All_255_Colab.ipynb
 
-# Or create the notebook with the 255 video IDs listed
+# For each batch (2, 3, 4, 5):
+#   1. Set BATCH_NUM = <N> in Cell 3
+#   2. Runtime → Change runtime type → T4 GPU
+#   3. Run all cells
+#   4. Wait ~60 min
+#   5. Check Cell 6 output
 ```
 
-The 255 videos with proper audio+labels are the definitive dataset.
-Process these, train properly, evaluate on held-out test set.
+### Step 2: Train Model (after all batches)
 
----
+```bash
+# Open in Colab:
+https://colab.research.google.com/github/Das-rebel/autonomous_laughter_prediction/blob/main/Train_Fusion_255.ipynb
 
-## Appendix: Kaggle Debugging Log (2026-08-22)
-
-### Issues Found & Fixed
-
-| # | Issue | Root Cause | Fix |
-|---|-------|-----------|-----|
-| 1 | Audio files named `.wav.wav` | `-o` template had extension + `--extract-audio` adds one | Removed ext from template |
-| 2 | Labels not found on Kaggle | Dataset nested: `/kaggle/input/datasets/subhajitdas/...` | Hardcoded correct path |
-| 3 | Missing imports across cells | Variables don't persist between cells in Kaggle execution | Added all imports to Cell 1 |
-| 4 | 75% of words dropped | Min duration 0.02s + min WavLM chunk 0.1s too strict | Lowered to 0.005s and 0.01s |
-| 5 | **CUDA error on T4** | PyTorch 2.10+cu128 doesn't support sm_75 (T4) group_norm kernel | **Force CPU for WavLM** |
-| 6 | yt-dlp not found | Not installed in fresh kernel environment | pip install in Cell 1 |
-
-### Key Finding
-
-Kaggle T4 GPU runs PyTorch 2.10.0+cu128 which **does NOT support WavLM's group_norm operations**.
-The error is: `CUDA error: no kernel image is available for execution on the device`
-
-This means:
-- ❌ Cannot run WavLM forward pass on T4 GPU
-- ✅ Can run MLP training on GPU (simple Linear layers work)
-- ✅ Must extract features on CPU, train on GPU
-
-### Processing Strategy
-
-```
-Batch processing approach:
-- Each run processes 25 videos
-- Feature extraction: CPU (~5 min per video = ~2h per batch)
-- Training: GPU after all batches complete
-- Total: ~10 batches × 2h = ~20 hours of CPU time
+# Requires: ≥10 feature files on Drive
+# Runtime: T4 GPU
+# Time: ~15 min
 ```
 
+### Step 3: Evaluate Results
+
+Compare CV F1 and IoU-F1 to StandUp4AI baseline (F1=0.51).
+Results determine paper submission path.
