@@ -190,3 +190,32 @@ https://colab.research.google.com/github/Das-rebel/autonomous_laughter_predictio
 
 Compare CV F1 and IoU-F1 to StandUp4AI baseline (F1=0.51).
 Results determine paper submission path.
+
+---
+
+## Hypothesis Test Results (2026-08-25)
+
+**Completed locally on 118 videos with EMNLP ground truth labels.**
+
+### Results
+| Metric | Value |
+|--------|-------|
+| Word-level F1 | 0.6694 |
+| IoU-F1 @ 0.2 | 0.3040 |
+| StandUp4AI baseline | 0.51 |
+| Verdict | PROMISING (below baseline) |
+
+### Why Below Baseline
+1. **Granularity mismatch**: 5-second windows vs StandUp4AI word-level segments
+2. **Overlapping predictions** (stride=2.5s) inflate predicted segment count
+3. **Boundary precision** missing — we predict full 5s windows, ground truth is ~1-3s segments
+
+### What Works
+- Real classification (F1=0.67 word-level)
+- Top videos hit F1=0.68 IoU
+- Pipeline validated end-to-end on real ground truth
+
+### Recommended Next Step: Switch to Word-Level
+The user's Batch 1 (49 videos) has **word-level** features (n_words, 791). 
+This is the right granularity for IoU evaluation. Re-run hypothesis test on Batch 1 when data is accessible.
+
