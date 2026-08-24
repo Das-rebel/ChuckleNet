@@ -1,0 +1,16 @@
+{
+  "experiment": "word_level_30_videos",
+  "method": "WavLM+prosody word-level, MLP, 5-fold GroupKFold",
+  "n_videos": 30,
+  "n_words": 22019,
+  "positive_rate": 0.11685362641355193,
+  "overall_word_f1_at_0.5": 0.13051023950017354,
+  "iou_summary": {
+    "0.1": 0.2405500056912412,
+    "0.2": 0.19342374912737675,
+    "0.3": 0.17010804884365965,
+    "0.4": 0.13940523812391745,
+    "0.5": 0.09769858002008225
+  },
+  "baseline_standup4ai": 0.51
+}
