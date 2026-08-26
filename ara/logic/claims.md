@@ -57,3 +57,41 @@
 - **Proof**: `docs/FULL_FUSIONMLP_118V_RESULTS.md` documents the exact training config and results.
 - **Dependencies**: C02
 - **Tags**: training, results
+## C07: merge_threshold=0.8 improves IoU-F1@0.2 from 0.31 to 0.33
+- **Statement**: Using merge_threshold=0.8 (only confident >0.8 predictions form segments) gives IoU-F1@0.2=0.33 vs merge_threshold=0.5 giving 0.31.
+- **Status**: supported
+- **Provenance**: ai-executed
+- **Falsification criteria**: If merge_th=0.5 gave equal or better IoU, claim would be refuted.
+- **Proof**: Sweep over merge_threshold ∈ {0.5, 0.6, 0.7, 0.8} on 118 videos:
+  - merge_th=0.5: IoU@0.2=0.3185
+  - merge_th=0.8: IoU@0.2=0.3302
+- **Dependencies**: none
+- **Tags**: threshold-tuning, post-processing
+
+## C08: 50 epochs gives marginal F1 improvement over 30 epochs
+- **Statement**: Training FusionMLP for 50 epochs gives F1=0.6783 vs 30 epochs giving F1=0.6760 on 118 videos.
+- **Status**: supported
+- **Provenance**: ai-executed
+- **Falsification criteria**: If more epochs gave worse F1, claim would be refuted.
+- **Proof**: 30ep: 0.6760, 50ep: 0.6783 (118 videos, same architecture).
+- **Dependencies**: none
+- **Tags**: training-duration, diminishing-returns
+
+## C09: Standard FusionMLP matches Large variant
+- **Statement**: Increasing hidden size (1024→512→128) does not improve over Standard (512→256→64) — both give F1≈0.67.
+- **Status**: supported
+- **Provenance**: ai-executed
+- **Falsification criteria**: If Large gave F1 > 0.69, claim would be refuted.
+- **Proof**: Standard: 0.6783, Large: 0.6714 on 118 videos.
+- **Dependencies**: none
+- **Tags**: architecture, diminishing-returns
+
+## C10: Data scale is the limiting factor, not architecture
+- **Statement**: Going from 10 → 30 → 40 → 118 videos improved word-level F1 from 0.07 → 0.13 → 0.27 → 0.68. Architecture changes had marginal effect.
+- **Status**: supported
+- **Provenance**: ai-executed (validating user insight)
+- **Falsification criteria**: If architecture changes between 118 and 30 vids made bigger difference than data, claim would be refuted.
+- **Proof**: F1 trend across dataset sizes; Standard vs Large architectures similar.
+- **Dependencies**: C03
+- **Tags**: data-scale, user-insight
+

@@ -94,3 +94,28 @@ observations:
     potential_type: observation
     promoted: true
     promoted_to: "trace/exploration_tree.yaml (N02)"
+  - id: O12
+    timestamp: "2026-08-26T19:00"
+    provenance: ai-executed
+    content: "Higher merge threshold (0.8) outperforms default 0.5 by 0.02 IoU"
+    context: "Threshold sweep on 118 video model predictions"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C07)"
+
+  - id: O13
+    timestamp: "2026-08-26T19:15"
+    provenance: ai-executed
+    content: "Mac /tmp directory was cleared, losing all local word-level feature files. Only Kaggle download survived."
+    context: "Background processes running when cleanup happened"
+    potential_type: observation
+    promoted: false
+
+  - id: O14
+    timestamp: "2026-08-26T19:20"
+    provenance: ai-executed
+    content: "Larger FusionMLP (1024→512→128) doesn't beat standard (512→256→64) on same data"
+    context: "Architecture comparison on 118 videos"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C09)"

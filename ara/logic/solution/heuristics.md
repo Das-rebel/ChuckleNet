@@ -59,3 +59,27 @@
 - **Provenance**: ai-executed
 - **Sensitivity**: medium
 - **Code ref**: 118-video training with `pos_weight=2.0`
+## H11: Use merge_threshold=0.8 for IoU evaluation
+- **Rationale**: At default 0.5, model produces many low-confidence false positive segments. Higher threshold filters noise and improves IoU match with ground truth.
+- **Provenance**: ai-executed
+- **Sensitivity**: high
+- **Code ref**: All training notebooks' IoU eval code
+
+## H12: Train for ≥50 epochs on small datasets
+- **Rationale**: 50 epochs gives marginal F1 gain over 30 (0.6783 vs 0.6760) but ensures convergence. Earlier stopping (20 epochs) underfits.
+- **Provenance**: ai-executed
+- **Sensitivity**: low
+- **Code ref**: Training scripts use 50 epochs by default now
+
+## H13: Avoid larger architectures without data to support them
+- **Rationale**: Larger FusionMLP (1024 hidden) gives no improvement over standard (512 hidden) on 118 videos. Diminishing returns suggest adding capacity won't help until data scales.
+- **Provenance**: ai-executed
+- **Sensitivity**: medium
+- **Code ref**: Architecture comparison docs/BEST_118V_RESULTS.md
+
+## H14: Save working files to repo, not just /tmp
+- **Rationale**: Mac /tmp can be cleared at any time, losing hours of extraction work. Always checkpoint important results to permanent locations.
+- **Provenance**: ai-executed
+- **Sensitivity**: high
+- **Code ref**: This was learned the hard way
+

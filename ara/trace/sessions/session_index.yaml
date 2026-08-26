@@ -1,4 +1,8 @@
 sessions:
-  - id: "2026-08-26_001"
-    timestamp: "2026-08-26T12:54"
-    summary: "Hypothesis testing: validated 255-video dataset, ran 4 IoU tests, identified data scale as key lever"
+- id: 2026-08-26_001
+  summary: 'Hypothesis testing: validated 255-video dataset, ran 4 IoU tests, identified
+    data scale as key lever'
+  timestamp: 2026-08-26T12:54
+- id: 2026-08-26_002
+  summary: 'Threshold optimization: improved IoU-F1@0.2 from 0.31 to 0.33 with merge_th=0.8'
+  timestamp: 2026-08-26T19:00
