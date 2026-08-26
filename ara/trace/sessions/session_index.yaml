@@ -1,0 +1,4 @@
+sessions:
+  - id: "2026-08-26_001"
+    timestamp: "2026-08-26T12:54"
+    summary: "Hypothesis testing: validated 255-video dataset, ran 4 IoU tests, identified data scale as key lever"

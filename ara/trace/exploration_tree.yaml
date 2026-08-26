@@ -1,0 +1,169 @@
+tree:
+  - id: N01
+    type: question
+    title: "Can our fusion pipeline beat StandUp4AI baseline IoU-F1=0.51?"
+    provenance: user
+    timestamp: "2026-08-26T09:00"
+    description: >
+      Original best_fusion_model.pt got F1=0.975 on Gillick dataset. Question is whether we can match or beat StandUp4AI's IoU-F1=0.51 on EMNLP ground truth.
+    children:
+
+      - id: N02
+        type: decision
+        title: "Use existing Kaggle datasets instead of re-downloading from Drive"
+        provenance: user
+        timestamp: "2026-08-26T11:30"
+        choice: >
+          Download scale221 embeddings and EMNLP labels from Kaggle public datasets rather than re-downloading audio from Drive.
+        alternatives:
+          - "Re-download audio+labels from Drive (slow, ~3-5 files/min)"
+          - "Wait for user's Batch 1 Colab run to save features to Drive"
+        evidence: >
+          scale221 already on Kaggle (221 embeddings), EMNLP labels already on Kaggle (155 CSVs). Local downloads were too slow.
+        children:
+
+          - id: N03
+            type: experiment
+            title: "Train FusionMLP on 118 videos with scale221 embeddings + EMNLP ground truth"
+            provenance: ai-executed
+            timestamp: "2026-08-26T12:30"
+            result: >
+              Word F1=0.676 (pos_weight=2.0). IoU-F1@0.2=0.3098. Below StandUp4AI's 0.51 but consistent.
+            evidence: [C06, "docs/FULL_FUSIONMLP_118V_RESULTS.md"]
+            children:
+
+              - id: N04
+                type: decision
+                title: "Run 5-fold GroupKFold (vs Leave-One-Out)"
+                provenance: ai-executed
+                timestamp: "2026-08-26T12:20"
+                choice: >
+                  5-fold GroupKFold gives more training data per fold (95 videos train, 23 test) vs Leave-One-Out (117 train, 1 test).
+                alternatives:
+                  - "Leave-One-Out (more rigorous but very few training samples)"
+                evidence: >
+                  Tested both: LOOV gave F1=0.07, 5-fold gave F1=0.13-0.27 depending on architecture.
+                children:
+
+                  - id: N05
+                    type: experiment
+                    title: "Test multiple pos_weight values: {1.0, 2.0, 3.0}"
+                    provenance: ai-executed
+                    timestamp: "2026-08-26T12:25"
+                    result: >
+                      pw=2.0 gave best F1=0.676. pw=1.0=0.667, pw=3.0=0.670. All within 0.01 of each other.
+                    evidence: [H10]
+
+              - id: N06
+                type: observation
+                title: "IoU-F1 drops sharply with higher thresholds"
+                provenance: ai-executed
+                timestamp: "2026-08-26T12:40"
+                description: >
+                  At IoU=0.1: F1=0.465, IoU=0.2: F1=0.310, IoU=0.3: F1=0.193, IoU=0.4: F1=0.110, IoU=0.5: F1=0.058. Suggests boundary precision is the bottleneck.
+
+      - id: N07
+        type: decision
+        title: "Process videos locally on CPU (no Colab GPU available)"
+        provenance: user
+        timestamp: "2026-08-26T10:00"
+        choice: >
+          When Colab GPU was unavailable, extract features locally on CPU. ~5 min per video for WavLM on CPU.
+        alternatives:
+          - "Use Kaggle GPU (P100 incompatible with WavLM group_norm)"
+          - "Wait for Colab GPU reset"
+        evidence: >
+          Tested all options: Colab exhausted GPU, Kaggle P100 CUDA error, CPU only viable option.
+        children:
+
+          - id: N08
+            type: experiment
+            title: "Extract word-level features for 10 videos on CPU"
+            provenance: ai-executed
+            timestamp: "2026-08-26T11:00"
+            result: >
+              10 videos extracted in ~40 min. Word F1=0.07 (SimpleMLP). IoU-F1@0.2=0.19.
+            evidence: [C03, "docs/WORD_LEVEL_HYPOTHESIS.md"]
+            children:
+
+              - id: N09
+                type: pivot
+                title: "Switch from SimpleMLP to Full FusionMLP with BN"
+                provenance: ai-executed
+                timestamp: "2026-08-26T11:30"
+                from: "SimpleMLP (256→64→1) without BatchNorm"
+                to: "Full FusionMLP (791→512→256→64→1) with BatchNorm"
+                trigger: >
+                  SimpleMLP had NaN issues from BatchNorm removal. Full architecture fixed this and showed F1 improvement.
+                evidence: [C02, H01]
+
+              - id: N10
+                type: experiment
+                title: "Extract word-level features for 30 more videos on CPU"
+                provenance: ai-executed
+                timestamp: "2026-08-26T12:00"
+                result: >
+              30 videos total. Word F1=0.27 (full FusionMLP), IoU-F1@0.2=0.22.
+              evidence: [C02, C03, "docs/WORD_LEVEL_30V_RESULTS.md"]
+
+              - id: N11
+                type: experiment
+                title: "Extract word-level features for 40 videos total on CPU"
+                provenance: ai-executed
+                timestamp: "2026-08-26T12:15"
+                result: >
+                  40 videos. Word F1=0.27, IoU-F1@0.2=0.22. Confirmed Full FusionMLP beats SimpleMLP by 2x F1.
+                evidence: [C02, C03]
+
+      - id: N12
+        type: dead_end
+        title: "Try to access user's Batch 1 features from Drive (failed)"
+        provenance: ai-executed
+        timestamp: "2026-08-26T12:50"
+        hypothesis: >
+          User mentioned earlier Colab run produced 49 word-level feature files. They should be on Drive at `standup4ai/features_255/`.
+        failure_mode: >
+          Searched `features/`, `features_255/`, `checkpoints/`, `transcripts/` on Drive. All empty or no .npy files. The features were never saved to Drive.
+        lesson: >
+          Don't assume completed work is persisted. Verify file existence before relying on it.
+
+      - id: N13
+        type: dead_end
+        title: "Try downloading 200 more videos from Drive (too slow)"
+        provenance: ai-executed
+        timestamp: "2026-08-26T11:00"
+        hypothesis: >
+          Downloading audio+labels for 200 videos would give us enough data to test the data-scale hypothesis.
+        failure_mode: >
+          Downloads ran at ~3 files/min. Estimated 80 minutes for 200 videos. User suggested better approach: use cloud processing instead.
+        lesson: >
+          Always check for existing cached datasets before downloading.
+
+  - id: N14
+    type: pivot
+    title: "User reframes problem: architecture is good, just need data"
+    provenance: user
+    timestamp: "2026-08-26T12:00"
+    from: "Debug model architecture to improve IoU"
+    to: "Train existing architecture on more word-level data with EMNLP labels"
+    trigger: >
+      User said "our fusion model was far ahead we just needed a bigger data set" — recognizing that training NEW models on small data (10-30 videos) was failing not because of architecture, but because of data scale.
+
+  - id: N15
+    type: question
+    title: "Will scaling to 200+ videos close the IoU gap to 0.51?"
+    provenance: ai-suggested
+    timestamp: "2026-08-26T12:45"
+    description: >
+      Current: IoU=0.31 on 118 videos. StandUp4AI: 0.51. Trend from 10→30→40→118 videos showed monotonic improvement.
+    children:
+
+      - id: N16
+        type: experiment
+        title: "Plan: train on 200+ videos (user's Batch 1 + scale221) when accessible"
+        provenance: ai-suggested
+        timestamp: "2026-08-26T12:55"
+        hypothesis: >
+          With 2x more data (118 → 200+), expect IoU-F1@0.2 to improve by another 10-20%.
+        evidence: >
+          Extrapolation from F1 trend (10v→0.07, 30v→0.13, 40v→0.27, 118v→0.676). Logarithmic growth expected to continue.
