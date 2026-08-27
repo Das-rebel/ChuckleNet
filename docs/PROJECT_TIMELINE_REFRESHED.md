@@ -1,6 +1,6 @@
 # ChuckleNet: Complete Project Timeline (Refreshed)
 **Date:** 2026-08-27
-**Status:** Hypothesis testing complete — ready for scaled training
+**Status:** Word-level 40v tested — insufficient data, need 976 videos
 
 ---
 
@@ -88,13 +88,14 @@
 - **Need**: Extract features for 858 more videos
 - **Verdict**: 🚀 **8x MORE DATA AVAILABLE**
 
-### Phase 5: Multilingual Extraction (Aug 26-27, ONGOING)
-- **Tool**: WavLM on CPU (3 parallel workers) + rclone from Drive
+### Phase 5: Word-Level 40-Video Extraction (Aug 26-27)
+- **Tool**: WavLM on CPU (single worker) + rclone from Drive
 - **Target**: 100 videos (34 en_uk, 66 en_us)
-- **Progress**: 37/100 extracted, 73 audio + 55 labels downloaded
-- **Bottleneck**: 5-10 min per video on CPU = 13 hours for 100
-- **Full plan**: 858 videos × 8 min = 5 days on CPU, 19 hours on Kaggle GPU
-- **Verdict**: ⏳ In progress
+- **Progress**: 40/100 extracted over 10+ hours
+- **Result**: **F1=0.21, IoU=0.20** (too few videos, 11.4% positive rate)
+- **Problem**: 40 videos is below 15% positive rate threshold → model can't learn
+- **Bottleneck**: WavLM on CPU takes 5-10 min per video (too slow for scale)
+- **Verdict**: ⏸️ Paused — need Kaggle GPU for remaining 858 videos
 
 ---
 
@@ -111,26 +112,55 @@
 | Aug 2026 | librosa CPU WavLM | 10-40 video word-level | F1=0.27 |
 | Aug 2026 | GroupKFold + manual BCE | Training | F1=0.678 on 118 |
 | Aug 2026 | merge_th sweep | IoU optimization | IoU=0.3457 ✅ |
-| Aug 2026 | rclone + Drive | Multilingual download | 73 audio + 55 labels |
+| Aug 2026 | rclone + Drive | Multilingual download | 83 audio + 82 labels |
+| Aug 2026 | Local CPU WavLM | 40 video extraction | F1=0.21 ⏸️ |
 
 ---
 
 ## Current Model Inventory
 
-| Model File | Size | Trained On | F1 | IoU-F1@0.2 |
-|-----------|------|-----------|-----|-----------|
+| Model File | Size | Trained On | Word F1 | IoU-F1@0.2 |
+|-----------|------|-----------|---------|------------|
 | `best_fusion_model.pt` | 2.2MB | 87 Gillick | 0.975 | — |
 | `scale221_fusion_model.pt` | 2.2MB | 221 scale221 pseudo | 0.879 | — |
-| `sanity_hypothesis_model.pt` | 2.2MB | 118 scale221 ground truth | 0.678 | **0.3457** |
-| `fusion_255_model.pt` | — | Not yet trained | — | — |
+| `sanity_hypothesis_model.pt` | 2.2MB | 118v ground truth | 0.678 | **0.3457** |
+| `word_level_40v_model.pt` | — | 40 word-level | 0.206 | 0.20 |
 
 ---
 
-## Key Learnings (18 Patterns)
+## Data Inventory (Multilingual EMNLP)
+
+| Dataset | Count | Format | Labels |
+|---------|-------|--------|--------|
+| Gillick 87 | 87 | Utterance-level | Human (22.7% pos) |
+| scale221 embeddings | 221 | 5s × 791-dim | Pseudo (30%) |
+| en_uk EMNLP | 261 | Word-level BIO | Ground truth |
+| Multilingual EMNLP | 3719 | Word-level BIO | Ground truth |
+| Audio files (Drive) | 1036 | .m4a | — |
+| **With audio+labels** | **976** | **both** | **ground truth** |
+| Extracted features (local) | 40 | word × 791-dim | ground truth |
+| Downloaded audio (local) | 83 | .m4a | — |
+| Downloaded labels (local) | 82 | .csv | — |
+
+---
+
+## Current Best Results Summary
+
+| Metric | Value | Configuration |
+|--------|-------|--------------|
+| Best word F1 (Gillick) | **0.975** | F0+MLP, 87v, held-out comedians |
+| Best word F1 (EMNLP) | **0.6783** | FusionMLP+BN, 118v, 50ep |
+| Best IoU-F1@0.2 | **0.3457** | merge_th=0.97 on 118v |
+| StandUp4AI baseline | 0.51 | External benchmark |
+| Word-level 40v F1 | 0.2056 | Insufficient data |
+
+---
+
+## Key Learnings (18 Patterns from Agent Ensemble)
 
 | # | Pattern | Status |
 |---|---------|--------|
-| 1 | Label sparsity (≥15% positive) | ✅ Enforced |
+| 1 | Label sparsity (≥15% positive) | ⚠️ 40v = 11.4% → fails |
 | 2 | pos_weight ≤ 3.0 | ✅ Enforced |
 | 3 | Separate boundary from classification | ⏳ Not yet |
 | 4 | Don't refine with imperfect teacher | ✅ Enforced |
@@ -147,56 +177,49 @@
 | 15 | Hallucinated citations | ⚠️ Needs audit |
 | 16 | Unvalidated paper claims | ✅ Validated |
 | 17 | Incomplete external validation | ✅ EMNLP ground truth |
-| 18 | Too few videos (10-40) | ✅ Scaled to 118 |
+| 18 | Too few videos (10-40) | ⚠️ Current: 40v = FAILED |
 
 ---
 
-## Data Inventory
+## Immediate Next Actions (Priority Order)
 
-| Dataset | Count | Format | Labels |
-|---------|-------|--------|--------|
-| Gillick 87 | 87 | Utterance-level | Human (22.7% pos) |
-| scale221 embeddings | 221 | 5s × 791-dim | Pseudo (30%) |
-| en_uk EMNLP | 261 | Word-level BIO | Ground truth |
-| Multilingual EMNLP | 3719 | Word-level BIO | Ground truth |
-| Audio files | 1036 | .m4a | — |
-| **With audio+labels** | **976** | **both** | **ground truth** |
-| Extracted features (local) | 37 | word × 791 | ground truth |
-| Downloaded audio (local) | 73 | .m4a | — |
+| # | Action | Platform | Time | Expected Gain |
+|---|--------|----------|------|---------------|
+| 1 | **Extract all 858 multilingual videos** | Kaggle GPU | 19h | IoU → 0.40-0.50 |
+| 2 | **Train on 976 videos** | Kaggle GPU | 30 min | Word F1 → 0.60-0.70 |
+| 3 | **Optimize merge_th on 976** | Local | 5 min | IoU → 0.45-0.55 |
+| 4 | Add boundary detection head | Kaggle GPU | 2-3h | IoU +0.05-0.10 |
+| 5 | Submit paper with 118v result | — | 1 week | Publish |
 
 ---
 
-## Current Best Results Summary
+## Realistic Timeline (if Kaggle GPU used)
 
-| Metric | Value | Configuration |
-|--------|-------|--------------|
-| Best word F1 | **0.975** | F0+MLP, Gillick, held-out comedians |
-| Best word F1 (EMNLP) | **0.6783** | FusionMLP+BN, 118v, 50 epochs |
-| Best IoU-F1@0.2 | **0.3457** | Same + merge_th=0.97 |
-| StandUp4AI baseline | — | 0.51 IoU-F1@0.2 |
-| Gap to baseline | — | **0.16** |
+| Step | Duration | Cumulative |
+|------|----------|------------|
+| Extract 858 videos (Kaggle GPU, 80s/video) | ~19 hours | 19h |
+| Train on 976 videos | 30 min | 20h |
+| Optimize merge threshold | 5 min | 20h |
+| Evaluate & report | 1 hour | 21h |
+| **Total** | **~21 hours** | — |
 
----
+## Realistic Timeline (if CPU only continues)
 
-## Next Actions (Priority Order)
-
-| # | Action | Time | Expected Gain |
-|---|--------|------|---------------|
-| 1 | Extract remaining 858 multilingual videos | 19h Kaggle GPU or 5d CPU | IoU → 0.40-0.45 |
-| 2 | Train on all 976 videos | 30 min | Word F1 → 0.72+ |
-| 3 | Optimize merge threshold on 976 | 1 min | IoU → 0.42-0.45 |
-| 4 | Try WavLM-large | 3-5h extraction | Word F1 +2-5% |
-| 5 | Add boundary detection head | 2-3h | IoU +0.05-0.10 |
-| 6 | Submit paper with current result | 1 week | Publish |
+| Step | Duration | Cumulative |
+|------|----------|------------|
+| Extract remaining 60 (40 done + 60 more) | ~5 hours | 5h |
+| Extract 738 more (858 total) | ~60 hours | 65h |
+| Train on 976 videos | 30 min | 65.5h |
+| **Total** | **~65 hours (3 days)** | — |
 
 ---
 
-## What Changed Since Aug 25
+## GitHub: [Das-rebel/autonomous_laughter_prediction](https://github.com/Das-rebel/autonomous_laughter_prediction)
 
-1. ✅ Found 976 videos (not just 118) with audio+labels
-2. ✅ Merge threshold optimization: IoU improved 0.31 → 0.35
-3. ✅ Full FusionMLP confirmed better than SimpleMLP
-4. ✅ Standard architecture ≈ Large architecture (no benefit from larger)
-5. ✅ 50 epochs > 30 epochs (marginal improvement)
-6. ⏳ Multilingual extraction: 37/100 done, ongoing
-7. ⏳ User's Batch 1 features still not accessible from Drive
+**Key files:**
+- `docs/PROJECT_TIMELINE_REFRESHED.md` — This document
+- `docs/IOU_EVALUATION_DECISION_GRAPH.md` — Full decision graph
+- `docs/HISTORICAL_TRAINING_FAILURES.md` — 18 patterns catalogued
+- `scale221/` — 221 video scale experiment (5-second windows)
+- `scale221_word_level/` — 40 word-level videos with features
+- `Kaggle_WordLevel_Training.ipynb` — Training notebook for Kaggle
