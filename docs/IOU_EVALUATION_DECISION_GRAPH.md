@@ -313,3 +313,34 @@ With current best IoU-F1@0.2=0.3457 on 118 videos, if we get to 976 videos:
 ### Additional Discovery: Label File Format
 
 Multilingual label files use format `VID.csv` (no language suffix), not `VID,lang.csv` as I initially thought. This caused early download failures.
+
+---
+
+## Extraction Progress (2026-08-27, 18:30)
+
+### Active Extraction
+- **Target**: 100 multilingual videos (en_uk + en_us)
+- **Method**: 3 parallel CPU workers with WavLM-base
+- **Progress**: 5/100 done, ~0.4 features/min
+- **Expected completion**: ~4 hours for 100 videos
+
+### Full Multilingual Plan
+- **Total available**: 976 videos with audio+labels
+- **Currently have features**: 118 (from scale221)
+- **Need to extract**: 858 videos
+- **At 0.4 features/min**: 858/0.4 = 2145 min = 36 hours
+- **Parallel 3 workers**: 12 hours for all 858
+
+### Recommendation
+- Let current 100-video extraction run overnight
+- Check in 4 hours: expect ~100 done
+- Then batch process remaining 758 videos (another ~30 hours with 3 workers)
+- Total: ~1.5 days to extract all multilingual features
+
+### Alternative: Kaggle GPU
+Would be 10x faster (80s vs 5min per video), but:
+- Need proper PyTorch version for P100 (2.2.0+cu118)
+- Or use T4 GPU (works natively)
+- 858 videos × 80s = 19 hours single GPU
+- With 4 parallel kernels: 4.75 hours
+
