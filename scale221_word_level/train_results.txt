@@ -1,0 +1,26 @@
+
+=== DATA ===
+Videos: 40
+Words: 31143
+Positive rate: 11.4%
+Feature dim: 791
+pos_weight: 3.00
+
+=== TRAINING (5-fold GroupKFold) ===
+  Fold 1 (7v): F1=0.2130 P=0.3828 R=0.1476 [10ep]
+  Fold 2 (8v): F1=0.1850 P=0.3149 R=0.1309 [9ep]
+  Fold 3 (8v): F1=0.1905 P=0.3095 R=0.1376 [23ep]
+  Fold 4 (9v): F1=0.1667 P=0.3158 R=0.1132 [8ep]
+  Fold 5 (8v): F1=0.2572 P=0.3073 R=0.2211 [19ep]
+
+=== OOF Word F1@0.5: 0.2056 ===
+
+=== IOU EVALUATION ===
+  merge_th=0.5: IoU>=0.1=0.2545  IoU>=0.2=0.1978  IoU>=0.3=0.1699  IoU>=0.4=0.1431  IoU>=0.5=0.1167  
+  merge_th=0.7: IoU>=0.1=0.1449  IoU>=0.2=0.1304  IoU>=0.3=0.1077  IoU>=0.4=0.0887  IoU>=0.5=0.0749  
+  merge_th=0.8: IoU>=0.1=0.0454  IoU>=0.2=0.0343  IoU>=0.3=0.0343  IoU>=0.4=0.0331  IoU>=0.5=0.0215  
+  merge_th=0.9: IoU>=0.1=0.0145  IoU>=0.2=0.0145  IoU>=0.3=0.0145  IoU>=0.4=0.0145  IoU>=0.5=0.0110  
+  merge_th=0.95: IoU>=0.1=0.0052  IoU>=0.2=0.0052  IoU>=0.3=0.0052  IoU>=0.4=0.0052  IoU>=0.5=0.0039  
+  merge_th=0.97: IoU>=0.1=0.0039  IoU>=0.2=0.0039  IoU>=0.3=0.0039  IoU>=0.4=0.0039  IoU>=0.5=0.0039  
+
+Results saved

@@ -344,3 +344,42 @@ Would be 10x faster (80s vs 5min per video), but:
 - 858 videos × 80s = 19 hours single GPU
 - With 4 parallel kernels: 4.75 hours
 
+
+---
+
+## Word-Level 40-Video Results (2026-08-27)
+
+### Training Results
+- **Videos**: 40 unique word-level videos
+- **Total words**: 31,143 (avg 779 words/video)
+- **Positive rate**: 11.4% (below 15% threshold)
+- **OOF Word F1@0.5**: **0.2056** (model struggles with limited data)
+- **IoU-F1@0.2**: 0.1978 (at merge_th=0.5)
+
+### Architecture
+- FusionMLP(791→512→256→64→1) + BatchNorm + Dropout(0.3)
+- Training: AdamW(lr=5e-4), pos_weight=3.0, 80 epochs max, patience=10
+- Split: 5-fold GroupKFold (7-8 videos per fold)
+
+### Problem Identified
+- **40 videos is insufficient** for word-level training
+- 11.4% positive rate is below the 15% threshold
+- Only ~35-40 positive words per fold → model can't learn
+- Higher merge_th makes things WORSE (model is uncertain, not confident)
+
+### Required Scale
+| Videos | Positive words | Expected F1 |
+|--------|----------------|-------------|
+| 40 (current) | ~89/fold | 0.21 |
+| 118 (5s windows) | ~230/fold | 0.68 |
+| 200+ | ~500+/fold | 0.50+ |
+| 976 (all) | ~1500+/fold | 0.70+ |
+
+### Next Actions
+1. Extract all 858 remaining multilingual videos (Kaggle GPU)
+2. Train on 900+ videos (expected F1 ~0.50-0.70)
+3. Optimize merge_th after scale-up
+
+### Files
+- `scale221_word_level/` - 40 videos, word-level features (791-dim)
+- `Kaggle_WordLevel_Training.ipynb` - Training notebook for Kaggle
