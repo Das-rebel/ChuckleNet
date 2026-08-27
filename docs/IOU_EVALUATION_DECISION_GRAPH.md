@@ -258,3 +258,58 @@ START: We have IoU=0.33 on 118 videos (gap 0.18 to baseline 0.51)
 - `docs/FUSIONMLP_40V_RESULTS.md` - Word-level 40 videos
 - `docs/HISTORICAL_TRAINING_FAILURES.md` - 18 failure patterns
 - `ara/` - Research artifact (exploration tree, claims, heuristics)
+
+---
+
+## Multilingual Extraction Pipeline (2026-08-27)
+
+### Critical Discovery
+
+**976 multilingual videos** with BOTH audio + EMNLP labels available (not just 118 en_uk videos).
+
+| Language | Videos | Audio+Label |
+|----------|--------|-------------|
+| en_uk | 261 | 255 |
+| es_latam | 970 | 194 |
+| fr | 651 | 154 |
+| it | 567 | 115 |
+| es | 404 | 84 |
+| en_us | 319 | 68 |
+| fr_ca | 193 | 42 |
+| cs | 111 | 30 |
+| hu | 69 | 23 |
+| es_ch | 166 | 11 |
+
+### Current Status
+
+- **Target**: Extract features for all 858 multilingual videos we don't have
+- **Plan**: Download audio+labels from Drive, extract word-level features on CPU
+- **Throughput**: ~5 min per video on CPU = ~72 hours for 858 videos
+- **Current**: Started with first 100 target (60% en_us, 34% en_uk)
+- **Progress**: Downloading audio (~30 done) and labels (~10 done), extraction running
+
+### Time Estimates
+
+| Videos | CPU Hours | Parallel CPUs |
+|--------|-----------|---------------|
+| 100 | 8.3 hours | 2.1 hours on 4 cores |
+| 300 | 25 hours | 6.3 hours on 4 cores |
+| 858 | 71.5 hours | 17.9 hours on 4 cores |
+
+### Kaggle GPU Alternative
+
+If using Kaggle T4 with compatible PyTorch:
+- ~80 seconds per video
+- 858 videos × 80s = 19 hours single kernel
+- 858 / 4 kernels = 4.75 hours
+
+### Expected Results with Multilingual Data
+
+With current best IoU-F1@0.2=0.3457 on 118 videos, if we get to 976 videos:
+- Word-level F1 should improve from 0.68 → 0.70+
+- IoU-F1@0.2 should improve from 0.35 → 0.42+
+- Potentially closer to StandUp4AI's 0.51 baseline
+
+### Additional Discovery: Label File Format
+
+Multilingual label files use format `VID.csv` (no language suffix), not `VID,lang.csv` as I initially thought. This caused early download failures.
