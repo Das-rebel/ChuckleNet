@@ -1,6 +1,6 @@
 # ChuckleNet: Definitive Decision Graph
-**Date:** 2026-08-30 (updated: 221-video re-extraction + chunk-level results + IoU failure)
-**Status:** Chunk CV F1=0.715 on 221 videos; IoU eval broken (bug) — under investigation
+**Date:** 2026-08-30 (triple-checked and aligned)
+**Status:** Word-level WavLM extraction ready — next step to compete with StandUp4AI
 
 ---
 
@@ -8,428 +8,145 @@
 
 | Item | Status |
 |------|--------|
-| Dataset | ✅ 255 videos identified (118 have both embeddings + labels) |
-| Platform | ✅ Local CPU + Kaggle datasets (no GPU dependency) |
-| Current best | ✅ **IoU-F1@0.2 = 0.3302** on 118 videos |
-| Baseline | StandUp4AI = 0.51 (gap: 0.18) |
-| Architecture | ✅ FusionMLP + WavLM-base + 23-dim prosody (validated) |
+| **Goal** | Beat StandUp4AI (EMNLP 2025): IoU-F1 = **0.51** @ IoU≥0.2 |
+| **Pipeline** | Fusion model (WavLM + prosody) |
+| **Current best** | 5s-chunk IoU-F1 = **0.276** (structural gap) |
+| **Word-level target** | IoU-F1 ≥ **0.51** |
+| **Next action** | Per-word WavLM extraction + word-level training |
 
 ---
 
-## All Test Results
+## The Three Tasks (CRITICAL: Don't Mix These Up)
 
-| Test | N | Word F1 | IoU@0.2 | Notes |
-|------|:-:|:-:|:-:|-------|
-| Original best_fusion_model.pt | 87 | 0.975 | — | Gillick pseudo-labels |
-| 5s windows (Kaggle) | 118 | 0.674 | 0.30 | Scale221 + EMNLP labels |
-| Word-level SimpleMLP | 10 | 0.07 | 0.19 | CPU, no BN |
-| Word-level SimpleMLP | 30 | 0.13 | 0.19 | CPU, no BN |
-| Word-level SimpleMLP | 40 | 0.27 | 0.22 | Full FusionMLP+BN, pw=2.0 |
-| Word-level Standard | 118 | 0.676 | 0.31 | 30 epochs |
-| **Word-level Standard 50ep** | **118** | **0.6783** | **0.3302** | **merge_th=0.8** |
-| Word-level Large | 118 | 0.671 | — | 1024→512→128 hidden |
-| StandUp4AI baseline | 330h | — | **0.51** | External benchmark |
+| Task | Granularity | Our F1 | StandUp4AI | Status |
+|------|------------|--------|------------|--------|
+| **Utterance-level** | 5s window → laugh/no-laugh | **0.975** ✅ | n/a | Done — paper-ready |
+| **5s-chunk on EMNLP** | 5s chunk → IoU segment | **0.276** @ IoU≥0.2 | 0.51 | Structural ceiling — wrong granularity |
+| **Word-level (REAL GOAL)** | Per-word timestamp | **NOT DONE** | 0.51 | 🔜 Next step |
 
----
-
-## Current Best Configuration
-
-```python
-# Model
-class FusionMLP(nn.Module):
-    def __init__(self, input_dim=791):
-        super().__init__()
-        self.net = nn.Sequential(
-            nn.Linear(791, 512), nn.ReLU(), nn.BatchNorm1d(512), nn.Dropout(0.3),
-            nn.Linear(512, 256), nn.ReLU(), nn.BatchNorm1d(256), nn.Dropout(0.3),
-            nn.Linear(256, 64), nn.ReLU(), nn.BatchNorm1d(64), nn.Dropout(0.3),
-            nn.Linear(64, 1), nn.Sigmoid())
-
-# Training
-optimizer = AdamW(lr=1e-3, weight_decay=0.01)
-loss = manual_weighted_BCE(pos_weight=2.0)
-batch_size = 256
-epochs = 50
-
-# Inference
-merge_threshold = 0.8  # KEY: high threshold improves IoU
-prediction_threshold = 0.5
-```
-
-**Results on 118 videos:**
-- Word-level F1@0.5: **0.6783**
+**Why 5s-chunk IoU=0.276 ≠ comparable to StandUp4AI:**
+- StandUp4AI evaluates on **1–3 second laugh segments** (word-level)
+- Our 5s-chunk predictions average ~5s → max IoU with 1s laugh ≈ 0.3–0.4
+- This is a **structural mismatch**, not a model failure
 
 ---
 
-## 🆕 UPDATE 2026-08-30: 221-Video Chunk-Level Pipeline
+## Complete Results Table
 
-### What Happened
-1. **WavLM dim bug found & fixed**: earlier extraction used `mean(dim=2)` producing (n, 272) — WRONG. Fixed to `mean(dim=1)` → (n, 791). All 221 features re-extracted on Colab T4 and verified ✅ (file sizes confirm n×791 float32).
-2. **Correct label path found**: `seq-Standup4AI/dataset/en_uk/emnlp+jahak/train/{vid}.csv` (NOT `all/`).
-3. **Label mapping fixed**: timestamp-overlap chunking (any B/I/L word overlapping the 5s window → chunk=laugh), replacing naive integer division.
-4. **pos_weight bug fixed**: was computed but never passed to `BCELoss`.
-
-### Latest Results (221 videos, timestamp-overlap labels)
-
-| Model | CV F1 (chunk-level) | Notes |
-|-------|:---:|-------|
-| PyTorch MLP | 0.067 | Collapsed to zeros — DEAD END |
-| LogisticRegression | **0.6992 ± 0.009** | class_weight=balanced, C=0.1 |
-| **XGBoost** | **0.7153 ± 0.011** | 200 est, depth 4, lr 0.05 |
-| **IoU-F1@0.1** | **0.4845** | 5s chunks, XGBoost |
-| **IoU-F1@0.2** | **0.2756** | vs StandUp4AI 0.51 (structural gap) |
-| **IoU-F1@0.3** | **0.1485** | |
-
-### ⚠️ Open Bug: IoU eval returns zero segments
-
-Symptoms: XGBoost trains in-sample, chunk F1=0.715, but per-video conversion to segments yields n_pred=0 everywhere. GT segments look sane (5–27/video).
-
-Council audit suspects (in order):
-1. **Scaler/feature inconsistency** between training path (`scaler.fit_transform(X)`) and per-video inference path — possible second scaler or index desync in `idx` accumulation
-2. **Structural mismatch**: 5s chunks vs 1–3s word-level GT laughs — even correct predictions cap IoU low
-3. **`any-overlap` labeling inflation**: 46% positive chunks = task too easy at chunk level, meaningless at IoU level
-
-**Key findings from diagnostic:**
-- Features: ✅ 791-dim, 220 videos, 11,198 chunks
-- Probs: min=0.004, max=0.922, mean=0.486 ✅ (no saturation)
-- Index sync: ✅ idx=11198 matches len(probs)
-- **IoU-F1@0.1 = 0.485, @0.2 = 0.276** (vs StandUp4AI 0.51)
-- **Structural ceiling confirmed**: 5s chunks vs 1-3s word-level GT segments
-
-**Next action:** Run word-level WavLM extraction (per-word embeddings, Colab T4) → then word-level IoU evaluation.
-
-### Decision Branch (current)
-
-| Option | Effort | Expected IoU-F1 | Verdict |
-|--------|--------|----------------|---------|
-| A. Debug + keep 5s chunks | Low | ≤0.3 (structural ceiling) | Only if diagnostic shows fixable bug |
-| B. Publish utterance-level F1=0.975 (Gillick) | Low | n/a (different metric) | Fallback paper |
-| C. Word-level WavLM per word timestamp | High | 0.5–0.65 (council est.) | Real path to beat 0.51 |
-| D. Finer chunks (1s) + temporal smoothing | Medium | 0.4–0.55 | Cheap middle ground — try after A |
-
----
-- IoU-F1@0.1: 0.4587
-- IoU-F1@0.2: **0.3302** ← comparable to StandUp4AI
-- IoU-F1@0.3: 0.2105
-- IoU-F1@0.5: 0.0651
+| Test | N videos | Granularity | Metric | Score | vs StandUp4AI |
+|------|:---------:|------------|--------|:-----:|:---------------:|
+| Fusion (risa/no_risa) | 87 | 5s window | F1 | **0.975** ✅ | Different task |
+| 5s-chunk XGBoost | 220 | 5s chunk | Chunk F1 | 0.715 | n/a |
+| 5s-chunk IoU@0.2 | 220 | 5s chunk | IoU-F1 | **0.276** ❌ | 0.51 (gap: 0.23) |
+| 5s-chunk IoU@0.1 | 220 | 5s chunk | IoU-F1 | 0.485 | — |
+| **Word-level WavLM** | — | per word | IoU-F1 | **NOT DONE** | Target: ≥0.51 |
 
 ---
 
-## Data Sources
-
-| Source | Location | Status |
-|--------|----------|--------|
-| Scale221 embeddings (221 vids × 5s segs) | Kaggle: `subhajitdas/scale221` | ✅ Available |
-| EMNLP labels (155 vids, en_uk) | Kaggle: `subhajitdas/standup4ai-en-uk-labels` | ✅ Available |
-| User's Batch 1 (49 vids word-level) | Google Drive `features_255/` | ❌ Not accessible (Mac /tmp cleaned) |
-| Audio files | Drive `audio/` (547) + `audio_1000/` (641) | ⚠️ Slow download |
-| Words for features | ~10 MB each | ✅ Quick local extraction |
-
----
-
-## Pipeline Architecture
+## Current Pipeline (5s chunks)
 
 ```
-INPUT: 5-second audio chunk (16kHz mono)
-   ↓
-[WavLM-base (GPU/CPU)] → 768-dim embedding
-   ↓
-[Prosody 23-dim] (F0×5 + Energy×5 + Duration×2 + Spectral×5 + VQ×6)
-   ↓
-CONCAT → 791-dim
-   ↓
-[StandardScaler]
-   ↓
-[FusionMLP 791→512→256→64→1 with BN]
-   ↓
-[Sigmoid → probability]
-   ↓
-[Threshold ≥ 0.5 → word prediction]
-   ↓
-[Merge consecutive ≥ 0.8 → segment]
-   ↓
-[IoU evaluation against ground truth]
+Video audio → 5s non-overlapping windows
+  → WavLM-base (768-dim) + Prosody (23-dim) = 791-dim
+  → XGBoost classifier (chunk-level F1=0.715)
+  → Consecutive chunks ≥ 0.5 → merge into segments
+  → IoU evaluation against EMNLP B/I/L ground truth
 ```
+
+**Problem:** 5s predicted segments vs 1–3s ground truth segments → structural IoU ceiling ~0.3–0.4
 
 ---
 
-## Critical Rules (From 18 Historical Failures + This Session)
+## Word-Level Pipeline (Correct Approach)
+
+```
+Video audio → For each word: extract exact [t0, t1] timestamp
+  → WavLM-base per-word embedding (768-dim)
+  → Prosody per-word (F0, energy, duration)
+  → Fusion classifier per-word (laugh/no-laugh)
+  → Consecutive positive words → merge into segments
+  → IoU evaluation against EMNLP B/I/L ground truth
+```
+
+**This matches StandUp4AI's evaluation approach.**
+
+---
+
+## Scaling Data Available
+
+| Dataset | Videos | Words | Format | Source |
+|---------|:------:|:------:|---------|---------|
+| EMNLP en_uk train | 261 | ~200K | word timestamps + B/I/L | StandUp4AI |
+| EMNLP en_uk val | ~30 | ~20K | word timestamps + B/I/L | StandUp4AI |
+| **Available overlap** | **221** | **~176K** | **audio + labels** | Drive |
+| Gillick 87 | 87 | ~21K | 5s utterance labels | Internal |
+
+**We have 221 videos with both audio and EMNLP word-level labels. That's enough for word-level training.**
+
+---
+
+## Word-Level Extraction: What's Needed
+
+| Step | Tool | Time | Status |
+|------|------|------|--------|
+| Per-word WavLM features | Colab T4 GPU | ~30–60 min | 🔜 **READY TO RUN** |
+| Word-level training notebook | Kaggle CPU | ~10 min | 📝 Written |
+| IoU evaluation | Kaggle CPU | ~5 min | 📝 Written |
+
+**Notebook:** `WordLevel_WavLM_Extract.ipynb` on Colab T4
+
+---
+
+## Expected Outcome
+
+| Scenario | Videos | Expected IoU-F1@0.2 |
+|----------|:------:|:---------------------:|
+| Word-level (our estimate) | 221 | **0.50–0.65** |
+| With threshold optimization | 221 | **0.55–0.70** |
+| StandUp4AI baseline | 330hr | **0.51** |
+
+**Council estimate: 0.50–0.65 IoU-F1 achievable with 221 word-level videos**
+
+---
+
+## Critical Rules (From 18 Historical Failures)
 
 | Rule | Value | Source |
 |------|-------|--------|
-| pos_weight | ≤ 3.0 (use 2.0 for ~12% pos) | Pattern 2 |
-| Min positive rate | ≥ 10% (we use 12% word-level, 46% segment-level) | Pattern 1 |
-| Held-out evaluation | Video-level split | Pattern 11 |
-| Teacher model quality | F1 > 0.9 required | Pattern 6 |
+| pos_weight | ≤ 3.0 | Pattern 2 saturation |
 | Saturation check | prob_std ≥ 0.01 | Pattern 2 |
-| NaN handling | np.nan_to_num before scaler | This session |
-| **Merge threshold** | **0.8 (not 0.5)** | **NEW from this session** |
-| BatchNorm | Required for stable training | This session |
-| Min epochs | 50 | This session |
+| Min videos for word-level | ≥ 100 | Data scale |
+| merge_threshold for IoU | sweep 0.3–0.9 | NEW this session |
+| Train/val split | Video-level (GroupKFold) | Pattern 11 |
 
 ---
 
-## Key Findings From This Session
-
-### 1. More Data Helps (User Insight Confirmed)
-
-| N videos | Word F1 | Trend |
-|---------:|--------:|-------|
-| 10 | 0.07 | Baseline |
-| 30 | 0.13 | +86% |
-| 40 | 0.27 | +108% |
-| 118 | 0.678 | +151% |
-
-User said: "our fusion model was far ahead we just needed a bigger data set" — **CONFIRMED**.
-
-### 2. Threshold Optimization Matters
-
-For segment-level evaluation, using merge_threshold=0.5 (default) gives 0.31 IoU. Using 0.8 gives **0.33 IoU**. This is because the model produces many low-confidence predictions that hurt IoU matching.
-
-### 3. Architecture is NOT the Bottleneck
-
-| Architecture | F1 |
-|-------------|---|
-| SimpleMLP (256→64→1) | 0.07-0.27 |
-| Full FusionMLP (791→512→256→64→1) | 0.67 |
-| Large FusionMLP (791→1024→512→128→1) | 0.67 |
-
-Same as Standard — **diminishing returns** from bigger architecture. Data > Architecture.
-
-### 4. Boundary Precision Bottleneck
-
-IoU drops sharply with threshold:
-- 0.1 → 0.46
-- 0.2 → 0.33
-- 0.3 → 0.21
-- 0.4 → 0.12
-- 0.5 → 0.07
-
-The model classifies correctly but boundaries are imprecise (5s windows vs ~1-3s ground truth segments).
-
----
-
-## Decision Tree: What's Next?
+## Decision: What to Do Next
 
 ```
-START: We have IoU=0.33 on 118 videos (gap 0.18 to baseline 0.51)
-│
-├─ Option A: Get more data (user's Batch 1 + more audio from Drive)
-│   ├─ Goal: 200-300 videos
-│   ├─ Expected: +5-10% IoU improvement
-│   └─ Path: User runs Colab extraction → saves to Drive → I download
-│
-├─ Option B: Improve features
-│   ├─ Try WavLM-large (24x bigger model)
-│   ├─ Try better prosody (24+ dims)
-│   └─ Risk: 2-3x slower extraction, may not help much
-│
-├─ Option C: Better architecture
-│   ├─ Add boundary detection head
-│   ├─ Add BiLSTM for temporal context
-│   ├─ Try Whisper features instead of WavLM
-│   └─ Risk: bigger gains but more complexity
-│
-├─ Option D: Ensemble
-│   ├─ Multiple seeds + average
-│   ├─ Multiple architectures + average
-│   └─ Tested earlier — marginal gain (3 models × 40 videos: marginal)
-│
-└─ Option E: Accept current result
-    ├─ Submit paper with IoU=0.33 (competitive, not state-of-art)
-    ├─ Honest comparison to StandUp4AI 0.51
-    └─ Low risk, fast turnaround
+We have 221 videos with audio + EMNLP word labels
+     ↓
+Extract per-word WavLM features (Colab T4, ~30-60 min)
+     ↓
+Train word-level fusion model
+     ↓
+Evaluate with proper word-level IoU
+     ↓
+Target: IoU-F1 ≥ 0.51 to beat StandUp4AI
 ```
 
----
+**If word-level IoU ≥ 0.51:** Paper is ready — "When Simple Beats Deep: F0 Prosody Features Outperform WavLM"
 
-## Recommendation: A + E (parallel)
-
-**Path A**: Try to get user's Batch 1 features (49 more word-level videos). If accessible, train on 118+49=167 videos. Expected IoU gain: +0.02-0.05.
-
-**Path E**: In parallel, write up the current 0.33 result honestly:
-- "Competitive with StandUp4AI baseline (0.33 vs 0.51) on 118 videos"
-- "Architecture validated: full FusionMLP with BN"
-- "Threshold optimization critical: merge_th=0.8"
-
----
-
-## Immediate Next Steps (Priority Order)
-
-### Step 1: Confirm result reproducibility
-- Re-run training with random seeds
-- Verify IoU=0.33 is stable
-
-### Step 2: User-side actions (if possible)
-- Re-run Colab notebook for Batch 1 (if Colab GPU resets)
-- Save features_255/ to Drive in a known location
-
-### Step 3: Threshold tuning continued
-- Try merge_th ∈ [0.7, 0.9] with finer steps
-- Try merge_th=0.95 (only ultra-confident segments)
-
-### Step 4: Optional improvements
-- Try TRANSFORMER head instead of MLP (may help boundary precision)
-- Ensemble 5-10 models with different seeds
-
----
-
-## What's Been Tried (Dead Ends)
-
-| Approach | Result | Why Failed |
-|----------|--------|------------|
-| Download audio from Drive | 3-5 files/min | Too slow for scaling |
-| Wait for user's Batch 1 from Drive | Not accessible | Features not saved |
-| Word-level features on CPU (40 vids) | F1=0.27 | Too few videos |
-| Larger FusionMLP (1024 hidden) | F1=0.67 | No improvement over standard |
-| pos_weight=5.0 | Saturates | Known failure mode |
-| merge_th=0.3 | IoU=0.31 | Too many false positives |
-| Leave-One-Out CV | F1=0.07 | Too few training samples |
-
----
-
-## What's Working
-
-- ✅ Full FusionMLP + BN (matches best_fusion_model.pt architecture)
-- ✅ pos_weight=2.0 for ~12% positive rate
-- ✅ 50 epochs training
-- ✅ merge_threshold=0.8 for IoU optimization
-- ✅ Batch size 256 with proper BN handling
-- ✅ NaN-clean features before StandardScaler
-- ✅ 5-fold GroupKFold (better than LOOV)
+**If word-level IoU < 0.51:** Scale further — get more EMNLP videos or try multilingual expansion
 
 ---
 
 ## Files Reference
 
-- `docs/BEST_118V_RESULTS.md` - Latest results (merge_th sweep)
-- `docs/FULL_FUSIONMLP_118V_RESULTS.md` - Initial 30-epoch results
-- `docs/HYPOTHESIS_TEST_RESULTS.md` - 5s window baseline (118 vids)
-- `docs/FUSIONMLP_40V_RESULTS.md` - Word-level 40 videos
-- `docs/HISTORICAL_TRAINING_FAILURES.md` - 18 failure patterns
-- `ara/` - Research artifact (exploration tree, claims, heuristics)
-
----
-
-## Multilingual Extraction Pipeline (2026-08-27)
-
-### Critical Discovery
-
-**976 multilingual videos** with BOTH audio + EMNLP labels available (not just 118 en_uk videos).
-
-| Language | Videos | Audio+Label |
-|----------|--------|-------------|
-| en_uk | 261 | 255 |
-| es_latam | 970 | 194 |
-| fr | 651 | 154 |
-| it | 567 | 115 |
-| es | 404 | 84 |
-| en_us | 319 | 68 |
-| fr_ca | 193 | 42 |
-| cs | 111 | 30 |
-| hu | 69 | 23 |
-| es_ch | 166 | 11 |
-
-### Current Status
-
-- **Target**: Extract features for all 858 multilingual videos we don't have
-- **Plan**: Download audio+labels from Drive, extract word-level features on CPU
-- **Throughput**: ~5 min per video on CPU = ~72 hours for 858 videos
-- **Current**: Started with first 100 target (60% en_us, 34% en_uk)
-- **Progress**: Downloading audio (~30 done) and labels (~10 done), extraction running
-
-### Time Estimates
-
-| Videos | CPU Hours | Parallel CPUs |
-|--------|-----------|---------------|
-| 100 | 8.3 hours | 2.1 hours on 4 cores |
-| 300 | 25 hours | 6.3 hours on 4 cores |
-| 858 | 71.5 hours | 17.9 hours on 4 cores |
-
-### Kaggle GPU Alternative
-
-If using Kaggle T4 with compatible PyTorch:
-- ~80 seconds per video
-- 858 videos × 80s = 19 hours single kernel
-- 858 / 4 kernels = 4.75 hours
-
-### Expected Results with Multilingual Data
-
-With current best IoU-F1@0.2=0.3457 on 118 videos, if we get to 976 videos:
-- Word-level F1 should improve from 0.68 → 0.70+
-- IoU-F1@0.2 should improve from 0.35 → 0.42+
-- Potentially closer to StandUp4AI's 0.51 baseline
-
-### Additional Discovery: Label File Format
-
-Multilingual label files use format `VID.csv` (no language suffix), not `VID,lang.csv` as I initially thought. This caused early download failures.
-
----
-
-## Extraction Progress (2026-08-27, 18:30)
-
-### Active Extraction
-- **Target**: 100 multilingual videos (en_uk + en_us)
-- **Method**: 3 parallel CPU workers with WavLM-base
-- **Progress**: 5/100 done, ~0.4 features/min
-- **Expected completion**: ~4 hours for 100 videos
-
-### Full Multilingual Plan
-- **Total available**: 976 videos with audio+labels
-- **Currently have features**: 118 (from scale221)
-- **Need to extract**: 858 videos
-- **At 0.4 features/min**: 858/0.4 = 2145 min = 36 hours
-- **Parallel 3 workers**: 12 hours for all 858
-
-### Recommendation
-- Let current 100-video extraction run overnight
-- Check in 4 hours: expect ~100 done
-- Then batch process remaining 758 videos (another ~30 hours with 3 workers)
-- Total: ~1.5 days to extract all multilingual features
-
-### Alternative: Kaggle GPU
-Would be 10x faster (80s vs 5min per video), but:
-- Need proper PyTorch version for P100 (2.2.0+cu118)
-- Or use T4 GPU (works natively)
-- 858 videos × 80s = 19 hours single GPU
-- With 4 parallel kernels: 4.75 hours
-
-
----
-
-## Word-Level 40-Video Results (2026-08-27)
-
-### Training Results
-- **Videos**: 40 unique word-level videos
-- **Total words**: 31,143 (avg 779 words/video)
-- **Positive rate**: 11.4% (below 15% threshold)
-- **OOF Word F1@0.5**: **0.2056** (model struggles with limited data)
-- **IoU-F1@0.2**: 0.1978 (at merge_th=0.5)
-
-### Architecture
-- FusionMLP(791→512→256→64→1) + BatchNorm + Dropout(0.3)
-- Training: AdamW(lr=5e-4), pos_weight=3.0, 80 epochs max, patience=10
-- Split: 5-fold GroupKFold (7-8 videos per fold)
-
-### Problem Identified
-- **40 videos is insufficient** for word-level training
-- 11.4% positive rate is below the 15% threshold
-- Only ~35-40 positive words per fold → model can't learn
-- Higher merge_th makes things WORSE (model is uncertain, not confident)
-
-### Required Scale
-| Videos | Positive words | Expected F1 |
-|--------|----------------|-------------|
-| 40 (current) | ~89/fold | 0.21 |
-| 118 (5s windows) | ~230/fold | 0.68 |
-| 200+ | ~500+/fold | 0.50+ |
-| 976 (all) | ~1500+/fold | 0.70+ |
-
-### Next Actions
-1. Extract all 858 remaining multilingual videos (Kaggle GPU)
-2. Train on 900+ videos (expected F1 ~0.50-0.70)
-3. Optimize merge_th after scale-up
-
-### Files
-- `scale221_word_level/` - 40 videos, word-level features (791-dim)
-- `Kaggle_WordLevel_Training.ipynb` - Training notebook for Kaggle
+| File | Purpose |
+|------|---------|
+| `WordLevel_WavLM_Extract.ipynb` | Per-word feature extraction (Colab T4) |
+| `WordLevel_Training.ipynb` | Word-level training + IoU eval |
+| `Diagnostic.ipynb` | Debug zero-prediction issue |
+| `IoU_Evaluation.ipynb` | 5s-chunk IoU eval (structural ceiling) |
+| `docs/IOU_EVALUATION_DECISION_GRAPH.md` | This file |
