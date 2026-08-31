@@ -1,6 +1,6 @@
 # ChuckleNet: Definitive Decision Graph
-**Date:** 2026-08-26 (updated after threshold optimization)
-**Status:** Best IoU-F1=0.33 achieved on 118 videos
+**Date:** 2026-08-30 (updated: 221-video re-extraction + chunk-level results + IoU failure)
+**Status:** Chunk CV F1=0.715 on 221 videos; IoU eval broken (bug) — under investigation
 
 ---
 
@@ -58,6 +58,47 @@ prediction_threshold = 0.5
 
 **Results on 118 videos:**
 - Word-level F1@0.5: **0.6783**
+
+---
+
+## 🆕 UPDATE 2026-08-30: 221-Video Chunk-Level Pipeline
+
+### What Happened
+1. **WavLM dim bug found & fixed**: earlier extraction used `mean(dim=2)` producing (n, 272) — WRONG. Fixed to `mean(dim=1)` → (n, 791). All 221 features re-extracted on Colab T4 and verified ✅ (file sizes confirm n×791 float32).
+2. **Correct label path found**: `seq-Standup4AI/dataset/en_uk/emnlp+jahak/train/{vid}.csv` (NOT `all/`).
+3. **Label mapping fixed**: timestamp-overlap chunking (any B/I/L word overlapping the 5s window → chunk=laugh), replacing naive integer division.
+4. **pos_weight bug fixed**: was computed but never passed to `BCELoss`.
+
+### Latest Results (221 videos, timestamp-overlap labels)
+
+| Model | CV F1 (chunk-level) | Notes |
+|-------|:---:|-------|
+| PyTorch MLP | 0.067 | Collapsed to zeros — DEAD END |
+| LogisticRegression | **0.6992 ± 0.009** | class_weight=balanced, C=0.1 |
+| **XGBoost** | **0.7153 ± 0.011** | 200 est, depth 4, lr 0.05 |
+| IoU-F1 (any threshold) | **0.0000** | ⚠️ ZERO predicted segments — BUG |
+
+### ⚠️ Open Bug: IoU eval returns zero segments
+
+Symptoms: XGBoost trains in-sample, chunk F1=0.715, but per-video conversion to segments yields n_pred=0 everywhere. GT segments look sane (5–27/video).
+
+Council audit suspects (in order):
+1. **Scaler/feature inconsistency** between training path (`scaler.fit_transform(X)`) and per-video inference path — possible second scaler or index desync in `idx` accumulation
+2. **Structural mismatch**: 5s chunks vs 1–3s word-level GT laughs — even correct predictions cap IoU low
+3. **`any-overlap` labeling inflation**: 46% positive chunks = task too easy at chunk level, meaningless at IoU level
+
+**Next action:** run `Diagnostic.ipynb` (checks prob distribution, per-video index sync, scaler consistency) before any retraining.
+
+### Decision Branch (current)
+
+| Option | Effort | Expected IoU-F1 | Verdict |
+|--------|--------|----------------|---------|
+| A. Debug + keep 5s chunks | Low | ≤0.3 (structural ceiling) | Only if diagnostic shows fixable bug |
+| B. Publish utterance-level F1=0.975 (Gillick) | Low | n/a (different metric) | Fallback paper |
+| C. Word-level WavLM per word timestamp | High | 0.5–0.65 (council est.) | Real path to beat 0.51 |
+| D. Finer chunks (1s) + temporal smoothing | Medium | 0.4–0.55 | Cheap middle ground — try after A |
+
+---
 - IoU-F1@0.1: 0.4587
 - IoU-F1@0.2: **0.3302** ← comparable to StandUp4AI
 - IoU-F1@0.3: 0.2105
