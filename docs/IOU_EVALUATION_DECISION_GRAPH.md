@@ -76,7 +76,9 @@ prediction_threshold = 0.5
 | PyTorch MLP | 0.067 | Collapsed to zeros — DEAD END |
 | LogisticRegression | **0.6992 ± 0.009** | class_weight=balanced, C=0.1 |
 | **XGBoost** | **0.7153 ± 0.011** | 200 est, depth 4, lr 0.05 |
-| IoU-F1 (any threshold) | **0.0000** | ⚠️ ZERO predicted segments — BUG |
+| **IoU-F1@0.1** | **0.4845** | 5s chunks, XGBoost |
+| **IoU-F1@0.2** | **0.2756** | vs StandUp4AI 0.51 (structural gap) |
+| **IoU-F1@0.3** | **0.1485** | |
 
 ### ⚠️ Open Bug: IoU eval returns zero segments
 
@@ -87,7 +89,14 @@ Council audit suspects (in order):
 2. **Structural mismatch**: 5s chunks vs 1–3s word-level GT laughs — even correct predictions cap IoU low
 3. **`any-overlap` labeling inflation**: 46% positive chunks = task too easy at chunk level, meaningless at IoU level
 
-**Next action:** run `Diagnostic.ipynb` (checks prob distribution, per-video index sync, scaler consistency) before any retraining.
+**Key findings from diagnostic:**
+- Features: ✅ 791-dim, 220 videos, 11,198 chunks
+- Probs: min=0.004, max=0.922, mean=0.486 ✅ (no saturation)
+- Index sync: ✅ idx=11198 matches len(probs)
+- **IoU-F1@0.1 = 0.485, @0.2 = 0.276** (vs StandUp4AI 0.51)
+- **Structural ceiling confirmed**: 5s chunks vs 1-3s word-level GT segments
+
+**Next action:** Run word-level WavLM extraction (per-word embeddings, Colab T4) → then word-level IoU evaluation.
 
 ### Decision Branch (current)
 
