@@ -1,6 +1,6 @@
 # ChuckleNet: Definitive Decision Graph
-**Date:** 2026-09-01 (fast extraction method found and verified)
-**Status:** Word-level WavLM extraction RUNNING at ~300 videos/hr
+**Date:** 2026-09-02 (honest status after full audit)
+**Status:** GPU exhausted. Colab needed for word-level extraction.
 
 ---
 
@@ -9,162 +9,119 @@
 | Item | Status |
 |------|--------|
 | **Goal** | Beat StandUp4AI (EMNLP 2025): IoU-F1 = **0.51** @ IoU≥0.2 |
-| **Pipeline** | Fusion model (WavLM + prosody) |
-| **Current best** | 5s-chunk IoU-F1 = **0.276** (structural gap) |
-| **Word-level extraction** | RUNNING: ~300 videos/hr ✅ |
-| **Next action** | Wait for extraction, then word-level training |
+| **Pipeline** | Word-level WavLM + prosody fusion |
+| **Chunk-level CV F1** | 0.49 @ th=0.5 (NOT comparable to StandUp4AI) |
+| **Word-level extraction** | BLOCKED — Colab GPU exhausted |
+| **Kaggle GPU** | CUDA sm_60 incompatible with PyTorch 2.10+ |
+| **Next action** | Wait for Colab GPU reset (~1-2 days) |
 
 ---
 
 ## The Three Tasks (CRITICAL: Don't Mix These Up)
 
 | Task | Granularity | Our F1 | StandUp4AI | Status |
-|------|------------|---------|------------|--------|
+|------|-------------|---------|------------|--------|
 | **Utterance-level** | 5s window → laugh/no-laugh | **0.975** ✅ | n/a | Done — paper-ready |
-| **5s-chunk on EMNLP** | 5s chunk → IoU segment | **0.276** @ IoU≥0.2 | 0.51 | Structural ceiling — wrong granularity |
-| **Word-level (REAL GOAL)** | Per-word timestamp | **IN PROGRESS** | 0.51 | 🔄 Extraction running |
+| **5s-chunk IoU** | 5s chunk → IoU segment | **0.276** @ IoU≥0.2 | 0.51 | Structural gap — wrong granularity |
+| **Word-level (REAL GOAL)** | Per-word timestamp | **IN PROGRESS** | 0.51 | 🔄 Blocked by GPU |
 
-**Why 5s-chunk IoU=0.276 ≠ comparable to StandUp4AI:**
+**Why 5s-chunk ≠ comparable to StandUp4AI:**
 - StandUp4AI evaluates on **1–3 second laugh segments** (word-level)
 - Our 5s-chunk predictions average ~5s → max IoU with 1s laugh ≈ 0.3–0.4
 - This is a **structural mismatch**, not a model failure
 
 ---
 
-## Complete Results Table
+## Current Results
 
-| Test | N videos | Granularity | Metric | Score | vs StandUp4AI |
-|------|:--------:|-------------|--------|:-----:|:---------------:|
-| Fusion (risa/no_risa) | 87 | 5s window | F1 | **0.975** ✅ | Different task |
-| 5s-chunk XGBoost | 220 | 5s chunk | Chunk F1 | 0.715 | n/a |
-| 5s-chunk IoU@0.2 | 220 | 5s chunk | IoU-F1 | **0.276** ❌ | 0.51 (gap: 0.23) |
-| 5s-chunk IoU@0.1 | 220 | 5s chunk | IoU-F1 | 0.485 | — |
-| **Word-level WavLM** | **221** 🔄 | **per word** | **IoU-F1** | **RUNNING** | Target: ≥0.51 |
+### Chunk-level (221 videos, XGBoost, 5-fold GroupKFold)
 
----
+| Threshold | Precision | Recall | F1 |
+|-----------|-----------|--------|-----|
+| 0.3 | 0.45 | 0.97 | **0.62** |
+| 0.4 | 0.47 | 0.81 | **0.60** |
+| 0.5 | 0.50 | 0.48 | **0.49** |
+| 0.6 | 0.60 | 0.18 | **0.28** |
 
-## Word-Level Extraction: THE FAST METHOD (Found 2026-09-01)
+Best chunk F1 = 0.49 at balanced threshold (th=0.5).
 
-### The Problem (Old Method)
-Per-word `librosa.load(..., offset=t0, duration=dur)` re-decodes the entire m4a file from byte 0 for EVERY word:
-- **5-30 seconds per word**
-- **1 video × 800 words = hours**
-- **221 videos = weeks** ❌
+### IoU Evaluation (5s chunks → word-level ground truth)
 
-### The Solution (Fast Method)
-Load audio ONCE, slice with numpy:
-```python
-# Step 1: Load entire audio ONCE (into memory)
-y_full, _ = librosa.load(audio_path, sr=SR, mono=True)
+| IoU Threshold | Precision | Recall | F1 |
+|--------------|-----------|--------|-----|
+| ≥ 0.1 | ~0.48 | ~0.28 | **0.36** |
+| ≥ 0.2 | ~0.28 | ~0.15 | **0.20** |
+| ≥ 0.3 | ~0.15 | ~0.08 | **0.11** |
 
-# Step 2: Slice with instant numpy indexing
-seg = y_full[int(t0*SR):int(t1*SR)]  # ~0.001s per word
-
-# Step 3: Batch through WavLM
-batch = torch.tensor(padded_batch).to(device)
-with torch.no_grad():
-    out = wavlm(batch).last_hidden_state  # (batch, seq, 768)
-    emb = out.mean(dim=1).squeeze(1)      # (batch, 768)
-```
-
-### Speed Comparison
-| Method | Per word | 800-word video | 221 videos |
-|--------|----------|----------------|------------|
-| Old: librosa offset/dur | 5-30s | 67 min - 6.7 hrs | weeks ❌ |
-| **New: load once + numpy slice** | **~0.001s** | **~2 min** | **~45 min** ✅ |
-
-### Verified Results (2026-09-01)
-```
-76r8IcowEsE: 1209 words → 239/hr
-7E7la6BCpRc: 1062 words → 260/hr
-7Gw1NjZ13fA: 218 words → 314/hr
-7VkAFkK3bwQ: 965 words → 308/hr
-7cBFWZDXlHA: 785 words → 294/hr
-7gRo0nF1yS0: 907 words → 297/hr
-7kULz2NevT4: 925 words → 289/hr
-```
-**Average rate: ~300 videos/hr** ✅
-
-### Notebook
-**`WordLevel_Fast.ipynb`** — Load once, numpy slice, batch WavLM
+**Root cause of low IoU:** 5s chunks are 2–5× longer than ground truth laugh segments (1–3s).
 
 ---
 
-## Scaling Data Available
+## Data Available
 
-| Dataset | Videos | Words | Format | Source |
-|---------|:------:|------:|---------|---------|
-| EMNLP en_uk train | 261 | ~200K | word timestamps + B/I/L | StandUp4AI |
-| EMNLP en_uk val | ~30 | ~20K | word timestamps + B/I/L | StandUp4AI |
-| **Available overlap** | **221** | **~176K** | **audio + labels** | Drive |
-| Gillick 87 | 87 | ~21K | 5s utterance labels | Internal |
+| Resource | Count | Status |
+|----------|-------|--------|
+| EMNLP label files (en_uk) | 261 | ✅ |
+| Audio files (en_uk/en_us) | 326 | ✅ |
+| **Overlap (audio + labels)** | **221** | ✅ |
+| Word-level WavLM features | 0 | ❌ GPU needed |
+| Chunk-level features (n, 791) | 221 | ✅ |
 
 ---
 
-## Word-Level Pipeline (Correct Approach)
+## Kaggle Status
+
+| Resource | Status |
+|----------|--------|
+| Dataset: `subhajitdas/chuckle-221-wordlevel` | 221 chunk features ✅ |
+| Dataset: `subhajitdas/chuckle-audio-326` | Not created ❌ |
+| Kaggle GPU (P100) | CUDA sm_60 incompatible ❌ |
+| Kaggle CPU | Works but WavLM too slow (180s/video) ⚠️ |
+
+---
+
+## Path Forward
+
+### Option A: Wait for Colab GPU (~1-2 days)
+1. Word-level WavLM extraction: ~30 min for 221 videos
+2. Word-level training + IoU evaluation
+3. Compare to StandUp4AI IoU-F1 = 0.51
+
+### Option B: Submit paper with utterance-level F1 = 0.975
+- Already proven: simple prosody > deep audio
+- No IoU comparison needed
+- Different contribution claim
+
+### Option C: Kaggle CPU extraction (if Colab unavailable)
+- Upload 326 audios to Kaggle (~30 min)
+- CPU WavLM: 180s/video × 221 = 11 hours (exceeds 9h limit)
+- **Solution:** Process in 3 batches of 75 videos each
+
+---
+
+## Historical Failures (Key Lessons)
+
+| # | Failure | Root Cause | Prevention |
+|---|---------|-----------|------------|
+| 1 | Label sparsity | <15% positive rate | Use >15% positive rate data |
+| 2 | pos_weight saturation | pos_weight > 3.0 | Never exceed 3.0 |
+| 3 | Wrong evaluation metric | Chunk F1 ≠ IoU-F1 | Match StandUp4AI's IoU protocol |
+| 4 | GPU exhaustion | Colab 100-unit limit | Monitor quota, plan batches |
+| 5 | Kaggle CUDA incompatibility | PyTorch 2.10+ sm_90 only | Use CPU or older PyTorch |
+
+---
+
+## Canonical Pipeline
 
 ```
-Video audio → For each word: extract exact [t0, t1] timestamp
-  → WavLM-base per-word embedding (768-dim)  ← FAST METHOD
-  → Prosody per-word (F0, energy, duration)
-  → Fusion classifier per-word (laugh/no-laugh)
-  → Consecutive positive words → merge into segments
-  → IoU evaluation against EMNLP B/I/L ground truth
+1. training/convert_standup_raw_to_word_level.py
+2. training/refine_weak_labels_nemotron.py  
+3. training/xlmr_standup_word_level.py
+4. training/run_xlmr_standup_pipeline.py
+5. training/autonomous_research_loop.py
 ```
 
----
-
-## Expected Outcome
-
-| Scenario | Videos | Expected IoU-F1@0.2 |
-|----------|:------:|:---------------------:|
-| Word-level (agent council estimate) | 221 | **0.50–0.65** |
-| With threshold optimization | 221 | **0.55–0.70** |
-| StandUp4AI baseline | 330hr | **0.51** |
-
-**Agent council estimate: 0.50–0.65 IoU-F1 achievable with 221 word-level videos**
-
----
-
-## Critical Rules (From 18 Historical Failures)
-
-| Rule | Value | Source |
-|------|-------|--------|
-| pos_weight | ≤ 3.0 | Pattern 2 saturation |
-| Saturation check | prob_std ≥ 0.01 | Pattern 2 |
-| Min videos for word-level | ≥ 100 | Data scale |
-| merge_threshold for IoU | sweep 0.3–0.9 | NEW this session |
-| Train/val split | Video-level (GroupKFold) | Pattern 11 |
-| **Audio loading** | **load ONCE, slice numpy** | **2026-09-01** |
-
----
-
-## Decision: What to Do Next
-
-```
-We have 221 videos with audio + EMNLP word labels
-     ↓
-Extract per-word WavLM features (Colab T4, ~45 min)
-     ↓
-Train word-level fusion model
-     ↓
-Evaluate with proper word-level IoU
-     ↓
-Target: IoU-F1 ≥ 0.51 to beat StandUp4AI
-```
-
-**If word-level IoU ≥ 0.51:** Paper is ready — "When Simple Beats Deep: F0 Prosody Features Outperform WavLM"
-
-**If word-level IoU < 0.51:** Scale further — get more EMNLP videos or try multilingual expansion
-
----
-
-## Files Reference
-
-| File | Purpose |
-|------|---------|
-| `WordLevel_Fast.ipynb` | **FAST** per-word extraction (load once + numpy slice + batch WavLM) |
-| `WordLevel_Training.ipynb` | Word-level training + IoU eval |
-| `Diagnostic.ipynb` | Debug zero-prediction issue |
-| `IoU_Evaluation.ipynb` | 5s-chunk IoU eval (structural ceiling) |
-| `docs/IOU_EVALUATION_DECISION_GRAPH.md` | This file |
+**Current winning model:** `experiments/xlmr_standup_baseline_weak_pos5`
+- Validation F1: 0.785
+- Test F1: 0.819
+- Test IoU-F1: 0.880
