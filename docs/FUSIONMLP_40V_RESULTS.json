@@ -1,0 +1,13 @@
+{
+  "experiment": "word_level_40v_FusionMLP_BN_pw2",
+  "method": "WavLM+prosody word-level, FULL FusionMLP with BatchNorm, pos_weight=2.0, 5-fold GroupKFold",
+  "n_videos": 40,
+  "iou_summary": {
+    "0.1": 0.29180714361102134,
+    "0.2": 0.2229895707415214,
+    "0.3": 0.17657247518157662,
+    "0.4": 0.14310674364635947,
+    "0.5": 0.12123550032791366
+  },
+  "baseline_standup4ai": 0.51
+}

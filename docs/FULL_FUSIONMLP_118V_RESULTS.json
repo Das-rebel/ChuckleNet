@@ -1,0 +1,16 @@
+{
+  "experiment": "full_fusionmlp_118v_5fold",
+  "method": "WavLM+prosody segment-level (5s windows), FULL FusionMLP with BN, pw=2.0, 5-fold GroupKFold",
+  "n_videos": 118,
+  "n_segments": 11161,
+  "positive_rate": 0.4594,
+  "oof_word_f1_0.5": 0.676,
+  "iou_summary": {
+    "0.1": 0.4646555526519061,
+    "0.2": 0.30980533299379,
+    "0.3": 0.19328305928836242,
+    "0.4": 0.10968582120195786,
+    "0.5": 0.058292182514507775
+  },
+  "baseline_standup4ai": 0.51
+}

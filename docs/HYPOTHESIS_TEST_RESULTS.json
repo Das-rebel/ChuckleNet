@@ -1,0 +1,17 @@
+{
+  "experiment": "hypothesis_test_full",
+  "method": "WavLM+prosody (791-dim) \u2192 FusionMLP, 5-fold GroupKFold, OOF predictions",
+  "n_videos": 118,
+  "n_segments": 11161,
+  "positive_rate": 0.45936744019353104,
+  "word_level_f1": 0.6739741427768409,
+  "iou_summary": {
+    "0.1": 0.4557362667464329,
+    "0.2": 0.3040285689192769,
+    "0.3": 0.17922080640724714,
+    "0.4": 0.10597685373388044,
+    "0.5": 0.05033973098225147
+  },
+  "baseline_standup4ai": 0.51,
+  "verdict": "promising"
+}

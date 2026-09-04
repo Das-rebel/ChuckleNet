@@ -1,0 +1,122 @@
+session:
+  id: "2026-08-26_001"
+  timestamp: "2026-08-26T12:54"
+  summary: "Hypothesis testing: validated 255-video dataset, ran 4 IoU tests, identified data scale as key lever"
+
+events_logged:
+  - type: decision
+    id: N02
+    provenance: user
+    summary: "Use existing Kaggle datasets instead of re-downloading from Drive"
+
+  - type: decision
+    id: N04
+    provenance: ai-executed
+    summary: "Run 5-fold GroupKFold (vs Leave-One-Out)"
+
+  - type: experiment
+    id: N03
+    provenance: ai-executed
+    summary: "Train FusionMLP on 118 videos - F1=0.676, IoU-F1@0.2=0.31"
+
+  - type: experiment
+    id: N05
+    provenance: ai-executed
+    summary: "Test pos_weight values: 1.0, 2.0, 3.0 - pw=2.0 best"
+
+  - type: experiment
+    id: N08
+    provenance: ai-executed
+    summary: "Extract word-level features for 10 videos on CPU"
+
+  - type: pivot
+    id: N09
+    provenance: ai-executed
+    summary: "Switch from SimpleMLP to Full FusionMLP with BN"
+
+  - type: experiment
+    id: N10
+    provenance: ai-executed
+    summary: "Extract features for 30 more videos"
+
+  - type: experiment
+    id: N11
+    provenance: ai-executed
+    summary: "Extract features for 40 videos total - F1=0.27"
+
+  - type: dead_end
+    id: N12
+    provenance: ai-executed
+    summary: "Could not find user's Batch 1 features on Drive"
+
+  - type: dead_end
+    id: N13
+    provenance: ai-executed
+    summary: "Downloading 200+ videos too slow (~3 files/min)"
+
+  - type: pivot
+    id: N14
+    provenance: user
+    summary: "User reframes: architecture good, just need data"
+
+  - type: question
+    id: N15
+    provenance: ai-suggested
+    summary: "Will scaling to 200+ videos close the IoU gap to 0.51?"
+
+ai_actions:
+  - action: "Downloaded scale221 embeddings + EMNLP labels from Kaggle"
+    provenance: ai-executed
+    files_changed: ["/tmp/hyp_test/"]
+
+  - action: "Extracted word-level features for 40 videos on CPU"
+    provenance: ai-executed
+    files_changed: ["/tmp/word_test/features/", "/tmp/word_test2/features/"]
+
+  - action: "Trained 4 models with different architectures/hyperparameters"
+    provenance: ai-executed
+    files_changed: []
+
+  - action: "Computed IoU evaluation for all models"
+    provenance: ai-executed
+    files_changed: ["docs/*RESULTS.md", "docs/*RESULTS.json"]
+
+  - action: "Updated decision graph and NEXT_STEPS document"
+    provenance: ai-executed
+    files_changed: ["docs/IOU_EVALUATION_DECISION_GRAPH.md", "docs/NEXT_STEPS_AUGUST_26.md"]
+
+claims_touched:
+  - id: C01
+    action: created
+    provenance: ai-suggested
+
+  - id: C02
+    action: created
+    provenance: ai-executed
+
+  - id: C03
+    action: created
+    provenance: ai-executed
+
+  - id: C04
+    action: created
+    provenance: ai-executed
+
+  - id: C05
+    action: created
+    provenance: ai-executed
+
+  - id: C06
+    action: created
+    provenance: ai-executed
+
+open_threads:
+  - "User's Batch 1 features not on Drive - need to re-run extraction or upload"
+  - "Will scaling to 200+ videos improve IoU beyond 0.31?"
+  - "Best architecture for boundary precision (currently bottleneck)"
+  - "WavLM-large vs base for better features"
+
+ai_suggestions_pending:
+  - "Try WavLM-large instead of base (user did not confirm)"
+  - "Use BiLSTM for temporal context (user did not confirm)"
+  - "Train on all 221 scale221 videos with pseudo-labels, test on 118 with real labels (user did not confirm)"

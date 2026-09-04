@@ -1,0 +1,89 @@
+session:
+  id: "2026-08-26_002"
+  timestamp: "2026-08-26T19:00"
+  summary: "Threshold optimization: improved IoU-F1@0.2 from 0.31 to 0.33 with merge_th=0.8"
+
+events_logged:
+  - type: experiment
+    id: N17
+    provenance: ai-executed
+    summary: "Retrain FusionMLP with 50 epochs (vs 30) - F1=0.6783"
+
+  - type: experiment
+    id: N18
+    provenance: ai-executed
+    summary: "Compare Standard vs Large FusionMLP - Standard slightly better (0.6783 vs 0.6714)"
+
+  - type: experiment
+    id: N19
+    provenance: ai-executed
+    summary: "Merge threshold sweep {0.5, 0.6, 0.7, 0.8} - 0.8 gives best IoU@0.2=0.3302"
+
+  - type: decision
+    id: N20
+    provenance: ai-executed
+    summary: "Adopt merge_th=0.8 as new inference parameter"
+
+  - type: pivot
+    id: N21
+    provenance: ai-executed
+    summary: "Move from data scaling to inference-time threshold optimization"
+
+  - type: observation
+    id: O12
+    provenance: ai-executed
+    summary: "Higher merge threshold (0.8 > 0.5) gives 0.02 IoU improvement by filtering low-confidence predictions"
+
+ai_actions:
+  - action: "Recovered scale221 embeddings + EMNLP labels from Kaggle after Mac /tmp cleanup"
+    provenance: ai-executed
+    files_changed: ["/tmp/recover/"]
+
+  - action: "Trained 50-epoch FusionMLP on 118 videos"
+    provenance: ai-executed
+    files_changed: []
+
+  - action: "Ran merge_threshold sweep"
+    provenance: ai-executed
+    files_changed: ["docs/BEST_118V_RESULTS.md"]
+
+  - action: "Updated decision graph with all test results"
+    provenance: ai-executed
+    files_changed: ["docs/IOU_EVALUATION_DECISION_GRAPH.md"]
+
+claims_touched:
+  - id: C06
+    action: advanced
+    provenance: ai-executed
+
+  - id: C07
+    action: created
+    provenance: ai-executed
+    statement: "merge_threshold=0.8 improves IoU-F1@0.2 from 0.31 to 0.33"
+    status: supported
+    proof: "docs/BEST_118V_RESULTS.md"
+
+  - id: C08
+    action: created
+    provenance: ai-executed
+    statement: "50 epochs gives F1=0.6783 vs 30 epochs F1=0.6760 (marginal improvement)"
+    status: supported
+    proof: "Best 118v test"
+
+  - id: C09
+    action: created
+    provenance: ai-executed
+    statement: "Standard FusionMLP matches Large variant (no benefit from bigger model)"
+    status: supported
+    proof: "F1=0.6783 standard vs 0.6714 large on 118 videos"
+
+open_threads:
+  - "User's Batch 1 word-level features still not accessible"
+  - "WavLM-large not yet tested"
+  - "Boundary detection head not yet implemented"
+  - "Can merge_th=0.9 push IoU higher?"
+
+ai_suggestions_pending:
+  - "Try WavLM-large for better features (user did not confirm)"
+  - "Add BiLSTM for temporal context (user did not confirm)"
+  - "Try merge_th > 0.8 (e.g., 0.9) for more aggressive filtering"

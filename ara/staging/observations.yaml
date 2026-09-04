@@ -1,0 +1,121 @@
+observations:
+
+  - id: O01
+    timestamp: "2026-08-26T09:30"
+    provenance: ai-executed
+    content: "Confirmed 255 videos exist with both audio files on Drive and EMNLP word-level BIO labels."
+    context: "Initial data audit via rclone"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (implied in C05/C06)"
+
+  - id: O02
+    timestamp: "2026-08-26T09:45"
+    provenance: ai-executed
+    content: "Scale221 had teacher model max prob=0.52, leading to fallback (top 30%) pseudo-labels."
+    context: "Reading scale221_train_local.py"
+    potential_type: observation
+    promoted: false
+
+  - id: O03
+    timestamp: "2026-08-26T10:15"
+    provenance: ai-executed
+    content: "Kaggle P100 (sm_60) incompatible with PyTorch 2.10+cu128 WavLM group_norm. T4 (sm_75) works natively."
+    context: "Debugging CUDA error 'no kernel image available for execution'"
+    potential_type: heuristic
+    promoted: true
+    promoted_to: "logic/solution/heuristics.md (H06)"
+
+  - id: O04
+    timestamp: "2026-08-26T10:30"
+    provenance: ai-executed
+    content: "Best IoU-F1@0.2=0.30 achieved with 5-second segment-level features on 118 videos, lower than StandUp4AI's 0.51."
+    context: "5-window hypothesis test"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C06)"
+
+  - id: O05
+    timestamp: "2026-08-26T11:30"
+    provenance: ai-executed
+    content: "Word-level F1 improved from 0.07 (10v) to 0.13 (30v) to 0.27 (40v) — clear data-scale effect."
+    context: "Word-level extraction and training"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C03)"
+
+  - id: O06
+    timestamp: "2026-08-26T12:15"
+    provenance: ai-executed
+    content: "Full FusionMLP with BatchNorm + pos_weight=2.0 outperforms simpler architectures consistently."
+    context: "Architecture comparison"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C02)"
+
+  - id: O07
+    timestamp: "2026-08-26T12:30"
+    provenance: ai-suggested
+    content: "IoU-F1 drops sharply at higher thresholds (0.5 → 0.058). Boundary precision is the bottleneck, not classification."
+    context: "IoU threshold sweep"
+    potential_type: claim
+    promoted: false
+
+  - id: O08
+    timestamp: "2026-08-26T12:50"
+    provenance: ai-executed
+    content: "User's earlier Colab Batch 1 features (49 videos, word-level) are not on Drive in any searchable location."
+    context: "User asked about Batch 1 results; searched Drive extensively"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C05)"
+
+  - id: O09
+    timestamp: "2026-08-26T12:55"
+    provenance: user
+    content: "User said 'do it all on your own' — expects me to work autonomously without further input."
+    context: "Process All Videos task"
+    potential_type: observation
+    promoted: false
+
+  - id: O10
+    timestamp: "2026-08-26T12:58"
+    provenance: ai-executed
+    content: "Slow Drive downloads (~3 files/min) make scaling via fresh downloads impractical."
+    context: "Trying to download 200+ videos from Drive"
+    potential_type: heuristic
+    promoted: false
+
+  - id: O11
+    timestamp: "2026-08-26T13:00"
+    provenance: ai-suggested
+    content: "User pointed out that no downloads needed — use existing cloud datasets."
+    context: "User said 'why do we ned to download ? we can procees them on cloud'"
+    potential_type: observation
+    promoted: true
+    promoted_to: "trace/exploration_tree.yaml (N02)"
+  - id: O12
+    timestamp: "2026-08-26T19:00"
+    provenance: ai-executed
+    content: "Higher merge threshold (0.8) outperforms default 0.5 by 0.02 IoU"
+    context: "Threshold sweep on 118 video model predictions"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C07)"
+
+  - id: O13
+    timestamp: "2026-08-26T19:15"
+    provenance: ai-executed
+    content: "Mac /tmp directory was cleared, losing all local word-level feature files. Only Kaggle download survived."
+    context: "Background processes running when cleanup happened"
+    potential_type: observation
+    promoted: false
+
+  - id: O14
+    timestamp: "2026-08-26T19:20"
+    provenance: ai-executed
+    content: "Larger FusionMLP (1024→512→128) doesn't beat standard (512→256→64) on same data"
+    context: "Architecture comparison on 118 videos"
+    potential_type: claim
+    promoted: true
+    promoted_to: "logic/claims.md (C09)"
