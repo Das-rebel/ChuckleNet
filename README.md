@@ -4,6 +4,17 @@
 
 ## 🆕 What's New (v2.13 — May 2026)
 
+## 🤗 Use the Model
+
+```python
+from transformers import AutoModel
+model = AutoModel.from_pretrained("Hayasuki/chuckleNet-v2", trust_remote_code=True)
+# Input: 791-dim feature vector (768 WavLM + 23 prosody) per 5-sec chunk
+# Output: laughter probability
+```
+Live demo: [HF Spaces](https://huggingface.co/spaces/Hayasuki/chucklenet) · Model card: [chuckleNet-v2](https://huggingface.co/Hayasuki/chuckleNet-v2)
+
+---
 **8-Agent Validation Pipeline** — ChuckleNet now validates predictions through 8 independent agents before final output. Each agent applies a different evaluation lens (prosodic consistency, cross-cultural bias, threshold sweep, IoU boundary checking, etc.). **Why it matters:** Subhajit uses this when preparing ACL/EMNLP submissions — the 8-agent consensus catches edge cases that single-evaluation misses. The pipeline raised IoU-F1 from 0.71 to 0.8798 across 71 videos. For any researcher using ChuckleNet as a baseline, the validation artifacts are in `training/validate_ensemble.py`.
 
 **Cross-Cultural Nuance Detection (75.9% vs 61–67% baselines)** — ChuckleNet detects audience laughter across 6 languages (en, zh, hi-latn, bn, fr, es) with 75.9% accuracy, compared to 61–67% for generic NLP models. **Why it matters:** Growth teams analyzing global content can now predict which jokes land in which markets — before distribution. Subhajit applied this to Hindi-Latin stand-up and found punchline positioning differs by 200ms+ compared to English, informing re-editing decisions.
@@ -14,6 +25,8 @@
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-green.svg)](https://www.python.org/)
 [![ Transformers](https://img.shields.io/badge/Transformers-4.40+-orange.svg)](https://huggingface.co/docs/transformers)
 [![XLM-RoBERTa](https://img.shields.io/badge/Backbone-XLM--RoBERTa-red)](https://huggingface.co/FacebookAI/xlm-roberta-base)
+[![🤗 Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-chuckleNet--v2-yellow)](https://huggingface.co/Hayasuki/chuckleNet-v2)
+[![🚀 Demo](https://img.shields.io/badge/%F0%9F%9A%80%20Live%20Demo-HF%20Spaces-blue)](https://huggingface.co/spaces/Hayasuki/chucklenet)
 
 ---
 
