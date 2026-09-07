@@ -147,3 +147,17 @@ P3  Error analysis on the 0.31 → 0.51 gap (where do we lose? short laughs? mus
 P4  Paper draft with honest numbers (IoU-F1 0.31 @118v; Gillick-162v ablation 0.559/0.548/0.537 — GILLICK_REVALIDATION_RESULTS.json)
 P5  Deferred: humor-strength prediction pivot (research_humor_goals)
 ```
+
+---
+# 📌 ADDENDUM — Sep 7-8, 2026: Label hierarchy proven, PRD v6 recovered, v20 finalized
+
+## New decisions (verified this session, supersedes anything above in conflict)
+- **D-LABEL-TIERS**: 4-tier label hierarchy established (docs/LABEL_HIERARCHY.md). July-16 npz labels = humor-lexicon `label_any` (100% uid+label match, 15000/15000, to chuckle_data/aligned_utterances.jsonl). 'Gillick 87' misnomer corrected (0/87 overlap with Gillick-162v). 'EMNLP labels' = StandUp4AI benchmark annotations.
+- **D-ANCHOR-RULE**: any Tier-1-trained model MUST carry Tier-2/3 anchor eval before reporting numbers. Prevents 0.96-pattern recurrence.
+- **D-033-IS-BEST**: best honest interval number = IoU-F1@0.2 **0.3302** on 118v vs StandUp4AI truth (merge 0.8); '0.310' was pre-sweep. Gold = Gillick-162v fusion 0.559. Real gap: 0.33 → 0.51.
+- **D-PRD6-RECOVERED**: PRD_V6 + LAUGHTER_PREDICTION_RESEARCH_VISION recovered from Jun-3 transcript (docs/recovered/, GitHub, Drive). PRD v6 3 products: P1 group laughter (cascade → died at IoU 0.50 ceiling → pivoted to segment-level), P2 individual/sarcasm (deferred, needs diarization), P3 content scorer.
+- **D-MONETIZE-C**: DEFINITIVE_PLAN.md (Aug 6 council): paper+open-source, NOT startup. Option C career-first recommended. The planned F0 'When Simple Beats Deep' 0.96 paper = DISQUALIFIED (lexicon labels). Publishable replacement: weak-label pitfall + honest numbers.
+- **D-V20-FINAL**: canonical Colab notebook = **ChuckleNet_Final_Colab_v20.ipynb** (v19 + GATE_N=20 gate + pos_rate<10% hard-fail + per-utterance timestamp persistence + IoU-F1@0.2 eval + results_v20.json + fresh *_v20 checkpoint namespace). v19 gist stays as provenance. Gist: <to be created>.
+
+## Track scores (measured Sep 7-8)
+Mission 70% · Grand vision ~30% · Research ~40% · Monetization-OptionC ~40%. All converge on: run v20 gate → full 621v → anchor evals → ONE honest paper.
