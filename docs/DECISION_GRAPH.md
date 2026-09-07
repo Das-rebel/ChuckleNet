@@ -161,3 +161,4 @@ P5  Deferred: humor-strength prediction pivot (research_humor_goals)
 
 ## Track scores (measured Sep 7-8)
 Mission 70% · Grand vision ~30% · Research ~40% · Monetization-OptionC ~40%. All converge on: run v20 gate → full 621v → anchor evals → ONE honest paper.
+- **D-GATE-V202 (Sep 8)**: v20 gate hard-fail at 0.7% was CORRECT behavior and exposed that the 620v collection is marker-poor: full-set pos_rate 1.16% (2,816/243,501), 174/620 videos with any markers, ~10 videos ≥10% (docs/GATE_FORENSICS_620V_*). Labels proven genuine (Drive VTTs byte-identical to curated set). Fix: 3-tier gate (FAIL<2%/WARN 2-10%/PASS≥10%), curated GATE_IDS, dual FULL+RICH training, PR-AUC metric, YouTube rolling-caption dedup (parsed counts were ~50% inflated). Checkpoint namespace bumped to *_v21 (old _v20 checkpoint = wrong-mix samples, never resume).
