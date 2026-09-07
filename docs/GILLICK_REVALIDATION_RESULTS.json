@@ -1,0 +1,25 @@
+{
+  "experiment": "gillick162_fusion_revalidation",
+  "date": "2026-09-07",
+  "purpose": "Revalidate the Aug-7 claim (memory: laughter.gillick_fresh_fusion_results, F1=0.5410+-0.0298) whose result JSON was never saved. Original artifacts survived on Drive: gdrive:chuckle_net/gillick_data/fusion_features.npz (1581x791) + fusion_best.pt.",
+  "data": {
+    "source": "gdrive:chuckle_net/gillick_data/fusion_features.npz",
+    "n_segments": 1581,
+    "n_videos": 162,
+    "positive_rate": 0.515,
+    "labels": "real AudioSet (Gillick) laughter labels",
+    "features": "WavLM 768-dim + prosody 23-dim concat = 791"
+  },
+  "protocol": "5-fold GroupKFold by video, OOF predictions, FusionMLP 791-512-256-64-1 BN+dropout, AdamW lr=1e-3, 30 epochs, batch 32, seed 0, segment-F1@0.5",
+  "results": {
+    "fusion_791": 0.5590,
+    "wavlm_only_768": 0.5478,
+    "prosody_only_23": 0.5374
+  },
+  "comparison_to_original_claim": {
+    "claimed": {"fusion": 0.5410, "wavlm_only": 0.5051, "prosody_only": 0.5037},
+    "verdict": "REPRODUCED within protocol differences. Original used a single cross-video split; this revalidation uses 5-fold OOF. Fusion>WavLM-only>Prosody-only ordering holds. Fusion gain is +2.0% over WavLM-only (claimed +7%)."
+  },
+  "provenance_note": "fusion_results.json in the same Drive dir does NOT belong to this experiment (it is the 87-video/21468-sample random-split run, val 0.9595/test 0.9729 - random-split, do not cite).",
+  "status": "HONEST - real labels, video-level grouping, no circularity"
+}
