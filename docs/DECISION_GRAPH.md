@@ -47,7 +47,7 @@ ROOT: Beat IoU-F1@0.2 = 0.51 (StandUp4AI baseline) on held-out comedy videos
 | F1 = 0.952 original README | HF model card (FIXED) | Fabricated/copied; already replaced with honest 0.31 |
 | "Prosody alone F1=0.71" | HF model card (FIXED) | Copied from StandUp4AI paper (related work), never our ablation |
 | F1 = 0.960 "Production-ready" | HF model card (CURRENT — REGRESSED Sep 4 19:02–20:37) | NO source JSON anywhere; 2nd regression incident; card re-fix PENDING |
-| val 0.9595 / test 0.9729 | gdrive `chuckle_net/gillick_data/fusion_results.json` | RANDOM-SPLIT on 87v/21,468 samples — not video-level; do NOT confuse with the Gillick-162v experiment in the same dir |
+| val 0.9595 / test 0.9729 | gdrive `chuckle_net/gillick_data/fusion_results.json` | **REAL video-level split (train_fusion_local.py, seed 42)** — but on the LOST July-16 labeling scheme (prosody-circularity signature); cite only as historical, not comparable — see `FUSION096_PROVENANCE_VALIDATION.json` |
 | F1 = 0.879 | `scale221/results.json` | teacher_max_prob=0.527 pseudo-label circularity |
 | "labels" in eval_youtube_labeled.jsonl | `data/chuckle-net-final/` (121,167 utts) | INVALID: 0.1% positive on 100% empty-text utterances — not laughter labels; do not train |
 
