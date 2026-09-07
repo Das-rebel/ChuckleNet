@@ -10,9 +10,14 @@
   "what_it_planned": {
     "pipeline": "download 634 comedy videos -> 1-sec segment F0/23-dim prosody + WavLM extraction -> train F0-LR on 87v caption-marker labels (expected F1~0.98) -> PSEUDO-LABEL all new videos with F0-LR -> retrain + XLM-R cascade stage-1 on word-level text splits",
     "paper_plan": "'When Simple Beats Deep: F0 Prosody Outperforms WavLM for Laughter Detection' (Nature aspiration per README_credits.txt) with bootstrap CIs",
-    "era_model_zoo_per_README": {"F0 Prosody": "F1=0.98 held-out comedians Peters/Chappelle/C.K.", "Top200 Prosody": "F1=0.9759", "Ensemble": "F1=0.941", "WavLM Phase A": "val 0.756 / test 0.617"}
+    "era_model_zoo_per_README": {
+      "F0 Prosody": "F1=0.98 held-out comedians Peters/Chappelle/C.K.",
+      "Top200 Prosody": "F1=0.9759",
+      "Ensemble": "F1=0.941",
+      "WavLM Phase A": "val 0.756 / test 0.617"
+    }
   },
-  "why_it_matters": "This is the ORIGIN of the pseudo-label cascade era: caption-marker labels (87v) -> F0 pseudo-labeler -> 1000+ videos. We proved (FUSION096_FULL_VALIDATION.json) that a 23-dim prosody model predicts the caption labels at 0.994 on unseen videos - so mass F0-pseudo-labeling would manufacture self-fulfilling circular data. The 0.9759 Top200 Prosody number cited in this README is the same labeler-derived artifact.",
+  "why_it_matters": "This is the ORIGIN of the pseudo-label cascade era: 87v lexicon labels (label_any - humor vocabulary in transcript text, 100% uid+label match to chuckle_data/aligned_utterances.jsonl) -> F0 pseudo-labeler -> 1000+ videos. We proved (FUSION096_FULL_VALIDATION.json) that a 23-dim prosody model predicts these lexicon labels at 0.994 on unseen videos - the model recognizes the acoustics of uttering humor words, not laughter. Mass F0-pseudo-labeling would manufacture self-fulfilling circular data.",
   "salvageable_assets": [
     "all_comedy_ids.txt: 634 comedy video IDs - genuine scale-up target list for REAL-label extraction",
     "comedy_videos/: 18 m4a (12 not in current corpus, audio already downloaded)",
