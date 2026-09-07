@@ -1,0 +1,23 @@
+{
+  "subject": "Scale_1000_Colab.ipynb + Scale_1000_F0_Verification.ipynb (gdrive:subhajit-comedy-data/, saved 2026-08-06 19:46/20:03)",
+  "verdict": "NEVER EXECUTED - planned pipeline that would have industrialized the label circularity; killed by same-evening honest pivot (clean_project_plan_20260806)",
+  "evidence_never_ran": [
+    "Zero execution outputs in all 29 cells across both notebooks",
+    "comedy_videos/ contains only 18 of 634 planned downloads (6 overlap current 621v corpus)",
+    "README_credits.txt lists features_1000.npz + cascade_stage1.pt + cascade_results.json as outputs - NONE exist on Drive",
+    "F0_Verification Option-B URL (release asset wavlm_training_data_expanded.npz) is a 404 - release v0.1-data contains only word-level text splits (Fatherhood_2021 / WESR-era, 'laughter_type' field), not the 87v npz"
+  ],
+  "what_it_planned": {
+    "pipeline": "download 634 comedy videos -> 1-sec segment F0/23-dim prosody + WavLM extraction -> train F0-LR on 87v caption-marker labels (expected F1~0.98) -> PSEUDO-LABEL all new videos with F0-LR -> retrain + XLM-R cascade stage-1 on word-level text splits",
+    "paper_plan": "'When Simple Beats Deep: F0 Prosody Outperforms WavLM for Laughter Detection' (Nature aspiration per README_credits.txt) with bootstrap CIs",
+    "era_model_zoo_per_README": {"F0 Prosody": "F1=0.98 held-out comedians Peters/Chappelle/C.K.", "Top200 Prosody": "F1=0.9759", "Ensemble": "F1=0.941", "WavLM Phase A": "val 0.756 / test 0.617"}
+  },
+  "why_it_matters": "This is the ORIGIN of the pseudo-label cascade era: caption-marker labels (87v) -> F0 pseudo-labeler -> 1000+ videos. We proved (FUSION096_FULL_VALIDATION.json) that a 23-dim prosody model predicts the caption labels at 0.994 on unseen videos - so mass F0-pseudo-labeling would manufacture self-fulfilling circular data. The 0.9759 Top200 Prosody number cited in this README is the same labeler-derived artifact.",
+  "salvageable_assets": [
+    "all_comedy_ids.txt: 634 comedy video IDs - genuine scale-up target list for REAL-label extraction",
+    "comedy_videos/: 18 m4a (12 not in current corpus, audio already downloaded)",
+    "download scaffolding (yt-dlp + deno pattern) still valid"
+  ],
+  "recommendation": "Do NOT revive F0 pseudo-labeling or the 'When Simple Beats Deep' framing - circular by construction. The publishable version is the inverse finding: caption-derived laughter markers are ~99% predictable from prosody (weak-label pitfall analysis), paired with honest real-label numbers (Gillick 0.559 / IoU 0.310). Use the 634-ID list with the v19 real-label pipeline.",
+  "date": "2026-09-07"
+}
