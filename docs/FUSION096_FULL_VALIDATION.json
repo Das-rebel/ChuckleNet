@@ -40,9 +40,9 @@
   "final_verdict": "F1=0.960: REAL experiment, REAL video-level split, but INVALID as laughter detection - July-16 labels (22.7% pos, construction script not found, Colab-built 2026-06-29) are ~99% predictable from 23 prosody dims on held-out videos. 'Production-ready' NOT supported. Honest reference numbers: Gillick-162v real AudioSet labels fusion segment-F1 0.559 (revalidated 2026-09-07); 118v VTT IoU-F1@0.2 0.310.",
   "card_action": "HF card must NOT say production-ready. Allowed phrasing: 'historical result 0.96 on deprecated July-16 labeling scheme (prosody-predictable labels); validated numbers: 0.559 Gillick / 0.310 IoU'.",
   "label_lineage_resolved": {
-    "mechanism": "labels = caption laughter markers ([laughter]-style VTT text tokens) projected onto utterances; kaggle_frame_dataset/utterances_clean.jsonl shows has_laughter flag + [laughter] positives on the same 87 videos",
-    "builder_notebook": "Colab_WavLM_Utterance_Level.ipynb (Drive, Jul 10) extracted per-utterance WavLM from utterances_clean.jsonl hosted on Das-rebel/chuckle-audio-notebooks (repo now 404 - deleted/private)",
-    "exact_npz_label_cut": "not recoverable (4/87 videos missing from surviving utterances_clean snapshot; different indexing) - but mechanism confirmed; npz itself archived in project data/july16_recovered/",
-    "also_found": "Scale_1000_Colab.ipynb + Scale_1000_F0_Verification.ipynb exist in gdrive:subhajit-comedy-data/ (memory had recorded them as nonexistent)"
+    "FINAL_label_source": "humor-LEXICON labels (label_any: text contains humor/laughter vocabulary words) - PROVEN by 15000/15000 uid matches with 100.0% label agreement vs Das-rebel/chuckle_data aligned_utterances.jsonl; remaining 6468 npz rows = second alignment batch",
+    "correction": "earlier same-day hypothesis 'caption [laughter] markers' was WRONG - utterances_clean.jsonl (has_laughter) was the Colab extraction input but NOT the npz label source",
+    "npz_uid_format": "matches chuckle_data aligned_utterances.jsonl utterance_id exactly",
+    "meaning": "0.96-era models learned 'acoustics of uttering humor-lexicon words', not laughter"
   }
 }
