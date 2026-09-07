@@ -37,7 +37,7 @@ has **regressed to false claims a second time** (see §6).
 **Before this audit:** docs cited "Gillick AudioSet REAL labels (162v) F1 fusion 0.541 ± 0.030
 (WavLM-only 0.505, prosody-only 0.504)" with NO result JSON anywhere (checked local disk,
 Drive, GitHub, gists, notebook outputs — the Drive `fusion_results.json` belongs to a
-DIFFERENT experiment: 87v/21,468-sample random-split run, val 0.9595/test 0.9729 — do not cite).
+DIFFERENT experiment: 87v/21,468-sample run on the lost July-16 labeling scheme, val 0.9595/test 0.9729 — provenance since RESOLVED: produced by `train_fusion_local.py` with a VIDEO-LEVEL split (seed 42); blocking issues = dataset lost + prosody-circularity signature (see `FUSION096_PROVENANCE_VALIDATION.json`; cite only as historical).
 
 **Resolution:** the experiment's artifacts survived at `gdrive:chuckle_net/gillick_data/`:
 - `fusion_features.npz` — 1,581 segments × 791-dim (768 WavLM + 23 prosody), 162 videos,
@@ -70,7 +70,7 @@ was in the old extraction, not in prosody features generally.
 | `chuckle_net_1000/{audio,vtt}/` | **621 audio + 628 VTT** (docs previously said 180) | docs updated |
 | `chuckle_net_output/extraction_checkpoint.npz` | 134MB, **45,192×795 features, 279 videos, pos_rate=1.6%** → labels are broken (sparse-label join, NOT VTT-utterance labels). No per-row timestamps stored → labels not re-derivable. NaN-free, loader proven at scale | documented as write-off; do NOT resume its labels; v19 must log per-video pos-rate during extraction |
 | `chuckle_net_output/utterance_features.npz` | 0 samples (failed v18-era run, Sep 3) | left in place, marked junk |
-| `chuckle_net/gillick_data/` | fusion_features.npz (Gillick 1581×791) + fusion_best.pt + MISMATCHED fusion_results.json (87v random-split) | features+model = the revalidation source |
+| `chuckle_net/gillick_data/` | fusion_features.npz (Gillick 1581×791) + fusion_best.pt + fusion_results.json (July-16 87v run — provenance resolved Sep 7, see FUSION096_PROVENANCE_VALIDATION.json) | features+model = the revalidation source |
 | `chuckle_net/` (AST era, Aug 7–8) | ast_labeled_clips.csv, ast_prosody_model.pkl — AST labeling dead end (1–3% pos) | no action, documented |
 | `cascade_data/stage1_{train,val,held_out}.jsonl` | 141MB, Aug 6, provenance UNKNOWN (no producing script found locally) | flagged UNVERIFIED — identify or ignore |
 | `wavlm_training_results/results.json` | 555 videos (445/55/55), val F1 0.218 / test 0.121 | now documented (honest scale datapoint) |
@@ -106,7 +106,7 @@ was in the old extraction, not in prosody features generally.
 
 1. G2 + PRIORITY STACK: v18 → **v19 canonical**
 2. METRICS honest table: Gillick row updated to revalidated numbers + JSON citation
-3. SUSPECT table: + HF card 0.960 (regressed), + Drive fusion_results.json 0.973 random-split,
+3. SUSPECT table: + HF card 0.960 (regressed), + Drive fusion_results.json 0.973 (July-16 labels — video-level split confirmed, but dataset lost + circularity signature),
    + scale221 results.json 0.879 teacher-circularity, + YouTube 121K labels invalid
 4. MODEL LAYER: marked nonexistent files as lost (`models/fusion_mlp_v2.pt`,
    `models/energy_model/*`); kept as historical description only
