@@ -1,0 +1,30 @@
+{
+  "investigation": "validating the HF card claim F1=0.960 production-ready",
+  "date": "2026-09-07",
+  "verdict": "REAL RESULT, WRONG LABELS, NOT PRODUCTION-READY",
+  "provenance_found": {
+    "script": "ChuckleNet/training/train_fusion_local.py (writes exactly fusion_results.json)",
+    "split": "VIDEO-LEVEL 80/10/10 by video ID, seed 42 — NO split leakage (earlier 'random-split' suspicion was WRONG, corrected)",
+    "result_json": "gdrive:chuckle_net/gillick_data/fusion_results.json: val_f1=0.9595, test_f1=0.9729, n=16742/2329/2397, epochs=30",
+    "model_arch": "791-512-256-64-1 MLP, BN, dropout, AdamW, pos_weight, cosine LR — matches HF card description",
+    "card_number_source": "val_f1 0.9595 -> '0.960' on HF card"
+  },
+  "blocking_issues": [
+    "Training data wavlm_training_data_expanded.npz (the 'July 16 dataset', 21468x791, 22.7% pos) is LOST - number not reproducible or auditable",
+    "July-16 labeling scheme never validated; project's own later re-eval of its sibling (555v, stricter labels) = F1 0.121",
+    "Circularity signature: prosody-only F1=0.9759 ~= fusion 0.975 >> WavLM-only 0.617, with 13 of 23 prosody dims literally zero - labels largely a function of 10 prosody dims; real-label prosody-only baseline is 0.537 (Gillick)",
+    "Same architecture on validated data: Gillick-162v real labels segment-F1 0.559 (OOF GroupKFold); 118v VTT IoU-F1@0.2 0.310"
+  ],
+  "reconstruction_experiment": {
+    "purpose": "test whether the 0.96 construction can produce 0.96 from the surviving predecessor data (15K utts/71 videos, same builder script, video-mean WavLM + 23-dim prosody with zeros)",
+    "results": {
+      "video_mean_random_split_F1": 0.1339,
+      "video_mean_video_split_F1": 0.0602,
+      "per_utterance_random_split_F1": 0.1585,
+      "per_utterance_video_split_F1": 0.2279,
+      "no_learning_baserate_lookup_F1": 0.0
+    },
+    "conclusion": "The 15K/71v predecessor CANNOT produce 0.96 under any split; the 0.96 hinges entirely on the lost July-16 labels"
+  },
+  "citation_rule": "0.96 may be cited ONLY as: 'historical result on the deprecated July-16 labeling scheme (dataset lost, not comparable)'. Production claims must use Gillick 0.559 / IoU-F1 0.310."
+}
