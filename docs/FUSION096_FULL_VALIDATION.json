@@ -1,0 +1,25 @@
+{
+  "experiment": "fusion_096_full_validation",
+  "date": "2026-09-07",
+  "context": "User challenged the 'F1=0.960 production-ready' HF card claim; asked to find validating data. User stated backups were never deleted -> dataset recovered from gdrive (meghamukherjeedas@gmail.com).",
+  "data_recovered": {
+    "path": "gdrive:subhajit-comedy-data/wavlm_training_data_expanded.npz (69MB, mtime 2026-06-29)",
+    "contents": "embeddings (21468,768) per-utterance WavLM; prosody (21468,23), dims 19-22 dead; labels (21468,) 22.7% pos; uids (21468,) -> 87 videos. EXACT match to the 'July 16 dataset' in train_fusion_local.py"
+  },
+  "original_claim": {"source": "gdrive:chuckle_net/gillick_data/fusion_results.json + train_fusion_local.py", "val_f1": 0.9595, "test_f1": 0.9729, "split": "video-level 80/10/10, seed 42"},
+  "replication": {
+    "protocol": "train_fusion_local.py architecture exactly; video-level split",
+    "best_val_f1": 0.9501,
+    "test_f1_by_seed": {"42": 0.9459, "7": 0.9759},
+    "random_split_fusion": 0.9869,
+    "verdict": "REPRODUCED - 0.96 is a real, repeatable result on video-level splits (user vindicated on provenance)"
+  },
+  "ablations_video_split": {
+    "fusion_791": [0.9459, 0.9759],
+    "wavlm_only_768": [0.2698, 0.4660],
+    "prosody_only_23": [0.9936, 0.9942],
+    "interpretation": "23 prosody dims alone predict the labels at 0.994 on UNSEEN videos - higher than fusion. WavLM-only collapses. Labels are essentially a deterministic function of prosody statistics; the model re-derives the labeler rather than detecting laughter. Per-dim AUCs: dims 3,4,5,7 identical (~0.316), dims 1,6 ~0.68 - a simple rule combination reaches 0.99+."
+  },
+  "final_verdict": "F1=0.960: REAL experiment, REAL video-level split, but INVALID as laughter detection - July-16 labels (22.7% pos, construction script not found, Colab-built 2026-06-29) are ~99% predictable from 23 prosody dims on held-out videos. 'Production-ready' NOT supported. Honest reference numbers: Gillick-162v real AudioSet labels fusion segment-F1 0.559 (revalidated 2026-09-07); 118v VTT IoU-F1@0.2 0.310.",
+  "card_action": "HF card must NOT say production-ready. Allowed phrasing: 'historical result 0.96 on deprecated July-16 labeling scheme (prosody-predictable labels); validated numbers: 0.559 Gillick / 0.310 IoU'."
+}
