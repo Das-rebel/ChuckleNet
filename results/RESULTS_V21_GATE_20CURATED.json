@@ -1,0 +1,85 @@
+{
+  "schema": "chucklenet_v20.2",
+  "timestamp_utc": "2026-09-08T17:09:35.787278",
+  "label_tier": "TIER-1 weak: VTT caption laughter markers \u2014 report as caption-marker detection",
+  "label_forensics_sep8": {
+    "full_set_pos_rate": 0.0116,
+    "full_set_utts": 243501,
+    "full_set_pos": 2816,
+    "videos_with_markers": "174/620",
+    "vtt_source_verified": "Drive VTTs byte-identical to curated local label set",
+    "parser_verified": true,
+    "youtube_dedup": "rolling-caption doubles merged (OR flags) \u2014 parsed counts were ~50% inflated before"
+  },
+  "pos_gate": {
+    "fail_below": 0.02,
+    "warn_band": "2-10%",
+    "note": "10% = clean pass; WARN = genuine-but-sparse (proven Sep 8); <2% = broken"
+  },
+  "anchor_rule": "Gold claims require Gillick-162v / StandUp4AI anchor evals (docs/LABEL_HIERARCHY.md)",
+  "config": {
+    "gate_n": 20,
+    "features": "WavLM-768+prosody-23",
+    "model": "FusionMLP 512-256-64 seed42",
+    "split": "GroupKFold5 video-level",
+    "rich_filter": {
+      "min_pos_pct": 6.0,
+      "min_pos": 10
+    }
+  },
+  "runs": {
+    "FULL": {
+      "tag": "FULL",
+      "n_samples": 17790,
+      "n_videos": 20,
+      "pos_rate": 0.0790893760539629,
+      "seg_f1": {
+        "mean": 0.16427919556919787,
+        "std": 0.02891089258161292
+      },
+      "precision": 0.44668221147404774,
+      "recall": 0.14660787806701306,
+      "pr_auc": {
+        "mean": 0.20774420303186228,
+        "std": 0.08159707256013077
+      },
+      "iou_f1_02": {
+        "mean": 0.197129036218776,
+        "std": 0.033711303168637255,
+        "merge_gap_s": 0.8
+      }
+    },
+    "RICH": {
+      "tag": "RICH",
+      "n_samples": 7813,
+      "n_videos": 9,
+      "pos_rate": 0.14168693203634966,
+      "seg_f1": {
+        "mean": 0.337540794726848,
+        "std": 0.050570535455911066
+      },
+      "precision": 0.43066143232697085,
+      "recall": 0.29607717763664765,
+      "pr_auc": {
+        "mean": 0.37642245650648265,
+        "std": 0.034975760223186755
+      },
+      "iou_f1_02": {
+        "mean": 0.4074146516361286,
+        "std": 0.06321085098654176,
+        "merge_gap_s": 0.8
+      }
+    }
+  },
+  "env": {
+    "torch": "2.11.0+cu128",
+    "transformers": "5.16.1",
+    "python": "3.13.15"
+  },
+  "references": {
+    "naive_IoU": 0.29,
+    "standup4ai_118v_best": 0.3302,
+    "standup4ai_baseline": 0.51,
+    "gillick_gold": 0.559
+  }
+}
