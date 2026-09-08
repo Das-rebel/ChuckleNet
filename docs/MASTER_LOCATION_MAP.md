@@ -40,3 +40,10 @@ v20 (current) → gist `<see repo notebook>` · v19 `188a3bc5d4346c8189372f00c8b
 
 ## HISTORIC ARCHIVE (don't reference for current work)
 `~/ChuckleNet/` + mirror `~/chucklenet-local/` (300+ April-era docs, context.db) · `docs/archive/` (6 PRDs) · memory keys `chucklenet.*` in pi memory store
+
+## Sep 8 additions (gate era)
+- **Canonical notebook:** ChuckleNet_Final_Colab_v20.ipynb = **v20.2d** (GH e409ee1b; changelog in notebook header: 2b=double-gate fix bb9f6eb5, 2c=frequent saves 112f4e9d, 2d=FAIL 0.5% e409ee1b). Same filename on gdrive:chuckle_net_1000/.
+- **Gate results:** results/RESULTS_V21_GATE_20CURATED.json (local, GitHub) + gdrive:chuckle_net_backups/v20_results/results_v21_GATE_20CURATED.json + live gdrive:chuckle_net_results/results_v21.json
+- **Gate forensics:** docs/GATE_FORENSICS_620V_README.md + docs/GATE_FORENSICS_620V_marker_stats.json
+- **Scoreboard:** docs/RESULTS_LOG.md = single place every number lands (paper source of truth)
+- **Run artifacts (Colab, auto-written):** gdrive:chuckle_net_results/ — extraction_checkpoint_v21.npz, processed_idx_v21.txt, utterance_features_v21.npz, results_v21.json, fusion_model_{full,rich}_v21.pt
