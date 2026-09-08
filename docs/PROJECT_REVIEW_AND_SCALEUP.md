@@ -146,3 +146,14 @@ Total: **~5 free Colab sessions + 2–3 weeks calendar** to a publishable, hones
 **Standing rule:** a number may be reported only if it exists in a result JSON produced
 by a video-level held-out split with real labels. Pseudo-label and random-split numbers
 are debugging signals, never results.
+
+---
+## Sep 8, 2026 — SCALEUP EXECUTION STATUS (v20.2d era)
+
+**Pipeline:** ChuckleNet_Final_Colab_v20.ipynb (v20.2d, GH e409ee1b) — curated GATE_IDS, 3-tier pos gate (FAIL<0.5% / WARN 1–10% / PASS≥10%), YouTube rolling-caption dedup (counts were ~50% inflated), FILES_PER_SAVE frequent checkpointing (3 gate / 10 full), dual FULL+RICH training, PR-AUC + IoU-F1@0.2 (merge 0.8), results_v21.json provenance.
+
+**Gate result (20 curated marker-rich videos):** FULL IoU-F1@0.2 0.197 / RICH **0.407** — first weak-label number above naive 0.29 and the 0.3302 118v-best (curated-selection caveat; anchors pending). Label-noise hypothesis confirmed (cleaner labels double recall at flat precision). Full details: docs/RESULTS_LOG.md rows 5–7, D-GATE-RESULT.
+
+**Scaleup data (verified):** gdrive:chuckle_net_1000/audio = 620 real m4a (620/620 VTT match); full-set parse 243,501 utts → ~122K after dedup, pos 1.16% (174/620 videos carry markers); RICH ≈ 10 videos @ ~10.5% pos (pos_pct≥6% & pos≥10).
+
+**NEXT STEP (executing now):** user sets GATE_N=0 → full 620v run (~6–9 h, resumable every 10 videos, WARN at ~1.16% expected). After results: Tier-2 anchor eval (118v StandUp4AI-truth vs 0.3302) + Tier-3 anchor (Gillick-162v vs 0.559) → honest paper per Option C.
