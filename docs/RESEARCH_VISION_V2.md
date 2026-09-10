@@ -10,13 +10,28 @@
 
 Laughter is the entry point, not the final product.
 
-The long-term research question is:
+### Central research question
+
+> **Can machines extract, learn, and model useful information from how humans interact that is not contained in the literal words they use?**
+
+A more operational form of the same question is:
 
 > **Can non-semantic multimodal interaction signals provide incremental information about human interaction state and intent beyond speech transcript semantics?**
+
+The first formulation is the broader scientific question. The second is the experimentally testable version used to design ChuckleNet's benchmarks.
 
 The project therefore does **not** compete to build a better text humor classifier, sentiment classifier or general-purpose language model.
 
 Text/ASR is used primarily for alignment, context and controlled ablations. The research contribution lives in audio, timing, paralinguistics, visual behavior and cross-modal interaction structure.
+
+### What "extract, learn, model and use" means
+
+- **Extract:** detect observable non-semantic signals such as laughter, hesitation, interruption, pause and reaction timing.
+- **Learn:** identify which acoustic, temporal and multimodal patterns are predictive and which are shortcuts or artifacts.
+- **Model:** represent those patterns as reusable event/state streams rather than one opaque emotion score.
+- **Use:** test whether those streams improve prediction, response timing or downstream interaction decisions beyond transcript/context baselines.
+
+The claim is deliberately about **information in interaction**, not about directly reading hidden psychological states.
 
 ## 2. Why laughter is the right starting point
 
@@ -132,6 +147,12 @@ The strongest version of the project is a **mechanistic decomposition of interac
 
 A major result would be evidence that different modalities carry different information at different stages of an interaction.
 
+The key falsifiable proposition is:
+
+> **For at least some interaction tasks, non-semantic signals provide information that is not recoverable from transcript semantics and generic context alone.**
+
+This proposition must be tested against matched baselines, temporal controls, speaker/source independence and cross-domain transfer.
+
 ## 7. Success criteria
 
 The project should be considered scientifically successful only when it demonstrates most of the following:
@@ -196,3 +217,11 @@ The September 2026 audit established:
 - 620-video VTT scale-up has sparse labels and must not be interpreted as equivalent to benchmark-truth laughter data.
 
 These are the current anchors for the new program.
+
+## 11. Supporting research and hypothesis map
+
+The supporting literature and explicit testable hypotheses for this vision are maintained in:
+
+`docs/SUPPORTING_RESEARCH_AND_HYPOTHESES_V2.md`
+
+That document should be updated whenever a new paper materially strengthens, weakens or reframes a hypothesis. Literature support does not count as validation of ChuckleNet's own claims; only the project's registered experiments can establish those claims.
