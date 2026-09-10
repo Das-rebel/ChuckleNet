@@ -20,6 +20,7 @@ This map prevents the repository from having multiple documents that appear to b
 | `docs/COMPETITOR_MAP_2026.md` | competitive landscape |
 | `docs/COMMERCIALIZATION_INTERACTION_SIGNAL_API.md` | commercial hypothesis |
 | `docs/MODEL_CARD_V3_INTERACTION_SIGNAL.md` | model-card source of truth |
+| `docs/PICLI_EXECUTION_MANDATE_V1.md` | Pi CLI execution handoff and operating gates |
 | `docs/DOCUMENTATION_MIGRATION_2026-09-10.md` | migration and preservation policy |
 | `docs/DOCUMENTATION_STATUS_V2.md` | this status map |
 | `README.md` | public repository entry point |
@@ -49,6 +50,7 @@ Historical result JSON, notebooks, checkpoints and data artifacts are **not** au
 4. A high score does not override label provenance.
 5. Do not delete artifacts during documentation migration unless an independent duplicate/retention audit justifies it.
 6. If a historical document is updated for clarity, its historical status must remain explicit.
+7. Pi CLI execution plans must use `docs/PICLI_EXECUTION_MANDATE_V1.md` for operational priorities and must not silently redefine the research north star.
 
 ## Current one-line direction
 
