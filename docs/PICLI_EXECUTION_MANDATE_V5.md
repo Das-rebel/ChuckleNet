@@ -39,19 +39,19 @@ Do not revert to historical ~0.95–0.98 headlines.
 
 ## Kernel execution status (V5 update)
 
-**v25** (just pushed): Full 620-video WavLM fine-tuning pipeline.
+**v26** (running): Per-video npz saves (620 files not 122K). Disk-space monitor + auto-cleanup. 36ks limit.
 - time_limit: 36,000s (~10h) on Tesla T4 GPU
-- Feature extraction: 620 videos × ~11s/video ≈ 1.9h via audioread + WavLM batched (MAX_BATCH=32)
+- Feature extraction: 620 videos × ~11s/video ≈ 1.9h via librosa audioread + WavLM batched (MAX_BATCH=32)
 - Training: 15 epochs × ~22min × 3 neg ratio ≈ 5.5h
-- Total ETA: ~7.4h (within 9h limit, below 36ks cap)
-- Dataset: chuckle-vtt-labels (624 VTT files, 620 matched) + chuckle-audio-620-videos (617 m4a files)
+- Total ETA: ~7.4h (within 9h limit)
+- Dataset: chuckle-vtt-labels (624 VTT, 620 matched) + chuckle-audio-620-videos (617 m4a)
 - Segments: 121,928 utterances, 1,965 positives (1.6%)
-- WavLM: microsoft/wavlm-base, 13s load, 0 missing keys
 - Features: mean-pooled last_hidden_state (768-dim) per utterance
+- Kernel ID: 134613734 | kaggle.com/code/subhajitdas/chuckle-e2e-v26
 
-**v24** (previous run): Processed 80/620 videos in 904s before external cancellation. WavLM pipeline confirmed functional.
+**v25** (FAILED — OSError: No space left on device): Per-segment .npz files (122K files) overwhelmed disk. Deleted.
 
-**Critical infrastructure milestone**: End-to-end WavLM fine-tuning on full 620-video dataset is now running as a single kernel. This will produce the first properly trained 620-video WavLM detector, replacing the weak-label v32 evidence anchor.
+**v24** (cancelled at 80/620): Processed 80/620 videos in 904s before external cancellation. WavLM pipeline confirmed functional; feature extraction ~11.3s/video.
 
 ---
 
@@ -458,11 +458,11 @@ Read:
 - `docs/COMMERCIALIZATION_INTERACTION_SIGNAL_API.md`
 - `docs/PICLI_EXECUTION_MANDATE_V4.md`
 - the latest canonical paper and supporting results registry
-- **kernel: kaggle.com/code/subhajitdas/chuckle-e2e-v25** (running; monitor for completion)
+- **kernel: kaggle.com/code/subhajitdas/chuckle-e2e-v26** (running; monitor for completion)
 
 Then do **only**:
 
-1. Monitor v25 completion; on success, extract metrics and update the 620-video detector evidence anchor;
+1. Monitor v26 completion; on success, extract metrics and update the 620-video detector evidence anchor;
 2. repository archaeology for the six current evidence anchors;
 3. produce `docs/CURRENT_EVIDENCE_AUDIT_2026-09-16.md`;
 4. identify exact reusable code/artifacts for P1;
@@ -479,13 +479,16 @@ The goal is to **find out whether the central proposition is true, where it is t
 
 ---
 
-# 15. Kernel execution log (v24)
+# 15. Kernel execution log (v26)
 
 ```
-Status: CANCEL_ACKNOWLEDGED at 80/620 videos (904s elapsed)
-VTT: 620 videos, 243,501 utts, 2,816 laughs (1.2%) ✓
-WavLM: loaded in 13s, missing=0, unexpected=0 ✓
-Segments: 121,928, pos=1,965 (1.6%) ✓
-Feature extraction rate: ~11.3s/video via audioread
-Path (GPU container): VTT=/kaggle/input/chuckle-vtt-labels, AUDIO=/kaggle/input/chuckle-audio-620-videos/vtt_audio_local
+v26 Status: RUNNING (kernel ID 134613734)
+VTT: 620 videos, 243,501 utts, 2,816 laughs (1.2%) — expected
+WavLM: expected 13s load, 0 missing keys
+Segments: 121,928, pos=1,965 (1.6%)
+Key fix: per-video npz (620 files vs 122K per-segment)
+Disk monitor: auto-cleanup if free < 2GB
+
+v25 Status: ERROR — No space left on device (per-segment npz explosion)
+v24 Status: CANCEL_ACKNOWLEDGED at 80/620 videos (904s elapsed)
 ```
