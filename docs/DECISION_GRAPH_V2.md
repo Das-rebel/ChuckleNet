@@ -127,7 +127,7 @@ The canonical graph is unchanged. Current evidence maps to it as follows:
 | Labels independently grounded? | **No for VTT weak labels.** Use as scale/hypothesis evidence only. Human-label anchors remain separate. |
 | Acoustic representation detects target event? | **Yes, weakly**, for laughter under weak labels. v32 is the citable full-corpus baseline: F1 0.2732 / AP 0.142 / IoU-F1@0.2 0.2290. |
 | Survives adversarial acoustic negatives? | Existing E01 evidence is supportive; v30e adds no new Gate-2 evidence. |
-| Temporal context adds information? | Existing E02 evidence is supportive at 40 and 118 video scales, but Mandate V4 requires stronger paired/counterfactual validation before headline claims. |
+| Temporal context adds information? | **Yes, but narrowly.** P1 paired 3-seed validation (118v, Sep 18) shows true order > random with ΔF1 +0.0769 [CI +0.0617,+0.0917] — primary gate PASS. Local-shuffle and reverse controls do not separate (CI spans zero). Implication: **broad sequence/context structure matters; fine local order and forward direction do not add measurable value at 5 s resolution.** Claim narrowed accordingly. |
 | Attribution, transfer, downstream intent | Still open. MELD null blocks generic-emotion overclaim. |
 
 The 2026-09-18 v30e Kaggle run is a **P0 reproducibility artifact**, not a flagship replacement or new decision-graph branch. v32 remains the weak-label flagship.

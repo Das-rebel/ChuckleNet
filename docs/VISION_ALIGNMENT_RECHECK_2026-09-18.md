@@ -147,3 +147,13 @@ Commercial work should therefore focus on:
 ---
 
 *Prepared 2026-09-18 after v30e completion and vision recheck.*
+## P1 Temporal Validation Result — 2026-09-18
+**Experiment:** `P1-TEMPORAL-PAIRED-118V-2026-09-18`  
+**Gate:** Primary PASS (true > random, ΔF1 +0.077, CI [+0.062,+0.092])  
+**Secondary controls:** FAIL (local-shuffle/reverse do not separate)  
+**Verdict:** PARTIAL  
+
+**What this means for the vision:**  
+The narrow claim "sequence context helps" is now reproducible with controls. The broader claim "temporal order matters" is too strong — the effect appears to live in broad sequence structure, not fine directional order. This is a meaningful scientific result: it advances the evidence base (P1 complete) and narrows the hypothesis.  
+**What this does NOT mean:** That we have proven real-time reaction timing or causal laughter prediction. Those remain P2/P3 questions.
+

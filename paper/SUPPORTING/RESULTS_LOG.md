@@ -66,3 +66,14 @@
 - Verdict: valid reproducibility artifact and release package. **v32 remains flagship** (F1 0.2732 / IoU-F1@0.2 0.2290 / AP 0.142) because it uses the fuller feature protocol and has post-hoc forensics. Do not compare v30e event IoU directly with v32 without controlling for the decode-window/valid-ID restriction.
 - Artifacts: local `releases/v30e/`, `releases/v30e_hf/`; `results_e2e.json`, `training_history.json`, `val_predictions.npz`.
 
+
+## Row 17 — 2026-09-18 | Mandate V4 P1 paired temporal validation — PARTIAL / NARROWED
+
+- Experiment: `P1-TEMPORAL-PAIRED-118V-2026-09-18`; script `training/p1_temporal_validate.py`; artifacts `results/p1/`.
+- Data: 118-video human-verified EMNLP intersection, 11,161 windows / 2,712 positives; 5-fold video-disjoint GroupKFold; seeds 42/43/44.
+- Conditions: true order, full random within-video order, local 25 s block shuffle, reverse.
+- Primary gate **PASS**: true − random = **+0.0769 F1**, clustered bootstrap 95% CI **[+0.0617, +0.0917]**; 287 improved / 66 worsened / 1 unchanged.
+- Secondary controls **FAIL**: true − local = −0.0061 [−0.0170, +0.0044]; true − reverse = +0.0071 [−0.0032, +0.0180].
+- Verdict: **PARTIAL**. Sequence context is strongly supported; fine local ordering or forward direction is not supported at fixed 5 s resolution. Narrow claim: broad sequence/context structure matters; do not headline unqualified “temporal order matters.”
+- Correct next temporal tests: preceding-context ablation, onset/offset error, reaction latency, prefix/causal evaluation.
+

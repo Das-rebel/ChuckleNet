@@ -42,6 +42,18 @@ Compare F0/prosody, spectral, WavLM and fusion against acoustically similar non-
 ### E02 — temporal ablation
 Compare frame-level models against models with pause, turn-position and preceding-event context.
 
+### E02 Results
+
+#### P1 Validation — 2026-09-18
+**ID:** `P1-TEMPORAL-PAIRED-118V-2026-09-18`
+**Dataset:** 118-video human-verified EMNLP B/I/L/O/U label intersection (11,161 windows, 2,712 positives)
+**Protocol:** 5-fold GroupKFold, 3 seeds (42/43/44), BiGRU 128 hidden, pos_weight=8, AdamW 5e-4, bias −2.0, gradient clip 1.0, 40 epochs, patience 8
+**Conditions:** true order · full random within-video · local 25 s block shuffle · reversed
+**Result:** Primary gate PASS — true vs random ΔF1 +0.0769, 95% CI [+0.0617, +0.0917]; local-shuffle and reverse controls do not separate (CI spans zero). **Verdict PARTIAL.**
+**Interpretation:** Sequence context carries reproducible predictive information. Full randomization destroys it. Fine local order and forward direction do not add measurable value at 5 s resolution. Narrow claim: broad sequence/context structure, not precise temporal ordering.
+**Artifacts:** `results/p1/p1_temporal_118v_results.json`, `results/p1/p1_temporal_118v_observations.json.gz`, `training/p1_temporal_validate.py`
+**Next:** Event-timing ablation (preceding context length, onset/offset error, reaction latency, causal/prefix eval) — more informative than another architecture search.
+
 ### E03 — attribution
 Separate speaker laughter, audience laughter, applause and speech-laugh.
 

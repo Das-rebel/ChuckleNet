@@ -417,3 +417,17 @@ For logistic regression, features are standardized (zero mean, unit variance) us
 ---
 
 *Generated: August 2026*
+
+---
+
+## PHASE 1 ARXIV PREPRINT — VERIFIED STATE (2026-08-29)
+
+Verified by keenable (5 calls, 0 cost issues):
+- Novelty: NO competitor claims F0>WavLM on stand-up (MTLLFM=sports, TIC-TALK=corpus, MultiLinguaHah=unsupervised no F1).
+- MultiLinguaHah 2605.06309 (Callejas et al., BYOL-A + Isolation Forest, stand-up mentioned) = REAL — include correctly.
+- Your result: F0(5-dim) F1=0.9553 > WavLM F1=0.2210 (held-out, balanced weights). F0+WavLM=0.9499 (negative — fusion hurts).
+- Base: weak-pos5 promoted (val 0.785 / test 0.819). Refined-label (0.0784 val) = DEAD. Do NOT use.
+- Scale: Phase 2 via Scale_1000_Colab.ipynb (87→500+ videos); Phase 3 submit INTERSPEECH/EMNLP.
+
+Title (final): "When Simple Beats Deep: Hand-Crafted F0 Prosody Outperforms WavLM (768-dim) for Cross-Comedian Laughter Detection". Submit as arXiv preprint now.
+
