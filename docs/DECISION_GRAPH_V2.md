@@ -118,6 +118,20 @@ The key quantity is the incremental improvement from the final condition.
 | temporal TCN/BiGRU/Conformer | interaction sequence | next |
 | audio + video temporal fusion | multimodal interaction | later |
 
+## Current position — 2026-09-18
+
+The canonical graph is unchanged. Current evidence maps to it as follows:
+
+| Graph node | Current status |
+|---|---|
+| Labels independently grounded? | **No for VTT weak labels.** Use as scale/hypothesis evidence only. Human-label anchors remain separate. |
+| Acoustic representation detects target event? | **Yes, weakly**, for laughter under weak labels. v32 is the citable full-corpus baseline: F1 0.2732 / AP 0.142 / IoU-F1@0.2 0.2290. |
+| Survives adversarial acoustic negatives? | Existing E01 evidence is supportive; v30e adds no new Gate-2 evidence. |
+| Temporal context adds information? | Existing E02 evidence is supportive at 40 and 118 video scales, but Mandate V4 requires stronger paired/counterfactual validation before headline claims. |
+| Attribution, transfer, downstream intent | Still open. MELD null blocks generic-emotion overclaim. |
+
+The 2026-09-18 v30e Kaggle run is a **P0 reproducibility artifact**, not a flagship replacement or new decision-graph branch. v32 remains the weak-label flagship.
+
 ## Commercial decision boundary
 
 Do not jump from “detected laughter/emotion” to “customer intent.” The scientifically defensible chain is:

@@ -56,3 +56,13 @@
 - Lesson: v1 crash fix (check_torch_load_is_safe dual patch) changed load class silently; load reports must be ASSERTED (missing keys == 0), not printed
 - Decision: v32 (F1 0.2732) remains the HF flagship; no swap. v4 candidate (pending GPU approval): proper `WavLMModel` class + assert load integrity + warmup restore
 - Numbers: train_hours 4.658, best_thr 0.23, n_utts 121,928 (protocol parity with row 1)
+
+## Row 16 — 2026-09-18 | ChuckleNet v30e independent full-corpus repeat — baseline, NOT flagship
+
+- Kernel: `subhajitdas/chuckle-e2e-v30e` (Kaggle T4, run 134760029); status COMPLETE. HF: private repo `Hayasuki/chucklenet-v30e`.
+- Pipeline: local WavLM-base mirror → per-utterance mean-pooled 768-d → MLP 768–256–128–1; 3:1 neg sampling; 15 epochs.
+- Extraction: 620/620 processed, 0 skipped, 2,789 s. This run applied a **900 s decode window** per video, leaving only feature-backed segment IDs eligible for split/eval (val 15,478 samples / 164 positives; fewer than the v32 full 121,928 protocol).
+- Results: best **segment F1 0.2444** @ 0.75, **AP 0.1642**; event **IoU-F1@0.1–0.5 0.1743** (P 0.2603, R 0.1310; TP/FP/FN 38/108/252).
+- Verdict: valid reproducibility artifact and release package. **v32 remains flagship** (F1 0.2732 / IoU-F1@0.2 0.2290 / AP 0.142) because it uses the fuller feature protocol and has post-hoc forensics. Do not compare v30e event IoU directly with v32 without controlling for the decode-window/valid-ID restriction.
+- Artifacts: local `releases/v30e/`, `releases/v30e_hf/`; `results_e2e.json`, `training_history.json`, `val_predictions.npz`.
+

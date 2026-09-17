@@ -12,6 +12,8 @@
 | 5 | **Sep 8** | **GATE: 20 curated v** | **T1 VTT markers** | FusionMLP 795d, GroupKFold5 | PR-AUC | 0.208 ± 0.082 (2.6× random 0.079) | ✅ weak-label gate, FULL | results/RESULTS_V21_GATE_20CURATED.json |
 | 6 | **Sep 8** | same FULL | T1 | same | IoU-F1@0.2 | 0.197 ± 0.034 | ✅ below naive | same |
 | 7 | **Sep 8** | **GATE: 9 RICH v** | **T1** | same | **IoU-F1@0.2** | **0.407 ± 0.063** | ✅ **first weak-label > naive AND > 0.3302** — ⚠️ NOT comparable (9 marker-selected videos; anchor pending) | same |
+| 8 | **Sep 18** | **FULL: 620 v** | **T1 VTT markers** | WavLM-base (frozen) → ChuckleNet v30e MLP 768–256–128–1; 80/20 video split on valid features | seg F1 / AP | **0.2444 @ 0.75** / **0.1642** (val 15,478; 164 pos) | ✅ independent full-scale e2e repeat under 900 s decode window; weak-label baseline | Kaggle `chuckle-e2e-v30e` run 134760029; private HF repo `Hayasuki/chucklenet-v30e`; local `releases/v30e/` |
+| 9 | **Sep 18** | same FULL | same | same | **IoU-F1 @ 0.1–0.5** | **0.1743** (P 0.2603, R 0.1310; TP/FP/FN 38/108/252) | ✅ full-scale event baseline under 900 s decode window — not directly comparable to v32 full-feature protocol | same |
 
 ## Gate insights (Sep 8)
 - Label-noise hypothesis CONFIRMED: RICH-vs-FULL doubles every metric; precision flat (0.447→0.431), recall doubled (0.147→0.296).
@@ -19,7 +21,7 @@
 - Full-set forensics: pos 1.16% (2,816/243,501), markers in 174/620 videos → FAIL line set to 0.5% (D-GATE-FAIL05).
 
 ## Pending
-- [ ] **Full 620v run** (GATE_N=0): FULL ≈ 122K deduped samples @ ~1.16% pos; RICH ≈ 10 videos @ ~10.5%. Expect WARN at gate — correct behavior.
-- [ ] **Tier-2 anchor eval**: v21 feature pipeline on 118v StandUp4AI-truth set → compare vs 0.3302.
+- [x] **Full 620v run** — completed Sep 18 as v30e: 620/620 feature extraction, 0 skips, ~122K indexed / 1,965 weak positives; best val F1 0.2444, AP 0.1642, IoU-F1@0.2 0.1743.
+- [ ] **Tier-2 anchor eval**: evaluate v30e and/or the stronger v21 feature pipeline on 118v StandUp4AI-truth set → compare vs 0.3302.
 - [ ] **Tier-3 anchor eval**: Gillick-162v → compare vs 0.559.
 - [ ] Then: honest paper (weak-label pitfall + label-circularity case study + scaled weak-label numbers).

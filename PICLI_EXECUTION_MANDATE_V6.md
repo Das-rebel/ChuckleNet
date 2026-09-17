@@ -1,5 +1,8 @@
 # PICLI_EXECUTION_MANDATE — V6
 
+> **2026-09-18 SUPERSESSION NOTICE:** This file’s execution status is stale. Strategic control remains Mandate V4; current execution status is `PICLI_EXECUTION_MANDATE_V7.md` / `docs/PICLI_EXECUTION_MANDATE_V7.md`. v30e is complete but is only a P0 reproducibility artifact; v32 remains flagship.
+
+
 **Date:** 2026-09-16  
 **Status:** ACTIVE — v27 running on Kaggle, Modal blocked (payment required for T4 GPU)
 

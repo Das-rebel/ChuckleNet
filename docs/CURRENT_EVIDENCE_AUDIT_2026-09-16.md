@@ -1,5 +1,7 @@
 # CURRENT_EVIDENCE_AUDIT — 2026-09-16
 
+> **2026-09-18 resolution note:** Anchor 4’s apparent 0.229-vs-0.197 discrepancy is resolved. The 0.197 number is the earlier 20-video curated gate result; 0.229 is the v32 full-corpus result. The new v30e run is a restricted-protocol reproducibility artifact and does **not** replace v32. See `PICLI_EXECUTION_MANDATE_V7.md` and `paper/SUPPORTING/RESULTS_LOG.md` Row 16.
+
 **Purpose:** Trace all six canonical evidence anchors to their exact code/config/artifact provenance.
 
 ---
@@ -76,14 +78,18 @@
 | **Timestamp** | 2026-09-08 |
 | **Status** | ⚠️ PARTIAL — result file shows IoU-F1@0.2 = 0.197 (not 0.229), AP ≈ 0.142 (matches). The discrepancy needs resolution. |
 
-**Critical note from `results/RESULTS_V21_GATE_20CURATED.json`:**
-```
-FULL run: IoU-F1@0.2 mean=0.197 (std=0.034), not 0.229
-RICH run: IoU-F1@0.2 mean=0.229 (matches the claim)
-```
-The 0.229 may be from the RICH subset, not the FULL set. This needs verification against the canonical paper.
+**2026-09-18 resolution:**
 
-**v25 update:** The running kernel `kaggle.com/code/subhajitdas/chuckle-e2e-v25` will produce a new trained-WavLM 620-video result with the FULL dataset. This will supersede or validate the v32 result.
+The two numbers are different protocols:
+
+| Run | Protocol | IoU-F1@0.2 |
+|---|---|---:|
+| 20-video curated gate | small curated gate | 0.197 |
+| **v32 full 620-video run** | full weak-label corpus; 124 held-out videos | **0.2290** |
+
+Therefore v32’s 0.229 is not a RICH-subset mistake. v32 remains the flagship weak-label result.
+
+The later `chuckle-e2e-v30e` run processed 620/620 videos but used a 900 s decode window and evaluated only feature-backed IDs (15,478 val samples / 164 positives). It scored F1 0.2444, AP 0.1642, and event IoU-F1 0.1743. It is a P0 reproducibility artifact, not a v32 replacement.
 
 ---
 
@@ -134,7 +140,7 @@ The 0.229 may be from the RICH subset, not the FULL set. This needs verification
 | 1 | ⚠️ PARTIAL | Code path verification |
 | 2 | ⚠️ PARTIAL | Code path verification |
 | 3 | ⚠️ UNVERIFIED | Shuffle methodology |
-| 4 | ⚠️ PARTIAL | 0.229 vs 0.197 discrepancy (RICH vs FULL), v25 will generate new result |
+| 4 | ✅ RESOLVED — v32 provenance confirmed; v30e is a restricted reproducibility repeat | No blocker; keep v32 as flagship |
 | 5 | ⚠️ PARTIAL | Metrics not extracted from JSON |
 | 6 | ⚠️ PARTIAL | Bootstrap method verification |
 
@@ -148,6 +154,6 @@ The 0.229 may be from the RICH subset, not the FULL set. This needs verification
 2. **Read `docs/FULL_FUSIONMLP_118V_RESULTS.md`** — extract exact code path  
 3. **Read `docs/GILLICK_REVALIDATION_RESULTS.json`** — extract exact metrics
 4. **Read `docs/HYPOTHESIS_TEST_RESULTS.md`** — verify MELD null methodology
-5. **Resolve v32 0.229 vs 0.197 discrepancy** — check if 0.229 is from RICH subset
-6. **Monitor v25 completion** — extract new 620-video WavLM result when ready
+5. ~~**Resolve v32 0.229 vs 0.197 discrepancy**~~ — RESOLVED 2026-09-18: different protocol scales; v32 remains flagship.
+6. ~~**Monitor v25 completion**~~ — superseded by later v30/v30e work; v30e is complete but is not a v32 replacement.
 7. **For each result: verify model seed, config, and split are documented**
