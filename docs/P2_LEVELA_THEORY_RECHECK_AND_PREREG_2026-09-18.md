@@ -162,3 +162,13 @@ Acoustic-alone deltas also pass at H=2 and H=3 (+0.0974 / +0.1102). The advantag
 **P2 is now CLOSED on this dataset tier:** non-semantic acoustic context carries laughter-predictive information up to at least a 15-second horizon, robust to onset-bleed controls (§6), position shortcut (§5), and leakage discipline (§4). Product mapping: a **15-second reaction-anticipation window** is enough lead time for dialogue-policy actions (prepare response, hold turn, pre-buffer generation) — matching the commercial use case validated independently by the Endpoint-Anticipation literature (Unmute integration, −505 ms latency).
 
 **Remaining limits (honest):** single domain (stand-up), frozen WavLM 5 s embeddings, no streaming/causal deployment test yet, no external-dataset transfer yet. Next: P3 discovery (binding gap), optional external validation via TIC-TALK or fresh labeled videos (see `docs/HUMAN_LABELING_COST_SURVEY_2026-09-18.md`).
+
+---
+
+## 8. Comedian-disjoint hardening (found and closed a leakage axis; executed same day)
+
+The Level A folds were video-disjoint but **not comedian-disjoint** — the oEmbed channel/title map shows same-comedian duplication in the 118v set (e.g., Stephen Bailey ×4, Michael McIntyre ×3). Rerun with `GroupKFold` grouped by comedian key (title-extracted) + channel.
+
+**VERDICT: SURVIVES.** Fold mean F1: words 0.473 · acoustic 0.566 · acoustic+words 0.568. Gates: a+w − words **+0.1147** [+0.0887,+0.1416] PASS; acoustic − words **+0.1158** [+0.0849,+0.1476] PASS — deltas unchanged (slightly larger) vs video-disjoint folds. Same-comedian identity was not contributing to the effect.
+
+Script: `training/p2_levela_comedian_disjoint.py`; artifacts: `results/p2_level_a/p2_levela_comedian_disjoint_results.json`; oEmbed comedian map: built from YouTube oEmbed (title/channel per video), stored in project data prep script history.

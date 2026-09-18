@@ -116,3 +116,10 @@
 - Paired ΔF1 (a+w − words): H2 **+0.1024** [+0.0768,+0.1276]; H3 **+0.1054** [+0.0799,+0.1310]; acoustic-alone also passes (H2 +0.0974, H3 +0.1102). All four gates PASS.
 - Combined with Rows 19–20: non-semantic acoustic context anticipates audience laughter at 5/10/15 s horizons, robust to onset-bleed and position controls, on human labels. Advantage decays negligibly with horizon.
 - Claim tier final for this dataset: **≥15 s reaction-anticipation signal, information beyond transcript, controlled evidence**. Limits: stand-up only, frozen features, no streaming test, no external transfer yet.
+
+## Row 22 — 2026-09-18 | Comedian-disjoint hardening — Level A claim SURVIVES
+
+- Experiment: `P2-LEVELA-COMEDIAN-DISJOINT-2026-09-18`; script `training/p2_levela_comedian_disjoint.py`; artifacts `results/p2_level_a/p2_levela_comedian_disjoint_results.json`.
+- Motivation: video-disjoint folds still allowed same-comedian specials across train/validation (oEmbed map: Stephen Bailey ×4, Michael McIntyre ×3, etc.). Rerun Level A H=1 with GroupKFold grouped by comedian key (title-extracted first-2-words + channel; map built from free YouTube oEmbed).
+- Result: fold mean F1 words 0.473 / acoustic 0.566 / a+w 0.568; gates a+w − words **+0.1147** [+0.0887,+0.1416] PASS, acoustic − words **+0.1158** [+0.0849,+0.1476] PASS — deltas unchanged vs Row 19.
+- Verdict: **claim survives comedian-disjoint splitting**; leakage axis closed. Evidence chain for the ≥15 s anticipation claim now includes: onset-bleed strata (Row 20), horizon curve (Row 21), comedian-disjoint folds (this row).
