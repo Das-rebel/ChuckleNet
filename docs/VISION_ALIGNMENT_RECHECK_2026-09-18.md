@@ -177,5 +177,5 @@ Combined with P1, the evidence now triangulates cleanly: the information beyond 
 
 **What this means for the vision:**
 The core question — "can machines extract useful information from how humans interact that is not contained in the words?" — now has its first controlled positive answer: yes, in the acoustic context BEFORE an audience reaction. Three results triangulate: sequence structure matters (P1), timing statistics do not (P2-concurrent), pre-onset acoustic context does (P2 Level A). The signal is learned-representation acoustic, sequential, and prospective — exactly the biosemiotic framework's H3 reaction-coupling hypothesis. Biosemiotic framing was rechecked and reconnected rather than reinvented; the burned synthetic-feature lesson (label leakage) stays burned.
-**What this does NOT mean yet:** real-time latency claims (sub-window onset-margin check pending — part of the effect may be very-early onset bleed), generic emotion (MELD null stands), pause-feature products (null ×2).
+**Onset-margin refinement (same day):** advantage undiminished at ≥2.5 s onset lag (+0.222 [0.172,0.275]) → **genuine anticipation confirmed**, not onset bleed. **What this does NOT mean yet:** streaming/real-time latency claims (causal deployment test pending), generic emotion (MELD null stands), pause-feature products (null ×2).
 

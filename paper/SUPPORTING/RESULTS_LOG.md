@@ -98,3 +98,12 @@
 - Verdict: **BEYOND-WORDS PROSPECTIVE SUPPORTED.** Pre-onset frozen-WavLM context predicts next-window laughter far better than the entire preceding transcript. Consistent with ICPhS-2019 anticipatory acoustic cues and with P1 (sequence structure) + P2-concurrent (timing aggregates null).
 - Caveat: laugh onset late in window t with midpoint in t+1 may place audible onset in the context — part of the effect may be very-early onset detection; sub-5 s onset-margin analysis is the registered next step. Hand-crafted timing features are null twice; do not pitch pause-statistic features.
 
+
+
+## Row 20 — 2026-09-18 | Onset-margin stratification — GENUINE ANTICIPATION confirmed (not onset bleed)
+
+- Experiment: `P2-LEVELA-ONSET-MARGIN-2026-09-18`; script `training/p2_levela_onset_margin.py`; artifacts `results/p2_level_a/p2_levela_onset_margin_results.json`.
+- Same arms/seeds/folds as Row 19 retrained with per-window predictions; positives stratified by earliest laugh-word onset relative to the context boundary (straddle / early 0–1 s / mid 1–2.5 s / late ≥2.5 s).
+- Hit rate on positives: acoustic context ~0.78–0.80 in every stratum vs words 0.47–0.53; paired clustered-bootstrap hit-rate delta (acoustic+words − words): straddle +0.271 [0.187,0.355], early +0.233 [0.183,0.281], mid +0.245 [0.194,0.295], **late +0.222 [0.172,0.275]**.
+- Verdict: **GENUINE ANTICIPATION.** The advantage is undiminished where onset bleed is physically impossible; only 774/8,181 positives are straddle.
+- Claim tier: pre-onset acoustic context anticipates audience laughter up to a 5-second horizon, beyond the full preceding transcript, robust to onset-bleed controls. Streaming-latency claims still require causal deployment tests.

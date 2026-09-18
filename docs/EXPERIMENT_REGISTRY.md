@@ -69,6 +69,7 @@ Compare transcript-only vs transcript+context vs transcript+context+interaction 
 **Arms (identical MLP, 5 folds × 3 seeds):** position 0.418 · words 0.478 · words+timing 0.473 · **acoustic context 0.569** · **acoustic+words 0.574**.
 **Gates:** acoustic+words − words **+0.1117** [+0.0857,+0.1390] PASS · acoustic − words **+0.1074** [+0.0766,+0.1398] PASS · timing null (2nd time).
 **Verdict:** BEYOND-WORDS PROSPECTIVE SUPPORTED (H3/H4-prospective). Caveat: possible very-early onset bleed across the 5 s boundary; sub-window onset-margin analysis registered next. Gate-evaluation sign bug in first readout corrected from saved observations (provenance note in results JSON).
+**Onset-margin refinement (`P2-LEVELA-ONSET-MARGIN-2026-09-18`):** advantage flat across onset strata — late (≥2.5 s, bleed impossible) +0.222 hit-rate delta [0.172,0.275]; acoustic hits ~80% vs words ~53% in every stratum. Verdict upgraded to **genuine anticipation (5 s horizon)**, not early-onset detection.
 
 #### E05 Results — P2 concurrent beyond-words test — 2026-09-18
 **ID:** `P2-BEYOND-WORDS-118V-2026-09-18`

@@ -113,3 +113,32 @@ The first gate readout printed NOT SUPPORTED due to a **sign bug in gate evaluat
 3. **Honest caveat:** the target is laugh-word midpoint in window t+1; a laugh whose onset falls late in window t but midpoint in t+1 would put audible onset in the context. Part of the effect may therefore be *very-early onset detection* rather than pure pre-speech anticipation. A sub-5 s onset-margin analysis is the natural confirmation step and is registered as the next P2 refinement.
 4. Position-only is a real shortcut (0.418) — consistent with the discourse-position label finding — but acoustic context beats it by ~0.15 F1.
 5. Timing aggregates null twice (concurrent + prospective): hand-crafted pause summaries do not capture the signal; learned representations do. Do not pitch pause-statistic features.
+
+---
+
+## 6. Onset-margin refinement outcome (registered in §5 caveat 3; executed same day)
+
+**VERDICT: GENUINE ANTICIPATION — the effect is NOT onset bleed.**
+
+Script: `training/p2_levela_onset_margin.py`; artifacts: `results/p2_level_a/p2_levela_onset_margin_results.json` (+ observations archive). Same arms/seeds/folds retrained with per-window predictions saved; positives stratified by margin = earliest laugh-word start in target window minus context boundary.
+
+Hit rate on positives (pred > 0.5):
+
+| Stratum | n_pos | words | acoustic | acoustic+words |
+|---|---:|---:|---:|---:|
+| straddle (onset inside context) | 774 | 0.472 | 0.775 | 0.796 |
+| early (0–1 s into target) | 2,772 | 0.520 | 0.784 | 0.801 |
+| mid (1–2.5 s) | 2,238 | 0.520 | 0.796 | 0.813 |
+| **late (≥2.5 s — bleed impossible)** | **2,397** | **0.533** | **0.804** | **0.811** |
+
+Paired hit-rate delta (acoustic+words − words), video-clustered bootstrap:
+straddle +0.271 [0.187, 0.355] · early +0.233 [0.183, 0.281] · mid +0.245 [0.194, 0.295] · **late +0.222 [0.172, 0.275]**.
+
+The advantage is flat across strata and undiminished at the one stratum where audible onset inside the context is physically impossible. Only 774/8,181 positives are straddle; the effect lives almost entirely in genuinely post-context onsets.
+
+### Claim upgrade
+- Before: "acoustic context prospectively predicts audience laughter position" (caveat: possibly early-onset detection).
+- Now: **"Pre-onset acoustic context anticipates audience laughter up to a 5-second horizon in stand-up, with information beyond the entire preceding transcript, robust to onset-bleed controls."**
+- Consistent with Vettin & Todt (>80% of laughter follows full phrases) and the ICPhS-2019 anticipatory-cues physiology; now demonstrated with a controlled incremental-information protocol on human labels.
+- Commercial mapping: this is a **reaction-anticipation signal** (feed-forward to dialogue policy: prepare response / hold turn / expect listener reaction), not merely fast onset detection. Latency claims still require streaming/causal deployment tests (T4/GPU), which remain blocked by Modal billing.
+- Next registered step (P2 closure): horizon curve (predict 2 windows ahead), then P3 design-partner discovery with this claim language.
