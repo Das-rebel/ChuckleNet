@@ -16,6 +16,7 @@
 | 9 | **Sep 18** | same FULL | same | same | **IoU-F1 @ 0.1–0.5** | **0.1743** (P 0.2603, R 0.1310; TP/FP/FN 38/108/252) | ✅ full-scale event baseline under 900 s decode window — not directly comparable to v32 full-feature protocol | same |
 | 10 | **Sep 18** | **118v human labels** | **Tier-1 EMNLP B/I/L** | BiGRU paired protocol; 3 seeds × 5 video folds; true/random/local/reverse | paired ΔF1 true−random | **+0.0769**, clustered 95% CI **[+0.0617,+0.0917]** | ✅ P1 primary gate PASS; sequence context matters | `results/p1/p1_temporal_118v_results.json` |
 | 11 | **Sep 18** | same | same | same | paired ΔF1 true−local / true−reverse | **−0.0061** [−0.0170,+0.0044] / **+0.0071** [−0.0032,+0.0180] | ⚠️ secondary controls FAIL — fine local order/direction not supported | same |
+| 12 | **Sep 18** | 118v (6,211 word-span windows, 44.5% pos) | Tier-1 EMNLP B/I/L | TF-IDF word content vs +7 timing features; MLP; 5 folds × 3 seeds | paired ΔF1 (timing minus words) | **+0.0018** [−0.0046,+0.0080] | ❌ P2 concurrent gate FAIL — timing adds nothing over words at current-window level; redirect to prospective Level A | `results/p2/p2_beyond_words_results.json` |
 
 ## Gate insights (Sep 8)
 - Label-noise hypothesis CONFIRMED: RICH-vs-FULL doubles every metric; precision flat (0.447→0.431), recall doubled (0.147→0.296).

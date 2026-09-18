@@ -77,3 +77,13 @@
 - Verdict: **PARTIAL**. Sequence context is strongly supported; fine local ordering or forward direction is not supported at fixed 5 s resolution. Narrow claim: broad sequence/context structure matters; do not headline unqualified “temporal order matters.”
 - Correct next temporal tests: preceding-context ablation, onset/offset error, reaction latency, prefix/causal evaluation.
 
+
+## Row 18 — 2026-09-18 | Mandate V4 P2 concurrent beyond-words test — NOT SUPPORTED (null narrows thesis)
+
+- Experiment: `P2-BEYOND-WORDS-118V-2026-09-18`; script `training/p2_beyond_words.py`; artifacts `results/p2/`.
+- Data: 118-video human-verified EMNLP intersection; 6,211 word-span 5 s windows; 2,765 positives (44.5%); 5-fold video-disjoint GroupKFold; seeds 42/43/44.
+- Conditions: A = TF-IDF word content (train-fold fit, 5,000 feats); B = A + 7 pause/timing features; identical MLP per condition.
+- Result: B − A = **+0.0018 F1**, video-clustered bootstrap 95% CI **[−0.0046, +0.0080]** — spans zero; 65/118 improved vs 52/118 worsened.
+- Verdict: **NOT SUPPORTED.** Concurrent timing aggregates add no measurable information over word content for current-window laugh labeling. Word content is a strong baseline (fold F1 0.568).
+- Compatibility with P1: temporal signal lives in acoustic sequence structure (P1: order destruction −0.077), not in window-level timing statistics (P2: +0.002 null).
+- Consequence: do not claim timing-feature increments for concurrent detection; next P2 test is Level A prospective onset prediction (context-before only → next-window onset).

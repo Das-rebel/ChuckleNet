@@ -63,6 +63,12 @@ Predict engagement/reaction/uncertainty proxies from event sequences.
 ### E05 — semantic increment
 Compare transcript-only vs transcript+context vs transcript+context+interaction signals.
 
+#### E05 Results — P2 concurrent beyond-words test — 2026-09-18
+**ID:** `P2-BEYOND-WORDS-118V-2026-09-18`
+**Design:** 118v windows (6,211; 44.5% pos); A = TF-IDF word content (train-fold fit) vs B = A + 7 pause/timing features; identical MLP, 5-fold GroupKFold, 3 seeds; video-clustered bootstrap.
+**Result:** B − A = +0.0018 F1, 95% CI [−0.0046, +0.0080] — CI spans zero. **Verdict NOT SUPPORTED.**
+**Interpretation:** Concurrent timing aggregates add no information over word content for labeling the current window. Word content alone is a strong baseline (fold F1 0.568). Consistent with P1: the temporal signal lives in acoustic sequence structure, not window-level timing statistics. Concurrent claims must not headline timing features. Redirect P2 to the Level A prospective design (predict onset in the NEXT window from preceding context only).
+
 ### E06 — multimodal
 Add video after audio/temporal baselines stabilize.
 

@@ -157,3 +157,16 @@ Commercial work should therefore focus on:
 The narrow claim "sequence context helps" is now reproducible with controls. The broader claim "temporal order matters" is too strong — the effect appears to live in broad sequence structure, not fine directional order. This is a meaningful scientific result: it advances the evidence base (P1 complete) and narrows the hypothesis.  
 **What this does NOT mean:** That we have proven real-time reaction timing or causal laughter prediction. Those remain P2/P3 questions.
 
+## P2 Concurrent Beyond-Words Result — 2026-09-18
+**Experiment:** `P2-BEYOND-WORDS-118V-2026-09-18`
+**Gate:** FAIL — timing features add +0.0018 F1 over word content (CI spans zero)
+**Verdict:** NOT SUPPORTED (concurrent)
+
+**What this means for the vision:**
+The concurrent version of the beyond-words question is answered negatively at window level: pause/timing aggregates carry no information about whether the current window contains laughter beyond the words themselves. Word content is the dominant concurrent signal (F1 0.568 text-only vs 0.49 acoustic P1).
+
+Combined with P1, the evidence now triangulates cleanly: the information beyond words lives in **acoustic sequence structure across windows** (P1: order destruction −0.077), not in window-level timing statistics (P2: +0.002 null).
+
+**The remaining open beyond-words question is prospective (Level A):** can preceding context (words and/or timing) predict the reaction onset BEFORE it happens? That test cannot be solved by concurrent word content and is now the single highest-information research action.
+
+
