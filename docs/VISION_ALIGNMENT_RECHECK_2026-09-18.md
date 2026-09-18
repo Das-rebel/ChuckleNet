@@ -170,3 +170,12 @@ Combined with P1, the evidence now triangulates cleanly: the information beyond 
 **The remaining open beyond-words question is prospective (Level A):** can preceding context (words and/or timing) predict the reaction onset BEFORE it happens? That test cannot be solved by concurrent word content and is now the single highest-information research action.
 
 
+## P2 Level A Prospective Result — 2026-09-18
+**Experiment:** `P2-LEVELA-PROSPECTIVE-118V-2026-09-18`
+**Gate:** PASS — pre-onset frozen-WavLM context beats cumulative transcript +0.1117 F1 [CI +0.0857,+0.1390]; acoustic alone +0.1074 [+0.0766,+0.1398]; timing aggregates null (second time).
+**Verdict:** BEYOND-WORDS PROSPECTIVE SUPPORTED.
+
+**What this means for the vision:**
+The core question — "can machines extract useful information from how humans interact that is not contained in the words?" — now has its first controlled positive answer: yes, in the acoustic context BEFORE an audience reaction. Three results triangulate: sequence structure matters (P1), timing statistics do not (P2-concurrent), pre-onset acoustic context does (P2 Level A). The signal is learned-representation acoustic, sequential, and prospective — exactly the biosemiotic framework's H3 reaction-coupling hypothesis. Biosemiotic framing was rechecked and reconnected rather than reinvented; the burned synthetic-feature lesson (label leakage) stays burned.
+**What this does NOT mean yet:** real-time latency claims (sub-window onset-margin check pending — part of the effect may be very-early onset bleed), generic emotion (MELD null stands), pause-feature products (null ×2).
+

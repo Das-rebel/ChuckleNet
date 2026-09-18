@@ -63,6 +63,13 @@ Predict engagement/reaction/uncertainty proxies from event sequences.
 ### E05 — semantic increment
 Compare transcript-only vs transcript+context vs transcript+context+interaction signals.
 
+#### E05 Results — P2 Level A prospective onset prediction — 2026-09-18 (SUPPORTED)
+**ID:** `P2-LEVELA-PROSPECTIVE-118V-2026-09-18`
+**Task:** predict laugh-word presence in window t+1 from context ≤ t only (punchline of t+1 excluded by construction).
+**Arms (identical MLP, 5 folds × 3 seeds):** position 0.418 · words 0.478 · words+timing 0.473 · **acoustic context 0.569** · **acoustic+words 0.574**.
+**Gates:** acoustic+words − words **+0.1117** [+0.0857,+0.1390] PASS · acoustic − words **+0.1074** [+0.0766,+0.1398] PASS · timing null (2nd time).
+**Verdict:** BEYOND-WORDS PROSPECTIVE SUPPORTED (H3/H4-prospective). Caveat: possible very-early onset bleed across the 5 s boundary; sub-window onset-margin analysis registered next. Gate-evaluation sign bug in first readout corrected from saved observations (provenance note in results JSON).
+
 #### E05 Results — P2 concurrent beyond-words test — 2026-09-18
 **ID:** `P2-BEYOND-WORDS-118V-2026-09-18`
 **Design:** 118v windows (6,211; 44.5% pos); A = TF-IDF word content (train-fold fit) vs B = A + 7 pause/timing features; identical MLP, 5-fold GroupKFold, 3 seeds; video-clustered bootstrap.

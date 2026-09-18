@@ -87,3 +87,14 @@
 - Verdict: **NOT SUPPORTED.** Concurrent timing aggregates add no measurable information over word content for current-window laugh labeling. Word content is a strong baseline (fold F1 0.568).
 - Compatibility with P1: temporal signal lives in acoustic sequence structure (P1: order destruction −0.077), not in window-level timing statistics (P2: +0.002 null).
 - Consequence: do not claim timing-feature increments for concurrent detection; next P2 test is Level A prospective onset prediction (context-before only → next-window onset).
+
+## Row 19 — 2026-09-18 | Mandate V4 P2 Level A prospective onset prediction — SUPPORTED (H3/H4-prospective)
+
+- Experiment: `P2-LEVELA-PROSPECTIVE-118V-2026-09-18`; script `training/p2_level_a_prospective.py`; artifacts `results/p2_level_a/`; pre-registration `docs/P2_LEVELA_THEORY_RECHECK_AND_PREREG_2026-09-18.md`.
+- Task: predict laugh-word presence in window t+1 from context ≤ t only (punchline words of t+1 excluded by construction). 118v; 6,211 windows; 5-fold video-disjoint GroupKFold; seeds 42/43/44; identical MLP per arm.
+- Arms: position-only 0.418 · cumulative words TF-IDF 0.478 · words+timing 0.473 · **frozen-WavLM acoustic context 0.569** · **acoustic+words 0.574** (fold mean F1).
+- Gates (video-clustered bootstrap): G1 acoustic+words − words **+0.1117** [+0.0857,+0.1390] PASS; G3 acoustic − words **+0.1074** [+0.0766,+0.1398] PASS; G2 timing − words −0.0021 null; words − position +0.0497 (position shortcut real but far smaller).
+- Provenance note: first readout printed NOT SUPPORTED due to a sign bug in gate evaluation only; raw paired deltas were correct; gates recomputed from saved observations; correction embedded in results JSON.
+- Verdict: **BEYOND-WORDS PROSPECTIVE SUPPORTED.** Pre-onset frozen-WavLM context predicts next-window laughter far better than the entire preceding transcript. Consistent with ICPhS-2019 anticipatory acoustic cues and with P1 (sequence structure) + P2-concurrent (timing aggregates null).
+- Caveat: laugh onset late in window t with midpoint in t+1 may place audible onset in the context — part of the effect may be very-early onset detection; sub-5 s onset-margin analysis is the registered next step. Hand-crafted timing features are null twice; do not pitch pause-statistic features.
+

@@ -1,6 +1,7 @@
 # Biosemiotic Framework V2
 
 **Status: CANONICAL THEORETICAL FOUNDATION — 2026-09-10**
+**Evidence addendum — 2026-09-18 (updated after P2 Level A):** H1 PARTIAL (P1: broad sequence context +0.077 F1 [CI −0.092,−0.062]; fine local order null) · H4-concurrent NULL (P2: +0.0018 [−0.0046,+0.0080]) · **H3 + H4-prospective SUPPORTED (P2 Level A: pre-onset acoustic context beats cumulative words +0.1117 F1 [CI +0.0857,+0.1390]; 83/118 videos improved)** · H2, H5 correctly deferred. Caveat: part of the effect may be very-early onset bleed across the 5 s window boundary; sub-window onset-margin analysis registered as next step. See `docs/P2_LEVELA_THEORY_RECHECK_AND_PREREG_2026-09-18.md`. Note: this framework is the surviving THEORY layer; the synthetic tom_/duchenne_/incongruity_ features were a separate label-leaked artifact (dropped in COMPLETE_REPLAN) and are not part of this framework.
 
 ## 1. Role in ChuckleNet
 
