@@ -123,3 +123,12 @@
 - Motivation: video-disjoint folds still allowed same-comedian specials across train/validation (oEmbed map: Stephen Bailey ×4, Michael McIntyre ×3, etc.). Rerun Level A H=1 with GroupKFold grouped by comedian key (title-extracted first-2-words + channel; map built from free YouTube oEmbed).
 - Result: fold mean F1 words 0.473 / acoustic 0.566 / a+w 0.568; gates a+w − words **+0.1147** [+0.0887,+0.1416] PASS, acoustic − words **+0.1158** [+0.0849,+0.1476] PASS — deltas unchanged vs Row 19.
 - Verdict: **claim survives comedian-disjoint splitting**; leakage axis closed. Evidence chain for the ≥15 s anticipation claim now includes: onset-bleed strata (Row 20), horizon curve (Row 21), comedian-disjoint folds (this row).
+
+## Row 23 — 2026-09-18 | TIC-TALK external validation — protocol ports; their non-lexical correlate fails incremental controls
+
+- Experiment: `TICTALK-EXTERNAL-ANTICIPATION-ONSET-2026-09-18`; script `training/tictalk_external_validation.py`; artifacts `results/p2_tictalk/`; memo `docs/TICTALK_EXTERNAL_VALIDATION_2026-09-18.md`.
+- Source: public `ENC-PSL/TIC-TALK` (CC-BY-NC-4.0), 90 specials, 5,416 × 60 s blocks, sentence-BERT + Whisper-AT laugh events + 1 fps pose; **no raw audio** — protocol replication only.
+- v1 lesson archived: "any laugh in next block" target = 94% positive (near-continuous laughter) → saturated; final target = onset (≥5 s laugh-free gap) in next block.
+- Result (5 folds × 3 seeds, show-clustered bootstrap): text 0.959 / kin 0.733 / text+kin 0.960 / position 0.689. E1 kin increment over text +0.0012 [−0.0007,+0.0030] NULL; E3 text over position +0.2692 [+0.2375,+0.3023] PASS.
+- Verdict: (a) our protocol ports cleanly to second-lab data; (b) content anticipates onsets there too (converges with our discourse-position finding); (c) TIC-TALK's headline kinematic correlate (r=−0.75) yields ZERO paired predictive increment — external confirmation that correlates ≠ incremental information, the methodological standard our audio claim passed (Rows 19–22) and their kinematics do not.
+- Scope note: our acoustic anticipation claim is NOT refuted and NOT tested by this (their release has no audio).
