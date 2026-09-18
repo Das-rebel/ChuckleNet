@@ -142,3 +142,23 @@ The advantage is flat across strata and undiminished at the one stratum where au
 - Consistent with Vettin & Todt (>80% of laughter follows full phrases) and the ICPhS-2019 anticipatory-cues physiology; now demonstrated with a controlled incremental-information protocol on human labels.
 - Commercial mapping: this is a **reaction-anticipation signal** (feed-forward to dialogue policy: prepare response / hold turn / expect listener reaction), not merely fast onset detection. Latency claims still require streaming/causal deployment tests (T4/GPU), which remain blocked by Modal billing.
 - Next registered step (P2 closure): horizon curve (predict 2 windows ahead), then P3 design-partner discovery with this claim language.
+
+---
+
+## 7. Horizon-curve outcome (P2 closure; executed same day)
+
+**VERDICT: ANTICIPATION HORIZON EXTENDS — all four gates pass.**
+
+Script: `training/p2_horizon_curve.py`; artifacts: `results/p2_level_a/p2_horizon_curve_results.json`. Same arms/seeds/folds; target = laugh in window t+H from context ≤ t.
+
+| H (horizon) | words | acoustic | acoustic+words | a+w − words ΔF1 | gate |
+|---|---:|---:|---:|---:|---|
+| 1 (5 s, prior) | 0.478 | 0.569 | 0.574 | +0.1117 [+0.0857,+0.1390] | PASS |
+| 2 (10 s) | 0.466 | 0.559 | 0.560 | **+0.1024** [+0.0768,+0.1276] | **PASS** |
+| 3 (15 s) | 0.450 | 0.554 | 0.548 | **+0.1054** [+0.0799,+0.1310] | **PASS** |
+
+Acoustic-alone deltas also pass at H=2 and H=3 (+0.0974 / +0.1102). The advantage decays negligibly out to 15 seconds.
+
+**P2 is now CLOSED on this dataset tier:** non-semantic acoustic context carries laughter-predictive information up to at least a 15-second horizon, robust to onset-bleed controls (§6), position shortcut (§5), and leakage discipline (§4). Product mapping: a **15-second reaction-anticipation window** is enough lead time for dialogue-policy actions (prepare response, hold turn, pre-buffer generation) — matching the commercial use case validated independently by the Endpoint-Anticipation literature (Unmute integration, −505 ms latency).
+
+**Remaining limits (honest):** single domain (stand-up), frozen WavLM 5 s embeddings, no streaming/causal deployment test yet, no external-dataset transfer yet. Next: P3 discovery (binding gap), optional external validation via TIC-TALK or fresh labeled videos (see `docs/HUMAN_LABELING_COST_SURVEY_2026-09-18.md`).

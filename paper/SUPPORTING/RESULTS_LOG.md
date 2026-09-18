@@ -107,3 +107,12 @@
 - Hit rate on positives: acoustic context ~0.78–0.80 in every stratum vs words 0.47–0.53; paired clustered-bootstrap hit-rate delta (acoustic+words − words): straddle +0.271 [0.187,0.355], early +0.233 [0.183,0.281], mid +0.245 [0.194,0.295], **late +0.222 [0.172,0.275]**.
 - Verdict: **GENUINE ANTICIPATION.** The advantage is undiminished where onset bleed is physically impossible; only 774/8,181 positives are straddle.
 - Claim tier: pre-onset acoustic context anticipates audience laughter up to a 5-second horizon, beyond the full preceding transcript, robust to onset-bleed controls. Streaming-latency claims still require causal deployment tests.
+
+## Row 21 — 2026-09-18 | Horizon curve — anticipation extends to ≥15 s (P2 CLOSED)
+
+- Experiment: `P2-HORIZON-CURVE-118V-2026-09-18`; script `training/p2_horizon_curve.py`; artifacts `results/p2_level_a/p2_horizon_curve_results.json`.
+- Target: laugh presence in window t+H from context ≤ t; H=2 (10 s) and H=3 (15 s), same arms/seeds/folds as Rows 19–20.
+- Fold mean F1: H2 words 0.466 / acoustic 0.559 / a+w 0.560; H3 words 0.450 / acoustic 0.554 / a+w 0.548.
+- Paired ΔF1 (a+w − words): H2 **+0.1024** [+0.0768,+0.1276]; H3 **+0.1054** [+0.0799,+0.1310]; acoustic-alone also passes (H2 +0.0974, H3 +0.1102). All four gates PASS.
+- Combined with Rows 19–20: non-semantic acoustic context anticipates audience laughter at 5/10/15 s horizons, robust to onset-bleed and position controls, on human labels. Advantage decays negligibly with horizon.
+- Claim tier final for this dataset: **≥15 s reaction-anticipation signal, information beyond transcript, controlled evidence**. Limits: stand-up only, frozen features, no streaming test, no external transfer yet.
