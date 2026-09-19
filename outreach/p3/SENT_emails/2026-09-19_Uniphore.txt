@@ -1,0 +1,18 @@
+To: umesh@uniphore.com
+Subject: 15-second reaction anticipation for Uniphore
+
+Hi Umesh,
+
+On Uniphore continuing to set the enterprise voice-AI benchmark across BFSI, healthcare, and retail — congratulations.
+
+We research non-semantic interaction signals (ChuckleNet). We've just completed a controlled study showing frozen speech representations predict listener reactions up to 15 seconds ahead (+0.11 F1 over the full transcript; comedian-disjoint and onset-bleed controls; cross-lab replication done). The endpoint-anticipation line (Endpoint Anticipation, integrated in Kyutai's Unmute at -505 ms latency) confirms the industry already values this family.
+
+For Uniphore this fits because a reaction-anticipation stream is exactly the pre-route cue your enterprise voice bots need before routing / escalation. We will run a free retrospective on 50-100 of your calls: 3-page PDF + 30-min readout in 7 days (baseline endpoint/interrupt metrics, layered anticipation + endpoint-pressure + hesitation-onset scores, 3 actionable findings). No audio leaves your infra; we sign your NDA and process only transcripts + timestamps locally. We ask for one named business owner, one KPI, willingness to co-write. After the retrospective: (a) paid discovery to instrument a customer-flow, (b) co-authored public benchmark, or (c) design-partner introduction.
+
+Proof packet: github.com/Das-rebel/ChuckleNet (code + 17-row reproducible log). 20 minutes this week? Flexible timezone.
+
+Best,
+Subhajit Das
+Freelance AI/ML consultant (ChuckleNet)
+IISER Pune (MSc) \u00b7 IIM Tiruchirappalli (MBA) \u00b7 ex-Axis Bank / Groww / Niro
+sdas22@gmail.com | github.com/Das-rebel
