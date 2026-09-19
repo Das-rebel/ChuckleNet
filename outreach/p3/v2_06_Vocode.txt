@@ -1,0 +1,30 @@
+To: firstname@vocode.com
+Subject: 15-second reaction anticipation for Vocode ($3.25M seed round)
+
+Hi Kian,
+
+On Vocode shipping the developer-first voice-agent framework post-Seed -- congratulations.
+
+We research non-semantic interaction signals (ChuckleNet). We've just completed
+a controlled study showing that frozen speech representations predict listener
+reactions up to 15 seconds ahead, with information the transcript does not
+contain (+0.11 F1 over the full transcript; comedian-disjoint and onset-bleed
+controls; cross-lab protocol replication already done).
+
+For Vocode this is a near-term fit because a developer-facing signal node becomes a memorable demo for your YC + dev community. The underlying
+endpoint-anticipation line (Endpoint Anticipation, integrated in Kyutai's Unmute
+for -505 ms latency) shows the industry already pays attention to this signal
+family.
+
+We will run a free retrospective on 50-100 of your calls: you get per-call
+interaction-event timelines (reaction anticipation, endpoint pressure);
+results return within 7 days, written up, ready to brief your team. We'd ask
+for one named business owner, one agreed KPI, and willingness to publish a
+short joint write-up.
+
+20 minutes this week? I'm flexible on timezone.
+
+Best,
+Subhajit Das
+Independent researcher (ChuckleNet)
+sdas22@gmail.com | github.com/Das-rebel
