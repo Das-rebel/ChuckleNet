@@ -1,0 +1,47 @@
+To: kwindla@gmail.com
+Subject: 15-second reaction-anticipation node for the Pipecat pipeline
+
+Hi Kwindla,
+
+On Pipecat's open-source voice-agent framework continuing to set the agent-builder
+standard -- thank you for keeping Pipecat open.
+
+We research non-semantic interaction signals (ChuckleNet). We've just completed a
+controlled study showing that frozen speech representations predict listener
+reactions up to 15 seconds ahead, with information the transcript does not
+contain (+0.11 F1 over the full transcript; comedian-disjoint and onset-bleed
+controls; cross-lab protocol replication already done). The endpoint-anticipation
+line (Endpoint Anticipation, integrated in Kyutai's Unmute for -505 ms latency)
+shows the industry already values this signal family.
+
+For Pipecat, a reaction-anticipation node fits the pipeline cleanly -- it would
+ship as a lightweight pre-processor that emits anticipation/endpoint-pressure
+scores per turn, alongside the existing VAD/endpointing. We see this as a
+strong OSS-demo differentiator and a natural fit for the kind of community
+contributions Pipecat has been getting.
+
+We will run a free retrospective on 50-100 of your call recordings. We deliver a
+3-page PDF + 30-min readout in 7 days: your baseline endpoint/interrupt metrics,
+layered reaction-anticipation + endpoint-pressure + hesitation-onset scores, and
+3 actionable findings. No audio leaves your infra -- we sign your standard NDA
+and process only transcripts and timestamps locally. We ask for one named
+business owner, one agreed KPI, and willingness to publish a short joint
+write-up. After the retrospective, the commercial shape is one of: (a) a paid
+discovery engagement to instrument a customer-facing flow, (b) a co-authored
+public benchmark partnership, or (c) an introduction to your design-partner
+program.
+
+90-second proof packet on request: github.com/Das-rebel/ChuckleNet (code +
+pre-registration doc + 17-row reproducible results log).
+
+20 minutes this week? I'm flexible on timezone.
+
+Best,
+Subhajit Das
+Freelance AI/ML consultant (ChuckleNet)
+IISER Pune (MSc) · IIM Tiruchirappalli (MBA) · ex-Axis Bank / Groww / Niro
+sdas22@gmail.com | github.com/Das-rebel
+
+(Reach Kwindla is verified via his public pipecat-ai commit emails; no preview
+gate before sending. If you'd prefer I reach him via Pipecat Discord or via a
+daily.co address I haven't verified, drop me a note and I'll redirect.)
