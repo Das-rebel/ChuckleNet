@@ -1,0 +1,39 @@
+To: jordan.dearsley@vapi.ai
+Subject: 15-second reaction anticipation for Vapi (Vapi ($50M Series B))
+
+Hi Jordan,
+
+On Vapi closing a $50M Series B (Peak XV led, with Kleiner, M12, Bessemer) at 1B+ processed calls -- congratulations.
+
+We research non-semantic interaction signals (ChuckleNet). We've just completed a
+controlled study showing that frozen speech representations predict listener
+reactions up to 15 seconds ahead, with information the transcript does not
+contain (+0.11 F1 over the full transcript; comedian-disjoint and onset-bleed
+controls; cross-lab protocol replication already done).
+
+For Vapi this is a near-term fit because the next frontier is agents that anticipate listeners rather than only react to them. The
+underlying endpoint-anticipation line (Endpoint Anticipation, integrated in
+Kyutai's Unmute for -505 ms latency) shows the industry already pays attention to
+this signal family.
+
+We will run a free retrospective on 50-100 of your calls. We deliver a 3-page PDF
++ 30-min readout in 7 days: your baseline endpoint/interrupt metrics, layered
+reaction-anticipation + endpoint-pressure + hesitation-onset scores, and 3
+actionable findings. No audio leaves your infra -- we sign your standard NDA
+and process only transcripts and timestamps locally. We ask for one named
+business owner, one agreed KPI, and willingness to publish a short joint
+write-up. After the retrospective, the commercial shape is one of: (a) a paid
+discovery engagement to instrument a customer-facing flow, (b) a co-authored
+public benchmark partnership, or (c) an introduction to your design-partner
+program.
+
+90-second proof packet on request: github.com/Das-rebel/ChuckleNet (code +
+pre-registration doc + 17-row reproducible results log).
+
+20 minutes this week? I'm flexible on timezone.
+
+Best,
+Subhajit Das
+Freelance AI/ML consultant (ChuckleNet)
+IISER Pune (MSc) · IIM Tiruchirappalli (MBA) · ex-Axis Bank / Groww / Niro
+sdas22@gmail.com | github.com/Das-rebel
