@@ -1,0 +1,24 @@
+To: (find via LinkedIn/careers/community)
+Subject: 15-second reaction anticipation for Daily (Pipecat) voice agents
+
+Hi Daily (Pipecat) team,
+
+Your agents react to listeners; they don't yet anticipate them. We've validated a
+real-time interaction-signal layer from frozen speech representations that predicts
+listener reactions up to 15 seconds ahead, with information the transcript does not
+contain (controlled study, human-verified labels; comedian-disjoint and onset-bleed
+controls; writeup available). The endpoint-anticipation line (e.g., Unmute integration,
+-505 ms latency) shows the industry value of exactly this signal family.
+
+We're offering 2-3 design partners a free retrospective analysis: share N recorded
+calls, and we return interaction-event timelines (reaction anticipation, endpoint
+forecasts) mapped to your transcripts. You keep the insights; we ask for a named
+technical + business owner, one agreed evaluation metric, and a joint test.
+
+Relevant angle for Daily (Pipecat): open-source Pipecat; contribution-friendly integration of interaction events.
+
+20 minutes this week?
+
+Subhajit Das
+Independent researcher - ChuckleNet (interaction-signal research)
+GitHub: github.com/Das-rebel - sdas22@gmail.com

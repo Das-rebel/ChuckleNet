@@ -1,0 +1,22 @@
+To: (find via LinkedIn)
+Subject: timing signals in Yellow.ai call recordings (free retrospective study)
+
+Hi Yellow.ai team,
+
+We research non-lexical interaction signals - hesitation, reaction onset, turn
+pressure. We just completed a controlled validation showing that audio context
+predicts listener reactions up to 15 seconds ahead, beyond what transcripts capture
+(human-verified labels; full control chain; writeup available).
+
+We will run this free on 50-100 of your recorded calls (retrospective, no
+integration): you get per-call interaction-event timelines showing where your current
+intent engine is blind - objections forming, reactions starting, turns under pressure.
+We ask for a named business + technical owner and one agreed metric to evaluate.
+
+Relevant angle for Yellow.ai: enterprise conversational platform; escalation-timing signals.
+
+Worth a 20-minute chat?
+
+Subhajit Das
+Independent researcher - ChuckleNet (interaction-signal research)
+GitHub: github.com/Das-rebel - sdas22@gmail.com
